@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+*.log
+.coverage/
+.lazy-intel/
+
+# Derived indexes and local tool state: rebuilt on demand, host-specific, never published.
+.zvec-grep/
+.codegraph/
+.serena/

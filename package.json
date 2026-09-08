@@ -1,0 +1,24 @@
+{
+  "name": "lazy-intel",
+  "version": "0.2.0",
+  "description": "Autonomous code-intelligence MCP for OMP: self-managed zvec-grep + CodeGraph indexes and Serena LSP semantics behind one tool.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=22.5 <25"
+  },
+  "bin": {
+    "lazy-intel": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js serve",
+    "doctor": "node src/cli.js doctor",
+    "test": "node --test",
+    "check": "node --check src/cli.js && node --check src/engine.js && node --check src/index-manager.js && node --check src/mcp/server.js && node --test"
+  },
+  "dependencies": {
+    "@colbymchenry/codegraph": "1.6.0",
+    "@zvec/zvec-grep": "0.2.1"
+  }
+}

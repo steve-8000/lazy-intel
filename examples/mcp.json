@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
+  "disabledServers": ["zvec-grep", "codegraph"],
+  "mcpServers": {
+    "lazy-intel": {
+      "type": "stdio",
+      "command": "/opt/homebrew/opt/node@22/bin/node",
+      "args": ["/absolute/path/to/lazy-intel/src/cli.js", "serve"],
+      "timeout": 120000,
+      "env": {
+        "LAZY_INTEL_TIMEOUT_MS": "30000",
+        "LAZY_INTEL_INDEX_TIMEOUT_MS": "600000",
+        "LAZY_INTEL_AUTO_INDEX": "true",
+        "LAZY_INTEL_AUTO_REPAIR": "true",
+        "LAZY_INTEL_MAINTENANCE_MS": "5000",
+        "LAZY_INTEL_ZVEC_MODE": "auto",
+        "LAZY_INTEL_SERENA_CONTEXT": "agent",
+        "SERENA_USAGE_REPORTING": "false",
+        "DO_NOT_TRACK": "1"
+      }
+    }
+  }
+}

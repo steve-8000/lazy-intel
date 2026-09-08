@@ -1,0 +1,26 @@
+{
+  "generated": "2026-09-08",
+  "upstreams": {
+    "zvec-grep": {
+      "repo": "https://github.com/zvec-ai/zvec-grep",
+      "package": "@zvec/zvec-grep",
+      "version": "0.2.1",
+      "license": "Apache-2.0",
+      "role": "hybrid workspace retrieval"
+    },
+    "codegraph": {
+      "repo": "https://github.com/colbymchenry/codegraph",
+      "package": "@colbymchenry/codegraph",
+      "version": "1.6.0",
+      "license": "MIT",
+      "role": "architecture, call paths, impact"
+    },
+    "serena": {
+      "repo": "https://github.com/oraios/serena",
+      "package": "serena-agent",
+      "version": "1.7.0",
+      "license": "MIT",
+      "role": "LSP-backed symbol semantics"
+    }
+  }
+}
