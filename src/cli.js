@@ -27,9 +27,8 @@ try {
     }
     case "install-omp": {
       const root = args.find((a) => !a.startsWith("--")) ?? process.cwd();
-      const { configPath, superseded } = await installOmp(root, { global: args.includes("--global") });
+      const { configPath } = await installOmp(root, { global: args.includes("--global") });
       console.log(configPath);
-      if (superseded.length) console.log(`disabled superseded MCP servers: ${superseded.join(", ")}`);
       console.log("OMP: run /mcp reload, then /mcp test lazy-intel");
       break;
     }

@@ -3,6 +3,8 @@ import process from "node:process";
 import { codeIntel } from "../engine.js";
 import { bootstrapRoot, closeIndexManager } from "../index-manager.js";
 import { log } from "../lib/log.js";
+import { bootRoot } from "../lib/roots.js";
+import { closeSerena } from "../backends/serena.js";
 
 const TOOL = {
   name: "code_intel",
@@ -19,7 +21,7 @@ const TOOL = {
     additionalProperties: false,
     properties: {
       query: { type: "string", description: "Focused local-code question or search phrase. Optional for status/sync/reindex/repair and symbol-only calls." },
-      root: { type: "string", description: "Absolute project root. Defaults to lazy-intel process cwd." },
+      root: { type: "string", description: "Canonical workspace root, confined to process boot root or explicitly configured LAZY_INTEL_ALLOWED_ROOTS." },
       operation: {
         type: "string",
         enum: ["auto", "search", "architecture", "symbol", "references", "implementations", "diagnostics", "impact", "status", "sync", "reindex", "repair"],
@@ -27,7 +29,7 @@ const TOOL = {
       },
       backend: { type: "string", enum: ["all", "zvec", "codegraph", "serena"], default: "all", description: "Backend target for control operations. Serena supports status/repair; zvec and CodeGraph support index controls." },
       embedding: { type: "string", description: "Optional zvec embedding model for an explicit reindex. Omit it to preserve an existing index model." },
-      symbol: { type: "string", description: "Exact/near-exact symbol name or Serena name_path." },
+      symbol: { type: "string", description: "Exact/near-exact symbol name or Serena name_path. Required for impact, references and implementations." },
       relativePath: { type: "string", description: "Project-relative source path. Required for references/implementations/diagnostics." },
       includeBody: { type: "boolean", default: false },
       substringMatching: { type: "boolean" },
@@ -47,7 +49,6 @@ const TOOL = {
 };
 
 export function startMcpServer() {
-  const bootRoot = process.env.LAZY_INTEL_ROOT || process.cwd();
   if (process.env.LAZY_INTEL_AUTO_INDEX !== "false") {
     bootstrapRoot(bootRoot).catch((error) => log("warn", "initial automatic indexing failed", { root: bootRoot, error: error.message }));
   }
@@ -84,6 +85,8 @@ export function startMcpServer() {
   });
 
   rl.on("close", () => {
+    for (const controller of controllers.values()) controller.abort();
+    closeSerena();
     closeIndexManager();
     process.exitCode = 0;
   });
@@ -105,7 +108,7 @@ async function handle(req, signal) {
       const result = await codeIntel(req.params?.arguments ?? {}, signal);
       const backends = result.meta?.backends;
       // Intelligence calls where no backend produced evidence are failures, not empty successes.
-      const isError = Array.isArray(backends) && backends.length > 0 && backends.every((b) => !b.ok);
+      const isError = result.meta?.ok === false || (Array.isArray(backends) && backends.length > 0 && backends.every((b) => !b.ok));
       return {
         content: [{ type: "text", text: result.text }],
         structuredContent: result.meta,

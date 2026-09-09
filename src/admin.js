@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, open, readFile, rename, unlink } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -110,7 +111,13 @@ export async function installOmp(root, options = {}) {
   await mkdir(path.dirname(configPath), { recursive: true });
 
   let config = {};
-  try { config = JSON.parse(await readFile(configPath, "utf8")); } catch {}
+  try { config = JSON.parse(await readFile(configPath, "utf8")); }
+  catch (error) { if (error.code !== "ENOENT") throw error; }
+  if (!config || typeof config !== "object" || Array.isArray(config)
+    || (config.mcpServers != null && (typeof config.mcpServers !== "object" || Array.isArray(config.mcpServers)))
+    || (config.disabledServers != null && (!Array.isArray(config.disabledServers) || config.disabledServers.some((name) => typeof name !== "string")))) {
+    throw new Error(`invalid OMP configuration: ${configPath}`);
+  }
   config.$schema ??= "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json";
   config.mcpServers ??= {};
 
@@ -119,7 +126,7 @@ export async function installOmp(root, options = {}) {
     type: "stdio",
     command: await stableNodePath(),
     args: [cliPath, "serve"],
-    timeout: 120000,
+    timeout: 1920000,
     env: {
       LAZY_INTEL_TIMEOUT_MS: "30000",
       LAZY_INTEL_INDEX_TIMEOUT_MS: "600000",
@@ -130,6 +137,8 @@ export async function installOmp(root, options = {}) {
       LAZY_INTEL_SERENA_CONTEXT: "agent",
       SERENA_USAGE_REPORTING: "false",
       DO_NOT_TRACK: "1",
+      ...config.mcpServers["lazy-intel"]?.env,
+      LAZY_INTEL_SERENA_BIN: await resolveBin("serena"),
     },
   };
   // A project-scoped install pins the root; the global install follows OMP's session cwd.
@@ -137,10 +146,26 @@ export async function installOmp(root, options = {}) {
   config.mcpServers["lazy-intel"] = entry;
 
   const disabled = new Set(config.disabledServers ?? []);
-  const superseded = SUPERSEDED_SERVERS.filter((name) => name in config.mcpServers || disabled.has(name));
-  for (const name of superseded) disabled.add(name);
+  for (const name of SUPERSEDED_SERVERS) {
+    delete config.mcpServers[name];
+    disabled.add(name); // Prevent other harness configuration sources from reconnecting it.
+  }
   config.disabledServers = [...disabled];
 
-  await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
-  return { configPath, superseded };
+  const temporary = `${configPath}.${randomUUID()}.tmp`;
+  try {
+    const file = await open(temporary, "wx", 0o600);
+    try {
+      await file.writeFile(`${JSON.stringify(config, null, 2)}\n`, "utf8");
+      await file.sync();
+    } finally { await file.close(); }
+    await rename(temporary, configPath);
+    if (process.platform !== "win32") {
+      const directory = await open(path.dirname(configPath), "r");
+      try { await directory.sync(); } finally { await directory.close(); }
+    }
+  } finally {
+    await unlink(temporary).catch((error) => { if (error.code !== "ENOENT") throw error; });
+  }
+  return { configPath };
 }

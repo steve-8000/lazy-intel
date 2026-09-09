@@ -143,6 +143,22 @@ DO_NOT_TRACK=1
 
 Optional: `LAZY_INTEL_ROOT` pins the bootstrap root, `LAZY_INTEL_EMBEDDING` overrides the inherited zvec model for *new* indexes, `LAZY_INTEL_PROBE_TIMEOUT_MS` bounds readiness probes, and `LAZY_INTEL_ZG_BIN` / `LAZY_INTEL_CODEGRAPH_BIN` / `LAZY_INTEL_SERENA_BIN` override binary resolution.
 
+### Trust boundaries
+
+- Executables never resolve through the requesting project's `node_modules/.bin` or `PATH`. zvec/CodeGraph use this installation's pinned dependencies; Serena uses the installed `~/.local/bin/serena`. Overrides must be absolute, executable files and are canonicalized with `realpath`. The installer records Serena's canonical absolute path.
+- MCP request roots are canonicalized before containment checks. They must be the process boot root (`LAZY_INTEL_ROOT` or cwd), a descendant, or inside an explicit `LAZY_INTEL_ALLOWED_ROOTS` entry (platform path delimiter). A sibling prefix or symlink escaping the allowlist is refused. `relativePath` cannot escape the requested root either. These are routing boundaries, not an OS sandbox against a concurrently hostile filesystem or a compromised backend.
+- Managed index roots/watchers are capped by `LAZY_INTEL_MAX_ROOTS` (default 8, maximum 64). Canonical aliases share one slot. On exhaustion, requests fail without creating another watcher; restart the MCP to release slots. In-flight work is never evicted to make room.
+- `impact` requires `symbol`; no implicit `explore` fallback. References and implementations require both `symbol` and `relativePath`.
+- OMP abort/timeout notifications propagate to Serena calls. A cancelled caller does not retry/restart a shared backend or cancel another caller's startup.
+- OMP configuration parsing/permission failures stop installation. Writes use a same-directory exclusive temporary file, `fsync`, atomic rename and mode `0600`; unrelated server entries and explicit lazy-intel environment settings are preserved. MCP request timeout covers index creation plus query execution.
+- Runtime observes `sync`/`reindex`/`repair` as derived-state effects. `status` and intelligence queries remain reads; no additional MCP tools or approval owner are introduced.
+
+### Denied roots
+
+The agent home (`OMP_HOME`, default `~/.omp`) and the zvec-grep home (`ZVEC_GREP_HOME`, default `~/.zvec-grep`) are never indexed. They are agent private state — session transcripts, blobs, logs, SQLite WALs — that the running harness rewrites continuously, so a watcher rooted there never settles and every sync re-embeds files that are still being appended to.
+
+The match is on the exact directory, never a prefix, so a real repository nested inside one — such as `~/.omp/agent` — is still indexed normally. Automatic bootstrap skips a denied root silently; an explicit `code_intel` call against one fails with the reason instead of quietly indexing it. `LAZY_INTEL_DENY_ROOTS` adds further directories, separated by the platform path delimiter.
+
 ## Pinned upstreams (2026-09-08)
 
 - `@zvec/zvec-grep` **0.2.1**
@@ -183,7 +199,7 @@ The indexes are fully autonomous, but they remain derived acceleration state, no
 
 A backend failure does not take down the MCP. Intelligence queries return whatever selected backend evidence is healthy, and a call where every selected backend failed is reported as an MCP tool error instead of an empty success.
 
-Retries are bounded: a failing backend backs off 30s, 1m, 2m, … up to 15m, the maintenance tick skips a backend that is already busy or not yet due, and the automatic rebuild escalation fires once per failure streak. A failed semantic call restarts Serena once.
+Retries are bounded: a failing backend backs off 30s, 1m, 2m, … up to 15m, the maintenance tick skips a backend that is already busy or not yet due, and the automatic rebuild escalation fires once per failure streak. A failed semantic call restarts Serena once; cancellation does not. Explicit maintenance reports an MCP error if any targeted backend fails, so a partial repair cannot be journaled as a successful effect.
 
 The agent can force recovery with:
 
@@ -211,6 +227,12 @@ The CLI control commands are diagnostics/compatibility only. Normal lifecycle ow
 ## Tests
 
 ```bash
-npm test
-npm run check
+npm run check:integration
+npm run test:integration
+npm run test:compatibility   # real pinned backends, scratch workspace; no model calls
 ```
+
+PR CI covers the executable/root/installer/cancellation boundaries on Node 22 and 24. Scheduled/manual compatibility runs install exact backend pins and use a local Qwen embedding model. They exercise search, architecture, impact, references and symbol lookup, then measure one restart-first and warm search sample. They do not measure general relevance or model performance.
+
+Local verification (2026-09-09, macOS arm64, Node 22.22.3): real zvec-grep 0.2.1, CodeGraph 1.6.0 and Serena 1.7.0 passed that compatibility exercise. First search including index creation: 7,236 ms; first search after MCP restart: 2,556 ms; warm search: 1,797 ms. Keep the existing restart reconciliation policy; these are single samples, not latency percentiles.
+

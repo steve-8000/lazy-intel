@@ -1,5 +1,7 @@
 import { spawn } from "node:child_process";
-import { access } from "node:fs/promises";
+import { constants } from "node:fs";
+import { access, realpath, stat } from "node:fs/promises";
+import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,22 +23,20 @@ function binName(name) {
   return process.platform === "win32" ? `${name}.cmd` : name;
 }
 
-export function localBin(name) {
-  return path.resolve(process.cwd(), "node_modules", ".bin", binName(name));
-}
-
-// Pinned project-local CLIs win over anything on PATH so the runtime matches upstreams.lock.json.
+// Only explicit absolute overrides or our installed dependencies are executable trust roots.
+// Never search cwd or PATH: either can contain an untrusted project's fake backend.
 export async function resolveBin(name) {
-  const override = process.env[BIN_ENV[name] ?? ""];
-  if (override) return override;
-  const candidates = [
-    path.resolve(repoRoot, "node_modules", ".bin", binName(name)),
-    localBin(name),
-  ];
-  for (const candidate of candidates) {
-    if (await pathExists(candidate)) return candidate;
-  }
-  return name;
+  const key = BIN_ENV[name];
+  if (!key) throw new Error(`unsupported backend executable: ${name}`);
+  const override = process.env[key];
+  const candidate = override || (name === "serena"
+    ? path.join(homedir(), ".local", "bin", binName(name))
+    : path.join(repoRoot, "node_modules", ".bin", binName(name)));
+  if (!path.isAbsolute(candidate)) throw new Error(`${key} must be an absolute executable path`);
+  const executable = await realpath(candidate);
+  if (!(await stat(executable)).isFile()) throw new Error(`${key} is not a file: ${executable}`);
+  await access(executable, constants.X_OK);
+  return executable;
 }
 
 export function run(command, args = [], options = {}) {
@@ -50,6 +50,7 @@ export function run(command, args = [], options = {}) {
   } = options;
 
   return new Promise((resolve, reject) => {
+    signal?.throwIfAborted();
     const started = performance.now();
     const child = spawn(command, args, {
       cwd,

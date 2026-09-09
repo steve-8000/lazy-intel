@@ -1,11 +1,14 @@
 import { watch } from "node:fs";
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
+import { canonicalDirectory } from "./lib/roots.js";
 import { homedir } from "node:os";
 import path from "node:path";
 import { resolveBin, run } from "./lib/process.js";
 import { log } from "./lib/log.js";
 
 const roots = new Map();
+const MAX_ROOTS = intEnv("LAZY_INTEL_MAX_ROOTS", 8, 1, 64);
 const MAINTENANCE_MS = intEnv("LAZY_INTEL_MAINTENANCE_MS", 5_000, 0, 300_000);
 // Only used when the filesystem watcher is unavailable: without change events, time is
 // the only remaining freshness signal.
@@ -25,9 +28,38 @@ const IGNORED_SEGMENTS = new Set([
   ".gradle", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".cache",
 ]);
 
+// Agent private state is not a source workspace. The OMP home holds ~100k session
+// transcripts, blobs, logs and SQLite WALs that the harness rewrites every second, so a
+// watcher rooted there can never settle: every sync re-embeds files the running agent is
+// still appending to. Matched by exact directory, never by prefix, so a real project nested
+// inside one — such as ~/.omp/agent — stays indexable.
+const DENIED_ROOTS = new Set(
+  [
+    process.env.OMP_HOME || path.join(homedir(), ".omp"),
+    process.env.ZVEC_GREP_HOME || path.join(homedir(), ".zvec-grep"),
+    ...(process.env.LAZY_INTEL_DENY_ROOTS ?? "").split(path.delimiter),
+  ].filter(Boolean).map((entry) => path.resolve(entry)),
+);
+
 let maintenanceTimer;
 
+export function isDeniedRoot(root) {
+  let canonical;
+  try { canonical = realpathSync(root); } catch { canonical = path.resolve(root); }
+  for (const denied of DENIED_ROOTS) {
+    if (denied === canonical) return true;
+    try { if (realpathSync(denied) === canonical) return true; } catch {}
+  }
+  return false;
+}
+
 export async function bootstrapRoot(root) {
+  root = await canonicalDirectory(root);
+  // cwd is frequently the OMP home itself; that is an ordinary skip, not a failure.
+  if (isDeniedRoot(root)) {
+    log("info", "skipping automatic indexing of agent private state", { root: path.resolve(root) });
+    return null;
+  }
   const state = await ensureState(root);
   // Never block MCP startup on a first-time index.
   queueMicrotask(() => {
@@ -66,6 +98,7 @@ export async function repairIndexes(root, backends = INDEX_BACKENDS, options = {
       if (created?.building) return created;
       return await refreshBackend(state, backend, options);
     } catch (first) {
+      options.signal?.throwIfAborted();
       log("warn", "index repair escalating to rebuild", { root: state.root, backend, error: first.message });
       return rebuildBackend(state, backend, options);
     }
@@ -107,11 +140,14 @@ export async function indexStatus(root, options = {}) {
 }
 
 async function ensureState(root) {
-  const absolute = path.resolve(root);
-  const info = await stat(absolute).catch(() => null);
-  if (!info?.isDirectory()) throw new Error(`root is not a directory: ${absolute}`);
+  const absolute = await canonicalDirectory(root);
+  if (isDeniedRoot(absolute)) {
+    throw new Error(`root is agent private state, not a source workspace: ${absolute} `
+      + "(run from the project directory, or set LAZY_INTEL_DENY_ROOTS to change the deny list)");
+  }
   const existing = roots.get(absolute);
   if (existing) return existing;
+  if (roots.size >= MAX_ROOTS) throw new Error(`workspace limit reached (${MAX_ROOTS}); restart lazy-intel to release watchers`);
   const state = {
     root: absolute,
     generation: 1,
@@ -189,6 +225,7 @@ async function ensureBackends(state, backends, options) {
       }
       return row(backend, true, "ready", { dirty });
     } catch (error) {
+      options.signal?.throwIfAborted();
       b.ready = false;
       b.consecutiveFailures += 1;
       b.lastError = error.message;

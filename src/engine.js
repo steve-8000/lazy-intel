@@ -1,17 +1,20 @@
-import { stat } from "node:fs/promises";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
+import { containsPath, requestRoot } from "./lib/roots.js";
 import { OPERATIONS, route } from "./router.js";
 import { zvecSearch } from "./backends/zvec.js";
 import { codegraphQuery } from "./backends/codegraph.js";
 import { repairSerena, serenaQuery, serenaStatus } from "./backends/serena.js";
 import { fuse } from "./fusion.js";
-import { indexStatus, repairIndexes, reindexIndexes, syncIndexes } from "./index-manager.js";
+import { indexStatus, isDeniedRoot, repairIndexes, reindexIndexes, syncIndexes } from "./index-manager.js";
 import { log } from "./lib/log.js";
 
 const CONTROL_OPERATIONS = new Set(["status", "sync", "reindex", "repair"]);
 
 export async function codeIntel(rawInput, signal) {
+  signal?.throwIfAborted();
   const input = await normalizeInput(rawInput);
+  signal?.throwIfAborted();
   if (CONTROL_OPERATIONS.has(input.operation)) return control(input, signal);
 
   const routes = route(input).slice(0, 2);
@@ -23,7 +26,7 @@ export async function codeIntel(rawInput, signal) {
     const [backend, kind] = entry.split(":");
     if (backend === "zvec") return zvecSearch(fullInput, signal);
     if (backend === "codegraph") return codegraphQuery(kind, fullInput, signal);
-    if (backend === "serena") return serenaQuery(kind, fullInput);
+    if (backend === "serena") return serenaQuery(kind, fullInput, signal);
     return Promise.resolve({ backend, ok: false, warning: `unknown backend ${backend}`, text: "" });
   });
   const results = await Promise.all(tasks);
@@ -69,24 +72,38 @@ async function control(input, signal) {
     else payload.push(...await repairIndexes(input.root, indexTargets, { timeoutMs: input.indexTimeoutMs, signal }));
   }
   if ((input.backend === "all" || input.backend === "serena") && input.operation === "repair") {
-    payload.push(await repairSerena(input.root, input.indexTimeoutMs));
+    payload.push(await repairSerena(input.root, input.indexTimeoutMs, signal));
   }
   return {
     text: JSON.stringify(payload, null, 2),
-    meta: { root: input.root, operation: input.operation, backend: input.backend },
+    meta: { root: input.root, operation: input.operation, backend: input.backend, ok: payload.every(row => row.ok),
+      backends: payload.map(({ backend, ok, error }) => ({ backend, ok, warning: error })),
+    },
   };
 }
 
 async function normalizeInput(raw) {
-  if (!raw || typeof raw !== "object") throw new Error("arguments must be an object");
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("arguments must be an object");
   const operation = raw.operation ?? "auto";
   if (!OPERATIONS.includes(operation)) throw new Error(`unsupported operation: ${operation}`);
   const queryRequired = !CONTROL_OPERATIONS.has(operation);
   const query = raw.query == null ? "" : stringValue(raw.query, "query", 4096, !queryRequired);
-  if (queryRequired && !query.trim() && !raw.symbol) throw new Error("query or symbol is required");
-  const root = path.resolve(raw.root ? stringValue(raw.root, "root", 4096) : process.cwd());
-  const info = await stat(root).catch(() => null);
-  if (!info?.isDirectory()) throw new Error(`root is not a directory: ${root}`);
+  const symbol = optionalString(raw.symbol, "symbol", 1024);
+  const relativePath = optionalString(raw.relativePath, "relativePath", 4096);
+  if (operation === "impact" && !symbol) throw new Error("impact requires symbol");
+  if (["references", "implementations"].includes(operation) && (!symbol || !relativePath)) {
+    throw new Error(`${operation} requires symbol and relativePath`);
+  }
+  if (operation === "diagnostics" && !relativePath) throw new Error("diagnostics requires relativePath");
+  if (queryRequired && !query.trim() && !symbol) throw new Error("query or symbol is required");
+  const root = await requestRoot(raw.root == null ? undefined : stringValue(raw.root, "root", 4096));
+  if (isDeniedRoot(root)) throw new Error(`root is agent private state, not a source workspace: ${root}`);
+  if (relativePath) {
+    const target = path.resolve(root, relativePath);
+    if (path.isAbsolute(relativePath) || !containsPath(root, target) || !containsPath(root, await realpath(target))) {
+      throw new Error("relativePath must remain inside the requested workspace");
+    }
+  }
   const freshness = raw.freshness ?? "auto";
   if (!["fast", "auto", "strict"].includes(freshness)) throw new Error(`unsupported freshness: ${freshness}`);
   const backend = raw.backend ?? "all";
@@ -97,8 +114,8 @@ async function normalizeInput(raw) {
     operation,
     backend,
     embedding: optionalString(raw.embedding, "embedding", 512),
-    symbol: optionalString(raw.symbol, "symbol", 1024),
-    relativePath: optionalString(raw.relativePath, "relativePath", 4096),
+    symbol,
+    relativePath,
     includeBody: Boolean(raw.includeBody),
     substringMatching: raw.substringMatching == null ? undefined : Boolean(raw.substringMatching),
     limit: clampInt(raw.limit, 1, 100, 20),

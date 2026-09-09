@@ -1,0 +1,46 @@
+name: Intelligence integration
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '31 6 * * 1'
+permissions:
+  contents: read
+jobs:
+  boundaries:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['22.22.3', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm run check:integration
+      - run: npm run test:integration
+  pinned-backends:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      LAZY_INTEL_EMBEDDING: local/qwen3-embedding-0.6b
+      LAZY_INTEL_ZVEC_MODE: direct
+      SERENA_USAGE_REPORTING: 'false'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.3'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - name: Install the pinned Serena executable
+        run: |
+          version=$(node -p 'JSON.parse(require("fs").readFileSync("upstreams.lock.json")).upstreams.serena.version')
+          uv tool install "serena-agent==$version" --python 3.13
+          echo "LAZY_INTEL_SERENA_BIN=$(uv tool dir --bin)/serena" >> "$GITHUB_ENV"
+      - run: npm run test:compatibility

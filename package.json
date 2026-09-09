@@ -15,6 +15,9 @@
     "start": "node src/cli.js serve",
     "doctor": "node src/cli.js doctor",
     "test": "node --test",
+    "test:integration": "node --test test/security.test.js test/cancellation.test.js test/index-manager.test.js test/mcp-smoke.test.js",
+    "test:compatibility": "node scripts/compatibility.mjs",
+    "check:integration": "node --check src/lib/process.js && node --check src/lib/roots.js && node --check src/admin.js && node --check src/engine.js && node --check src/index-manager.js && node --check src/backends/codegraph.js && node --check src/backends/serena.js && node --check src/mcp/client.js && node --check src/mcp/server.js && node --check scripts/compatibility.mjs",
     "check": "node --check src/cli.js && node --check src/engine.js && node --check src/index-manager.js && node --check src/mcp/server.js && node --test"
   },
   "dependencies": {

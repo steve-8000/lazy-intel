@@ -2,6 +2,7 @@ import { resolveBin, run } from "../lib/process.js";
 import { ensureIndexes } from "../index-manager.js";
 
 export async function codegraphQuery(kind, input, signal) {
+  if (kind === "impact" && !input.symbol?.trim()) throw new Error("impact requires symbol");
   const [ready] = await ensureIndexes(input.root, ["codegraph"], {
     freshness: input.freshness,
     timeoutMs: input.indexTimeoutMs,
@@ -9,7 +10,7 @@ export async function codegraphQuery(kind, input, signal) {
   });
   if (!ready?.ok) return failed("codegraph", `index unavailable: ${ready?.error ?? ready?.action ?? "unknown"}`);
 
-  const args = kind === "impact" && input.symbol
+  const args = kind === "impact"
     ? ["impact", input.symbol, "--path", input.root, "--depth", String(input.depth ?? 2), "--json"]
     : ["explore", input.query, "--path", input.root, "--max-files", String(Math.max(1, Math.min(input.limit, 12)))];
   try {

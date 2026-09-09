@@ -6,6 +6,10 @@ import path from "node:path";
 
 process.env.LAZY_INTEL_MAINTENANCE_MS = "0";
 delete process.env.LAZY_INTEL_EMBEDDING;
+// The deny list is resolved once at import time, so the fake agent home has to be pinned
+// first; otherwise the suite would assert against the developer's real ~/.omp.
+const DENIED_HOME = path.join(os.tmpdir(), "lazy-intel-denied-home");
+process.env.OMP_HOME = DENIED_HOME;
 
 const { ensureIndexes, indexStatus, syncIndexes, reindexIndexes, closeIndexManager } =
   await import("../src/index-manager.js");
@@ -172,7 +176,34 @@ test("an unconfigured embedding fails with actionable guidance instead of a raw 
   assert.deepEqual(await calls(), (await calls()).filter((c) => c.startsWith("zg status")), "no index must be started without a model");
 });
 
+test("an aborted index request never launches a backend or advances its baseline", async (t) => {
+  const { project, calls } = await fixture(t);
+  await assert.rejects(ensureIndexes(project, ["zvec"], { signal: AbortSignal.abort() }), { name: "AbortError" });
+  assert.deepEqual(await calls(), []);
+  const status = await indexStatus(project);
+  assert.equal(status.backends.zvec.consecutiveFailures, 0);
+  assert.equal(status.backends.zvec.baseline, "unverified");
+});
+
 test("serena is rejected as a derived-index target", async (t) => {
   const { project } = await fixture(t);
   await assert.rejects(() => ensureIndexes(project, ["serena"], { timeoutMs: 5_000 }), /no derived-index backend/);
+});
+
+test("the agent home is refused as a root while a project nested inside it still indexes", async (t) => {
+  const { calls } = await fixture(t);
+  const nested = path.join(DENIED_HOME, "agent");
+  await mkdir(nested, { recursive: true });
+  await writeFile(path.join(nested, "main.swift"), "func hello() {}\n");
+  t.after(() => rm(DENIED_HOME, { recursive: true, force: true }));
+
+  await assert.rejects(() => ensureIndexes(DENIED_HOME, ["zvec"], { timeoutMs: 30_000 }), /agent private state/);
+  await assert.rejects(() => indexStatus(DENIED_HOME), /agent private state/);
+  assert.deepEqual(await calls(), [], "a denied root must not reach a backend at all");
+
+  // Exact-directory deny: widening this to a prefix would silently disable code
+  // intelligence for every repository the user keeps inside the agent home.
+  const [row] = await ensureIndexes(nested, ["zvec"], { freshness: "auto", timeoutMs: 30_000 });
+  assert.equal(row.ok, true, JSON.stringify(row));
+  assert.equal((await indexStatus(nested)).backends.zvec.ready, true);
 });

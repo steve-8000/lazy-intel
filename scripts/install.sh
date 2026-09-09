@@ -32,7 +32,9 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 serena_pin="$(node -p 'JSON.parse(require("fs").readFileSync("upstreams.lock.json","utf8")).upstreams.serena.version')"
 uv tool install --force -p 3.13 "serena-agent==${serena_pin}"
-"$HOME/.local/bin/serena" init >/dev/null 2>&1 || serena init >/dev/null 2>&1 || true
+serena_bin="$(uv tool dir --bin)/serena"
+export LAZY_INTEL_SERENA_BIN="$(node -e 'console.log(require("fs").realpathSync(process.argv[1]))' "$serena_bin")"
+"$LAZY_INTEL_SERENA_BIN" init
 
 DO_NOT_TRACK=1 ./node_modules/.bin/codegraph telemetry off >/dev/null 2>&1 || true
 

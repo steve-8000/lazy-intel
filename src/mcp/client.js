@@ -21,6 +21,7 @@ export class StdioMcpClient {
       env: { ...process.env, ...this.env },
       stdio: ["pipe", "pipe", "pipe"],
     });
+    this.child.stdin.on("error", (error) => this.#closeAll(error));
     this.child.stderr.on("data", (chunk) => log("debug", `${this.name}:stderr`, { text: chunk.toString("utf8").slice(0, 4000) }));
     this.child.on("exit", (code, signal) => this.#closeAll(new Error(`${this.name} exited code=${code} signal=${signal}`)));
     this.child.on("error", (error) => this.#closeAll(error));
@@ -37,18 +38,40 @@ export class StdioMcpClient {
     return this;
   }
 
-  request(method, params = {}, timeoutMs = this.timeoutMs) {
+  request(method, params = {}, { signal, timeoutMs = this.timeoutMs } = {}) {
+    if (signal?.aborted) return Promise.reject(signal.reason);
     if (this.closed) return Promise.reject(new Error(`${this.name} is closed`));
     const id = this.nextId++;
     const message = { jsonrpc: "2.0", id, method, params };
     return new Promise((resolve, reject) => {
-      const timer = timeoutMs > 0 ? setTimeout(() => {
+      let timer;
+      const cleanup = () => {
         this.pending.delete(id);
-        reject(new Error(`${this.name} MCP timeout: ${method}`));
-      }, timeoutMs) : null;
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", onAbort);
+      };
+      const cancel = (error) => {
+        if (!this.pending.has(id)) return;
+        cleanup();
+        // MCP initialize is not cancellable. Notification failure must not hide the abort.
+        if (method !== "initialize") {
+          try { this.notify("notifications/cancelled", { requestId: id }); } catch {}
+        }
+        reject(error);
+      };
+      const onAbort = () => cancel(signal.reason);
+      this.pending.set(id, {
+        resolve: (result) => { cleanup(); resolve(result); },
+        reject: (error) => { cleanup(); reject(error); },
+      });
+      signal?.addEventListener("abort", onAbort, { once: true });
+      timer = timeoutMs > 0 ? setTimeout(() => cancel(new Error(`${this.name} MCP timeout: ${method}`)), timeoutMs) : null;
       timer?.unref();
-      this.pending.set(id, { resolve, reject, timer });
-      this.child.stdin.write(`${JSON.stringify(message)}\n`);
+      try {
+        this.child.stdin.write(`${JSON.stringify(message)}\n`, (error) => {
+          if (error) this.pending.get(id)?.reject(error);
+        });
+      } catch (error) { this.pending.get(id)?.reject(error); }
     });
   }
 
@@ -60,8 +83,8 @@ export class StdioMcpClient {
     return this.request("tools/list", {});
   }
 
-  async callTool(name, args) {
-    return this.request("tools/call", { name, arguments: args });
+  async callTool(name, args, options) {
+    return this.request("tools/call", { name, arguments: args }, options);
   }
 
   close() {
@@ -83,7 +106,6 @@ export class StdioMcpClient {
     const pending = this.pending.get(msg.id);
     if (!pending) return;
     this.pending.delete(msg.id);
-    clearTimeout(pending.timer);
     if (msg.error) pending.reject(new Error(`${this.name}: ${msg.error.message ?? JSON.stringify(msg.error)}`));
     else pending.resolve(msg.result);
   }
@@ -91,8 +113,7 @@ export class StdioMcpClient {
   #closeAll(error) {
     if (this.closed && this.pending.size === 0) return;
     this.closed = true;
-    for (const { reject, timer } of this.pending.values()) {
-      clearTimeout(timer);
+    for (const { reject } of this.pending.values()) {
       reject(error);
     }
     this.pending.clear();
