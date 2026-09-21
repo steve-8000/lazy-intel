@@ -11,12 +11,12 @@ delete process.env.LAZY_INTEL_EMBEDDING;
 const DENIED_HOME = path.join(os.tmpdir(), "lazy-intel-denied-home");
 process.env.OMP_HOME = DENIED_HOME;
 
-const { ensureIndexes, indexStatus, syncIndexes, reindexIndexes, closeIndexManager } =
+const { ensureIndexes, indexStatus, isDeniedRoot, syncIndexes, reindexIndexes, repairIndexes, observeIndexState, closeIndexManager } =
   await import("../src/index-manager.js");
 
 const TEST_EMBEDDING = "local/test-embedding";
 
-async function fixture(t, { slowIndexSeconds = 0, zvecConfig = true } = {}) {
+async function fixture(t, { slowIndexSeconds = 0, zvecConfig = true, buildingZvec = false } = {}) {
   const tmp = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-index-"));
   const bin = path.join(tmp, "bin");
   const project = path.join(tmp, "project");
@@ -32,6 +32,9 @@ async function fixture(t, { slowIndexSeconds = 0, zvecConfig = true } = {}) {
   }
 
   const marker = { zvec: ".zvec-grep/index.zvec", codegraph: ".codegraph/graph.db" };
+  const zvecStatus = buildingZvec
+    ? 'echo "state: indexing"; exit 1'
+    : 'if [[ -f "\$2/.zvec-grep/index.zvec" ]]; then echo "Workspace index is ready"; exit 0; fi\n    echo "Workspace index is not configured"; exit 1';
   await writeFile(path.join(bin, "zg"), `#!/usr/bin/env bash
 set -euo pipefail
 echo "zg $*" >> "${callLog}"
@@ -40,8 +43,7 @@ case "\${1:-}" in
     sleep ${slowIndexSeconds}
     mkdir -p "\$2/.zvec-grep" && touch "\$2/${marker.zvec}" ;;
   status)
-    if [[ -f "\$2/${marker.zvec}" ]]; then echo "Workspace index is ready"; exit 0; fi
-    echo "Workspace index is not configured"; exit 1 ;;
+    ${zvecStatus} ;;
   query) echo "zvec-hit" ;;
 esac
 `);
@@ -190,20 +192,78 @@ test("serena is rejected as a derived-index target", async (t) => {
   await assert.rejects(() => ensureIndexes(project, ["serena"], { timeoutMs: 5_000 }), /no derived-index backend/);
 });
 
-test("the agent home is refused as a root while a project nested inside it still indexes", async (t) => {
-  const { calls } = await fixture(t);
+test("the agent home and every repository nested inside it are refused as roots", async (t) => {
+  const { calls, project } = await fixture(t);
   const nested = path.join(DENIED_HOME, "agent");
-  await mkdir(nested, { recursive: true });
+  await mkdir(path.join(nested, "extensions"), { recursive: true });
   await writeFile(path.join(nested, "main.swift"), "func hello() {}\n");
   t.after(() => rm(DENIED_HOME, { recursive: true, force: true }));
 
   await assert.rejects(() => ensureIndexes(DENIED_HOME, ["zvec"], { timeoutMs: 30_000 }), /agent private state/);
   await assert.rejects(() => indexStatus(DENIED_HOME), /agent private state/);
+
+  // The harness keeps a real git repository at ~/.omp/agent holding rules, memories, skills
+  // and session databases. An exact-directory deny embedded exactly that private state, so
+  // the deny covers the whole tree.
+  await assert.rejects(() => ensureIndexes(nested, ["zvec"], { timeoutMs: 30_000 }), /agent private state/);
+  await assert.rejects(() => indexStatus(path.join(nested, "extensions")), /agent private state/);
   assert.deepEqual(await calls(), [], "a denied root must not reach a backend at all");
 
-  // Exact-directory deny: widening this to a prefix would silently disable code
-  // intelligence for every repository the user keeps inside the agent home.
-  const [row] = await ensureIndexes(nested, ["zvec"], { freshness: "auto", timeoutMs: 30_000 });
+  // A workspace outside the denied trees is unaffected.
+  const [row] = await ensureIndexes(project, ["zvec"], { freshness: "auto", timeoutMs: 30_000 });
   assert.equal(row.ok, true, JSON.stringify(row));
-  assert.equal((await indexStatus(nested)).backends.zvec.ready, true);
+});
+
+test("the home directory itself is never a workspace, but its children are", () => {
+  assert.equal(isDeniedRoot(os.homedir()), true);
+  assert.equal(isDeniedRoot(path.join(os.homedir(), "some-project")), false);
+});
+
+test("a building observation is not success or a failure", async (t) => {
+  const { project, calls } = await fixture(t, { buildingZvec: true });
+  const [row] = await ensureIndexes(project, ["zvec"], { freshness: "auto", timeoutMs: 30_000 });
+  assert.equal(row.ready, false);
+  assert.equal(row.ok, false);
+  assert.equal(row.building, true);
+  const status = await indexStatus(project);
+  assert.equal(status.backends.zvec.consecutiveFailures, 0);
+  assert.equal((await calls()).some((call) => call.includes(" index ")), false);
+});
+
+test("repair during a building observation does not start a second build", async (t) => {
+  const { project, calls } = await fixture(t, { buildingZvec: true });
+  const [row] = await repairIndexes(project, ["zvec"], { timeoutMs: 30_000 });
+  assert.deepEqual({ ready: row.ready, ok: row.ok, building: row.building }, { ready: false, ok: false, building: true });
+  assert.equal((await calls()).some((call) => call.includes(" index ")), false);
+});
+
+test("observeIndexState does not create an untracked root", async (t) => {
+  const { project } = await fixture(t);
+  assert.equal(observeIndexState(project), null);
+  assert.equal(observeIndexState(project), null);
+});
+
+test("a null-filename watcher event marks the generation dirty", async (t) => {
+  const fs = await import("node:fs");
+  const { syncBuiltinESMExports } = await import("node:module");
+  const originalWatch = fs.default.watch;
+  let event;
+  fs.default.watch = (_root, _options, callback) => {
+    event = callback;
+    return { on() { return this; }, close() {} };
+  };
+  syncBuiltinESMExports();
+  const fresh = await import(`../src/index-manager.js?null-filename=${Date.now()}`);
+  try {
+    const { project } = await fixture(t);
+    await fresh.ensureIndexes(project, ["zvec"], { freshness: "auto", timeoutMs: 30_000 });
+    const before = fresh.observeIndexState(project);
+    event("change", null);
+    const after = fresh.observeIndexState(project);
+    assert.equal(after.generation, before.generation + 1);
+  } finally {
+    fresh.closeIndexManager();
+    fs.default.watch = originalWatch;
+    syncBuiltinESMExports();
+  }
 });

@@ -1,0 +1,1530 @@
+{
+  "schema_version": 1,
+  "vendor": "vendor/zvec-grep",
+  "upstream": {
+    "repository": "zvec-ai/zvec-grep",
+    "clone_url": "https://github.com/zvec-ai/zvec-grep.git",
+    "commit": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+    "ref": "v0.2.1",
+    "version": "0.2.1",
+    "license": "Apache-2.0",
+    "commit_url": "https://github.com/zvec-ai/zvec-grep/commit/309a66995809243d3274fa8b5bea63ab11dda1a0"
+  },
+  "import": {
+    "unit": "U02",
+    "method": "git archive --format=tar HEAD from the pinned detached checkout, extracted verbatim; no export-ignore, no submodules, no symlinks, no LFS pointers in this tree",
+    "imported_at": "2026-09-21T07:21:20.802Z",
+    "source_checkout": "/Users/steve/lazy-project/lazy-intel-source-baselines/zvec-grep",
+    "tree_sha": "7998b9670b2c8fbd8c6add52d9e45d9811b32b8e",
+    "file_count": 369,
+    "manifest_sha256": "8d08865d3228c7e9a24df3d585c4eaa5316c14b3cc2cd46d9152acc77a186028",
+    "verified_identical_to_upstream_blobs": true
+  },
+  "local_patches": [
+    {
+      "path": "src/engine/pipeline/indexing/index.ts",
+      "original_blob": "90f61d994d7284834a08151b2c6766c4a5bbde8b",
+      "resulting_blob": "88f9e28742519930bc7b3d4dd3c2fffb7c16e085",
+      "unit": "U07",
+      "reason": "Added the prepared snapshot indexing entrypoint while retaining the stock storage lifecycle and finalizeWrites durability boundary.",
+      "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
+    },
+    {
+      "path": "src/engine/service/workspace-index.ts",
+      "original_blob": "b82bb1a5e54747d944a98941fd22fab9eb382591",
+      "resulting_blob": "199e4df47d81691aea990846ad41fdb37fd48779",
+      "unit": "U07",
+      "reason": "Exposed indexPrepared on the existing writable WorkspaceIndex service without creating a second storage handle or durability point.",
+      "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
+    }
+  ],
+  "patch_revision": 1,
+  "rules": [
+    "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
+    "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
+    "Distribution artefacts (npm tarball, PyPI wheel) are never a substitute for this source."
+  ],
+  "added_files": [
+    "src/lazy-entry.ts",
+    "src/engine/pipeline/indexing/prepared.ts"
+  ],
+  "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
+  "manifest": [
+    {
+      "path": ".github/assets/benchmark-comparison-cn-v2.svg",
+      "blob": "89d3ef86fa68f00bed167afd84b5fc16cb61501a"
+    },
+    {
+      "path": ".github/assets/benchmark-comparison-v2.svg",
+      "blob": "835d53705717f7a8b9e513036b9c054ee7c0c967"
+    },
+    {
+      "path": ".github/assets/benchmark-overall-retrieval-indexed-v3-light.png",
+      "blob": "421bdedcf2988c3e978c19c0f982f5718a80dedc"
+    },
+    {
+      "path": ".github/assets/benchmark-overall-retrieval-indexed-v3.png",
+      "blob": "641849d189e854ba43542113694ad7836ca9ae55"
+    },
+    {
+      "path": ".github/assets/benchmark-overall-retrieval-indexed-v4-dark.svg",
+      "blob": "9e5f46c0f8f6498c2d5a3a083f5847141f315174"
+    },
+    {
+      "path": ".github/assets/benchmark-overall-retrieval-indexed-v4-light.svg",
+      "blob": "23f3e7856856f2207d719cb650d47969d983f717"
+    },
+    {
+      "path": ".github/assets/benchmark-repository-top3-v2-light.png",
+      "blob": "c234874600c21a36f73254535e95328274e06f3e"
+    },
+    {
+      "path": ".github/assets/benchmark-repository-top3-v2.png",
+      "blob": "976b6b521217b81b61709198207fe6054f09b781"
+    },
+    {
+      "path": ".github/assets/zg-logo-dark.svg",
+      "blob": "18cdbb51602e8f5203b8648c89b6845b24f5f6c9"
+    },
+    {
+      "path": ".github/assets/zg-logo.svg",
+      "blob": "6f72c7c7844f18d84842c4d24c064ef7e9a762fc"
+    },
+    {
+      "path": ".github/assets/zvec-grep-tour-dark.gif",
+      "blob": "d8d1304a9c3fa0df8385a5ab536604b81bc4c52e"
+    },
+    {
+      "path": ".github/assets/zvec-grep-tour.gif",
+      "blob": "8c5961cdb9fb1bb0e6bf2784cb545b30cea194cd"
+    },
+    {
+      "path": ".github/scripts/generate-benchmark-overall.mjs",
+      "blob": "53c8e907a5aaca7b2373fe338a49a3d4cad0b80b"
+    },
+    {
+      "path": ".github/scripts/readme-demo.py",
+      "blob": "7e4f9e8b3c70ee5ed53c4e5fcdba3e8fbe7c91a7"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "blob": "ddb23bc69a68c1a23d2333741c095b2bb021afab"
+    },
+    {
+      "path": ".github/workflows/dependency-health.yml",
+      "blob": "826baaf9e8fc9b11451bc4173dd69677826fc2e3"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "blob": "b9d7989cc9281c3989bd5a28207cc40710368911"
+    },
+    {
+      "path": ".github/workflows/security.yml",
+      "blob": "735aba502592081c64c4e656dae34144d0cfc8db"
+    },
+    {
+      "path": ".gitignore",
+      "blob": "ffd27d58589713b31d20e610e0231edbf4c013cf"
+    },
+    {
+      "path": ".prettierignore",
+      "blob": "c29121086bcfc5d90e3f871020d347fa59e9bdf3"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "blob": "aa34ae4936787b5577603aef714b369a8032ea0b"
+    },
+    {
+      "path": "LICENSE",
+      "blob": "f49a4e16e68b128803cc2dcea614603632b04eac"
+    },
+    {
+      "path": "README.md",
+      "blob": "94d0dfa8b79f3218a5641ffed97f9fe4d4ce2cd2"
+    },
+    {
+      "path": "README_CN.md",
+      "blob": "36c62a3e6aa68d3aa09ee9bc88275491a9d3214f"
+    },
+    {
+      "path": "benchmarks/README.md",
+      "blob": "08c09a27c950656e31b67ca7e8ea5095fda9b8c8"
+    },
+    {
+      "path": "benchmarks/README_CN.md",
+      "blob": "a400cc34cbf7d7444f5273f0f626cc9d65a357bc"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/LATEST_REPORT.md",
+      "blob": "5ab5f789805b718d3e75026c9a4cd470e40a953c"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/README.md",
+      "blob": "5e74c093c336dcd1b62b7e915dd221c1942b35e1"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/README_CN.md",
+      "blob": "49b217a503016b3b34c0464c760b90ea02278ac2"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/benchmark.toml",
+      "blob": "e6879d8c93d6be4f2abf07483466bde903631861"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/prompts/task.md",
+      "blob": "9afc5b951221953188d97176185cd3f1969bf892"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/pyproject.toml",
+      "blob": "f3b164e4242fdb73ef4bcc6db4320a7e0dfcb2f2"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/suites/ci.txt",
+      "blob": "1a11f5aaebeca63f059cf3a173d742027a2e768a"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/suites/full.txt",
+      "blob": "573fb0e7dc91104d65395699f95e91b857952d14"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/suites/smoke.txt",
+      "blob": "036b3700ba09ad5b60de3c007078a0ed48994686"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/suites/study.txt",
+      "blob": "808b75ded5877cd06c3d1def39c58da83d296e51"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/uv.lock",
+      "blob": "b905f44a4f9f9c199b84494fd4172609e0ca8962"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/__init__.py",
+      "blob": "404f0da7f420e2e8aa0bddd150bd22fe83f5125f"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/artifacts.py",
+      "blob": "ed3244dc861ae4ea87791a849985ff73f26c32cb"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/cli.py",
+      "blob": "de02059f050271b041efd352409b6777ce3bbe3a"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/codex.py",
+      "blob": "4037b8fea0107ff5d352f7700b04d6a1bb34e3c9"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/config.py",
+      "blob": "abe22786ace22c1c369db9664c313d3d13769cf9"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/console.py",
+      "blob": "77a5a978a83a707f536d7a19b3d6a51ed6408946"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/corpus.py",
+      "blob": "7f35cc7ce3c09f5a702b73fb75bc3bd6004b733a"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/dataset.py",
+      "blob": "ec0a1d57293fb928d98330790c463e8d36db95d7"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/doctor.py",
+      "blob": "5461ba84463aed6d1c19dee64e1c9a68498397fb"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/evaluate.py",
+      "blob": "fbbebcd9e64c69dda84168ff310929ac0ba27962"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/index.py",
+      "blob": "2394428bf4755cc48764128d5336cc9eee1e81c6"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/models.py",
+      "blob": "0fb215e6192bd2d73da5e8653e59160b1c2679b8"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/process.py",
+      "blob": "ac85c008970cd64f2b60e332c3ab8eb4aec68a41"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/profiles.py",
+      "blob": "4a1458601b6d3018a89a699a310a2c5458fe6cf3"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/report.py",
+      "blob": "7314be576c198e4946674ffd837d07f58a3f153e"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/runner.py",
+      "blob": "57ae1cd6b0486b9db4b61780697f44656a8465e6"
+    },
+    {
+      "path": "benchmarks/browse-comp-plus/zg_bench/trace.py",
+      "blob": "e55c1016b6346278d98fbc8f7d4a215c05026eda"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/README.md",
+      "blob": "3d10b58b26e27a68b25425d18a25e3ca599d88c9"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/README_CN.md",
+      "blob": "26f678883f8ca5d577f760a6f5694ad1c0bedcbb"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/astropy-38/environment/Dockerfile",
+      "blob": "bbf0c8b0b65e48fc8edf1dc100cbc7865c8e1fb7"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/astropy-38/instruction.md",
+      "blob": "6acc9e88dcf011229c0e858d2af13ed9db2a110d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/astropy-38/task.toml",
+      "blob": "25064acb94812b84854931a2e1bf1e587228aaf5"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/astropy-38/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-1/environment/Dockerfile",
+      "blob": "70d2cb34544d5b595737c9802abe67376282b99d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-1/instruction.md",
+      "blob": "6069ea8dc085ebe06eb4962be574946086074b37"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-1/task.toml",
+      "blob": "a027f7003fa72078dfbed7064f8c212981c0513f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-1/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-19/environment/Dockerfile",
+      "blob": "70d2cb34544d5b595737c9802abe67376282b99d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-19/instruction.md",
+      "blob": "e31eae31a086edf1e1914842c461282a815f63d0"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-19/task.toml",
+      "blob": "89c1b14a27d82178b3cf5d86e78f0533d92bf17c"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-19/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-27/environment/Dockerfile",
+      "blob": "70d2cb34544d5b595737c9802abe67376282b99d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-27/instruction.md",
+      "blob": "60d9ddd7092f6ac59029fb6a78acffc0c3f2e4ec"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-27/task.toml",
+      "blob": "6d99499d875403ecb3b01080be3e2ae28823c8b8"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-27/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-39/environment/Dockerfile",
+      "blob": "70d2cb34544d5b595737c9802abe67376282b99d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-39/instruction.md",
+      "blob": "71ced8bc8dd5104d33188b3365f0dd155b62061c"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-39/task.toml",
+      "blob": "fd9359dd7889bc7fcd2394a1f9793f9cc085666c"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/conan-39/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-21/environment/Dockerfile",
+      "blob": "46d6f36997e09a39cb7bd4a510e7405cf5a4b5a1"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-21/instruction.md",
+      "blob": "751154c0f73be9304eea302e05f1a91563ef4aa5"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-21/task.toml",
+      "blob": "bbf679596d1c8fe52dca563cdbe32fffcd108eae"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-21/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-32/environment/Dockerfile",
+      "blob": "46d6f36997e09a39cb7bd4a510e7405cf5a4b5a1"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-32/instruction.md",
+      "blob": "96b7bed1912006a872fdbabff8e855b800181654"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-32/task.toml",
+      "blob": "118d3e82fc0164585d34f6d8b42c723f145e32df"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/django-32/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/matplotlib-37/environment/Dockerfile",
+      "blob": "09d9d86da38a15f8a00b387c8ce5b130d9c0f6df"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/matplotlib-37/instruction.md",
+      "blob": "9441e61998c6ad0e92ac2fc7baaef8d904d3cb9e"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/matplotlib-37/task.toml",
+      "blob": "5e1fa965365db5f124605221fab6324f42a8d746"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/matplotlib-37/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-10/environment/Dockerfile",
+      "blob": "1f0a1cab43470621f529196004ab0331308db8f7"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-10/instruction.md",
+      "blob": "13753b026cd1a6f57f13afff8cc1d60fd613e122"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-10/task.toml",
+      "blob": "45d597761a68957a2549c8417103f272cdc4b9d1"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-10/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-14/environment/Dockerfile",
+      "blob": "1f0a1cab43470621f529196004ab0331308db8f7"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-14/instruction.md",
+      "blob": "e1fbbafdea666ec5e9ad5064143b1b68a2896d9e"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-14/task.toml",
+      "blob": "fccd9853ddb62574a3c835e4b567b0bc157e9359"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-14/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-9/environment/Dockerfile",
+      "blob": "1f0a1cab43470621f529196004ab0331308db8f7"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-9/instruction.md",
+      "blob": "c81b76a30205ac53c4b3fb73574ad5869444001a"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-9/task.toml",
+      "blob": "96b1e0e10e1a62513ff02d8b34d4d32084a34e4e"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/pylint-9/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/reflex-6/environment/Dockerfile",
+      "blob": "06d86a6a2c42077f0a8fb5cdd3af5346c882e545"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/reflex-6/instruction.md",
+      "blob": "b6336ca71f84d71d847d5e65d93a73a331ab7468"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/reflex-6/task.toml",
+      "blob": "7c84651b86daede51de0123f9a274382bb5e788b"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/reflex-6/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/requests-16/environment/Dockerfile",
+      "blob": "4b9a5dcaa4e817d16ef9cc91b435ec5587aa28b5"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/requests-16/instruction.md",
+      "blob": "7aed84a97a35a26e14ae8057412d8cd9e5c4cb48"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/requests-16/task.toml",
+      "blob": "4dec62a2dd2d273ff720d392c1d6d31bc9dfa1e8"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/requests-16/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sqlfluff-2/environment/Dockerfile",
+      "blob": "b2b002af4016cc0e1aa79fb523f081dbd7a89607"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sqlfluff-2/instruction.md",
+      "blob": "9ef8459799a2e32908e63d3d394686ce19902b02"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sqlfluff-2/task.toml",
+      "blob": "ae5ae384ec2195d664ca9f10d8ec8437804ee91f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sqlfluff-2/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-14/environment/Dockerfile",
+      "blob": "fda28b46b142e8d0228c4678ca9957824d949779"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-14/instruction.md",
+      "blob": "b880dbf83350956fb82cc2f5765eb07aba833056"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-14/task.toml",
+      "blob": "91384a62a937d0e7e8fb6f2be1c78dbac3d468d5"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-14/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-43/environment/Dockerfile",
+      "blob": "fda28b46b142e8d0228c4678ca9957824d949779"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-43/instruction.md",
+      "blob": "6764b02ae01807d3b0fae56e5371832f0f38463b"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-43/task.toml",
+      "blob": "4018c03d3a3ed4a508112c89473553e2ebb79538"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/streamlink-43/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-26/environment/Dockerfile",
+      "blob": "ade2d720ad3f93071ecd8deaff0358ac2accc7ee"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-26/instruction.md",
+      "blob": "28c81ab6b8132ae2a1015f6a6f3d3b0f13b2487c"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-26/task.toml",
+      "blob": "969060ba606a4cf6a4be0182e24da442829a5b89"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-26/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-38/environment/Dockerfile",
+      "blob": "ade2d720ad3f93071ecd8deaff0358ac2accc7ee"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-38/instruction.md",
+      "blob": "b9c20fc4da128575c9bd019beb6e0ed6cfff3e6d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-38/task.toml",
+      "blob": "ec187288327bec662dcf08aaa0b514051a21599e"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/sympy-38/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-32/environment/Dockerfile",
+      "blob": "18b8e24a1821e683b06c0844658ac034b4df558c"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-32/instruction.md",
+      "blob": "4fbed914c0327bac000f81b82f9ef59fefd66270"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-32/task.toml",
+      "blob": "d768a2799feb01cd7de364b6e0d46848486759e8"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-32/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-46/environment/Dockerfile",
+      "blob": "18b8e24a1821e683b06c0844658ac034b4df558c"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-46/instruction.md",
+      "blob": "063335da1da42eb46284eeb7d7de0e048214646f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-46/task.toml",
+      "blob": "bc1bbcae19b7157c2db29e7b4b63760b45a25ec2"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/datasets/xarray-46/tests/test.sh",
+      "blob": "97a2ea837ab17d567628e9aee8d14b69e401d05f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/pyproject.toml",
+      "blob": "af079f4c2fc08854bcf6221a1e48a73000506a89"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/suites/swe-qa-bench.yaml",
+      "blob": "c3561e4e6950f2af5f6ba89e2f7e0b6ce5e9f8c4"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_cli.py",
+      "blob": "0394cde4a747242d06ff22f0102691f0de8dc1b3"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_diagnostics.py",
+      "blob": "3619a08940e5810d7b1f99e9704bb02ef7bc29ba"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_doctor.py",
+      "blob": "3fc7618b6b7e6a2dfea3852ca5a9a25e574cd885"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_opencode.py",
+      "blob": "1be6a6a48e0e04f9283bd6a98ff57845be5a1349"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_runner.py",
+      "blob": "f7a57ca11f2785a5160eeea7c7ffc89c5e34328b"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_swe_qa_reporting.py",
+      "blob": "cbcc2788b695d80f1ecc901dc99bd58eeee8f8cb"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_swe_qa_validation.py",
+      "blob": "02cdb8a2128e0e2dc53f74f20068984e2707ac17"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/tests/test_zvec_grep.py",
+      "blob": "06cc227c05ef5ffc7c9c814d99341716f5568277"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/uv.lock",
+      "blob": "39e7dec25d3f5bea6ec64f9b379ea0efe979cfb1"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/__init__.py",
+      "blob": "ef0468b788a7434b7e316338d224a2688978ab56"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/agents/__init__.py",
+      "blob": "dd997c1b2fe9fb1b487959663c741f73573dd10d"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/agents/opencode.py",
+      "blob": "15e6491424dbdeefd6c6cc7e8fa4d699651b6ee1"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/agents/zvec_claude_code.py",
+      "blob": "3e5efb1c79f403e3eb487af7ab1e978867c8d2d0"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/agents/zvec_codex.py",
+      "blob": "787148d3cc5be340ba70db5b9c881169e5278733"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/agents/zvec_grep.py",
+      "blob": "d2e8577bc4386d0f0c6aa21f5badb88dffbe3a48"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/agents/zvec_opencode.py",
+      "blob": "02d1c862344f424837f11f51c76f377245c2a6e4"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/cli.py",
+      "blob": "f748b533295ffd373bf7ad40e0d0c0e7de6aa00b"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/diagnostics.py",
+      "blob": "5748e4e50e0ad55dfb2efbe939826cdead8d32ca"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/doctor.py",
+      "blob": "5396b6d8f3ffe0b5bc6a5cb5968ba0af3a46358f"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/runner.py",
+      "blob": "94a5737fe5d8b3d5ef8f74b877933906a4979826"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/settings.py",
+      "blob": "3555ad622288e5da2f1a9965cc13e6214bad6763"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/__init__.py",
+      "blob": "64a16377b854860a1425ec8e88c9f75ccccf4248"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/__main__.py",
+      "blob": "5417fdadfbd9c9a98b0c2db2d48bfafeda740bae"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/cli.py",
+      "blob": "bfdbc2636de298e3577fc833f98ecd9240b4051e"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/collect.py",
+      "blob": "736a8c4168135140758e39c80ea6ee4207d864b5"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/data/references.json",
+      "blob": "31857166b7bb22fd2d215d22382c58f4d4a34430"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/data/selection.json",
+      "blob": "1e74bc6e75f697ab6aa7cd81093e6a56badf895a"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/judge.py",
+      "blob": "9def01bf5609afb65e03e32535365863adb33d78"
+    },
+    {
+      "path": "benchmarks/swe-qa-bench/zg_bench/swe_qa/validation.py",
+      "blob": "c946649f6138304a2298850e5bebfa8a53c2fdff"
+    },
+    {
+      "path": "docs/01-agents.md",
+      "blob": "0540e737dfa0e9690f21b1e4bb7b4a0ea7729b48"
+    },
+    {
+      "path": "docs/02-cli.md",
+      "blob": "1714f8ace698c3025087e3fa2301fddc784ca014"
+    },
+    {
+      "path": "docs/03-mcp.md",
+      "blob": "505559530b2937194ac090a5d46914e3f9d18396"
+    },
+    {
+      "path": "docs/04-pipeline.md",
+      "blob": "275c357b732d2aacdae6fd702a7d55f0b80fc487"
+    },
+    {
+      "path": "docs/05-architecture.md",
+      "blob": "c115b68e426ffb3195227f86b031080e6852702f"
+    },
+    {
+      "path": "docs/06-server.md",
+      "blob": "baed61f5d3a67b548af095bde60bf27d098128df"
+    },
+    {
+      "path": "docs/07-embedding.md",
+      "blob": "e3f60f10850e1e6f59f65bf9295254e778c957ce"
+    },
+    {
+      "path": "docs/08-roadmap.md",
+      "blob": "983cac49e194fa17fed843a1625344e566b79b00"
+    },
+    {
+      "path": "docs/README.md",
+      "blob": "6134e6ac76862a3fdfb88f08e318b704a4cc2cb7"
+    },
+    {
+      "path": "eslint.config.js",
+      "blob": "c06dd6fd6fdf26c5eaddbc4f2f8fa6c11d8ee8d4"
+    },
+    {
+      "path": "package-lock.json",
+      "blob": "3d3776db80b82f7ce791d0e6564a0f4df4cec848"
+    },
+    {
+      "path": "package.json",
+      "blob": "4e7dbb5202f1e08d139ab677327cad92027e40a5"
+    },
+    {
+      "path": "src/authorization/index.ts",
+      "blob": "57d965df1a4024e2135f65fab3646166e96d62d5"
+    },
+    {
+      "path": "src/authorization/manager.ts",
+      "blob": "1898cf6464be32809166e8dc7581c65965217ec1"
+    },
+    {
+      "path": "src/authorization/operation.ts",
+      "blob": "4d8c07ed59d3f6bf5fd1baadeaeb2e45a15cc7f7"
+    },
+    {
+      "path": "src/authorization/planner.ts",
+      "blob": "1d856ace10859b0b3764f5e6c534ad4fd0784ede"
+    },
+    {
+      "path": "src/authorization/prompt.ts",
+      "blob": "e760cec2ef103292d6285160976c0ebfca1117f2"
+    },
+    {
+      "path": "src/authorization/store.ts",
+      "blob": "2c53ec763d616c9a2f57c8cee2b650ff779b10b9"
+    },
+    {
+      "path": "src/authorization/target.ts",
+      "blob": "3a6128af27fce02c380eeaedabbb021a05ae2ae3"
+    },
+    {
+      "path": "src/authorization/types.ts",
+      "blob": "96605b598f235f65336f5d9872f0a1076a30cead"
+    },
+    {
+      "path": "src/cli/args.ts",
+      "blob": "bee829d1ee72f05e60571b5d1a277ed6b5797700"
+    },
+    {
+      "path": "src/cli/auth.ts",
+      "blob": "53b93cfa00132b7520a727d37b490616cd35b8b1"
+    },
+    {
+      "path": "src/cli/commands.ts",
+      "blob": "4cdadbc55d28b324b2bd176353f464e203a081ad"
+    },
+    {
+      "path": "src/cli/errors.ts",
+      "blob": "39aa6b70452e9c1af9472dd0de072055d4b7835f"
+    },
+    {
+      "path": "src/cli/format/context.ts",
+      "blob": "b07b5cc6b82fc5e8ee30784388186b709d096e8b"
+    },
+    {
+      "path": "src/cli/format/debug.ts",
+      "blob": "a7b54400d5336cd8a30b57b9d5e21e0759c4f274"
+    },
+    {
+      "path": "src/cli/format/highlight.ts",
+      "blob": "abd7aec144a80dd00d35700aefc84c5333228cbd"
+    },
+    {
+      "path": "src/cli/format/progress.ts",
+      "blob": "1b884e1afcf8f305b084c665059f025f07790b99"
+    },
+    {
+      "path": "src/cli/format/range.ts",
+      "blob": "2106717f9848c8c0d312751a4568ef429eedd9cb"
+    },
+    {
+      "path": "src/cli/format/status.ts",
+      "blob": "614d18363a806778e8d33010a3df867cd69af8dd"
+    },
+    {
+      "path": "src/cli/help.ts",
+      "blob": "ca012337d31698e6dd9b93adeb8d37f97eb21173"
+    },
+    {
+      "path": "src/cli/index.ts",
+      "blob": "52a253893ea18c58e529fcb6472bc054bfafff4b"
+    },
+    {
+      "path": "src/cli/install.ts",
+      "blob": "3dd054570d9a2d76c602065a4b8b57d0bed55caf"
+    },
+    {
+      "path": "src/cli/managed-rg.ts",
+      "blob": "11b522145cb3797cc0c1f341c22476cd8dd889bc"
+    },
+    {
+      "path": "src/cli/server-search.ts",
+      "blob": "2f4f53c5f0bf4c9bcd0a035310b89182c6e23349"
+    },
+    {
+      "path": "src/cli/types.ts",
+      "blob": "8d4c0a0bd51d1c769aecfd6e7ecd2ad877fdb1fe"
+    },
+    {
+      "path": "src/cli/version.ts",
+      "blob": "2bf6ce85d760f0992eb7a0095dfc5b3e872364c9"
+    },
+    {
+      "path": "src/client/daemon-client.ts",
+      "blob": "a260789fe1d682eac598c3e7e768c5327e8fa332"
+    },
+    {
+      "path": "src/client/mode-router.ts",
+      "blob": "1cbc56def5b6024ee96e52d2b4bd9f634d64de92"
+    },
+    {
+      "path": "src/client/search-policy.ts",
+      "blob": "65669c71456393da08f6f8f06ed5f85fdb30c8e7"
+    },
+    {
+      "path": "src/daemon/backend.ts",
+      "blob": "9b0155c585822015ef7df3dbb045cc73856aa53b"
+    },
+    {
+      "path": "src/daemon/change-set.ts",
+      "blob": "e9ecb1fa776565d50f629ea3524d99cc1d6bb7ca"
+    },
+    {
+      "path": "src/daemon/config.ts",
+      "blob": "9f2f9a5442924670ee2e98f0d97c06050883a764"
+    },
+    {
+      "path": "src/daemon/errors.ts",
+      "blob": "2620248aa0784e29999489caa05704bea3a58d6a"
+    },
+    {
+      "path": "src/daemon/http-server.ts",
+      "blob": "348486826a560a8da1f8c9faa17614a744f4b17b"
+    },
+    {
+      "path": "src/daemon/index-coordinator.ts",
+      "blob": "44d1954af1c6177fa488a7dae531b6df4e75e11d"
+    },
+    {
+      "path": "src/daemon/job-scheduler.ts",
+      "blob": "20b0b50a659b598d7323e29d6ae428bba50c7e19"
+    },
+    {
+      "path": "src/daemon/logger.ts",
+      "blob": "7b1dde8abfd7c129d89438ae25b214a48a4745e6"
+    },
+    {
+      "path": "src/daemon/model-pool.ts",
+      "blob": "eb906098f6b8b769bba40933af323a8ced507ddf"
+    },
+    {
+      "path": "src/daemon/root-lease.ts",
+      "blob": "9bdcd1fbfe918b49dc69262931a2954a0e95a2cd"
+    },
+    {
+      "path": "src/daemon/root-runtime.ts",
+      "blob": "4ff95a01710c5a3e08f1aca8e252b98ae659e8ba"
+    },
+    {
+      "path": "src/daemon/runtime-manager.ts",
+      "blob": "3ab18240c704ffb2b6925cc79266cb9629c8a9b1"
+    },
+    {
+      "path": "src/daemon/runtime.ts",
+      "blob": "fa12419b8ca1503e35e983e4c1802d2d2a95ee67"
+    },
+    {
+      "path": "src/daemon/server-controller.ts",
+      "blob": "6fe1ce750c2d66051421d813f1c4a27492e1789c"
+    },
+    {
+      "path": "src/daemon/watch-manager.ts",
+      "blob": "24be3126ef93467ac0d65ba3c96c762387d8b0f9"
+    },
+    {
+      "path": "src/daemon/workspace-read-session-cache.ts",
+      "blob": "c503e1d3dddaab90135ad96d6df86581b2ff0c33"
+    },
+    {
+      "path": "src/engine/code-formats.ts",
+      "blob": "6856eadff7b9e78a54528484d4713543ad08c712"
+    },
+    {
+      "path": "src/engine/config.ts",
+      "blob": "ad438cce7eabe4f87edb825b4176f61293d4375a"
+    },
+    {
+      "path": "src/engine/errors.ts",
+      "blob": "4fc19b3276f60c567c1907974ef784aa5c4306c0"
+    },
+    {
+      "path": "src/engine/extraction/code/adapter.ts",
+      "blob": "7a0e8eeb90c4e10b53253a3c73b380878daa0229"
+    },
+    {
+      "path": "src/engine/extraction/code/extractor.ts",
+      "blob": "e7d2a285cf4b4ceaa0f4cc3fbdc6ba177b2d3b0d"
+    },
+    {
+      "path": "src/engine/extraction/code/families/c-family.ts",
+      "blob": "61c1defaf8c70d3615e0a0ba3912512404119dde"
+    },
+    {
+      "path": "src/engine/extraction/code/families/js-ts.ts",
+      "blob": "fb08213c62552b9835268c4dcc030573e3366a39"
+    },
+    {
+      "path": "src/engine/extraction/code/families/metadata.ts",
+      "blob": "ac09f3d94d5f69c68b13b10188fed8cfaa0788bc"
+    },
+    {
+      "path": "src/engine/extraction/code/families/name-field.ts",
+      "blob": "4876e2b932fec7c901854b57485b89e275863e0b"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/c.ts",
+      "blob": "aaa9f2b3f1ebc460f8dfe506f3d81b3570c3b3c0"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/cpp.ts",
+      "blob": "b1899e3aa7578e267e03125815827cf14d0e99e6"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/go.ts",
+      "blob": "b3e749e0d79e85300deee926fb7abecbba14dda5"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/java.ts",
+      "blob": "ad702712729da95418cdc23735636ef11e85461e"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/javascript.ts",
+      "blob": "914d43f5c6e93a8482ec25c9b1c73f1fbec861cc"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/python.ts",
+      "blob": "bf32c19ec44890047ff9400702169227bed52e01"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/rust.ts",
+      "blob": "45faf14914cb6c0943b54bfeca5199c71607fe9c"
+    },
+    {
+      "path": "src/engine/extraction/code/languages/typescript.ts",
+      "blob": "d1e8b8d0dad8a3c597558a72e0b01cf395727615"
+    },
+    {
+      "path": "src/engine/extraction/code/tree-sitter/grammar.ts",
+      "blob": "390ee1ed0044267ee89cec909453047fbb4c2106"
+    },
+    {
+      "path": "src/engine/extraction/code/tree-sitter/nodes.ts",
+      "blob": "8dc84b87bc80a054fc76df423aa060dec05abd78"
+    },
+    {
+      "path": "src/engine/extraction/code/tree-sitter/parser.ts",
+      "blob": "3ae77bbf5d2f630c587ff1c0a881f47ef5a661b7"
+    },
+    {
+      "path": "src/engine/extraction/ids.ts",
+      "blob": "b157b309a051af62eb7e15cf98652a9acb4810c4"
+    },
+    {
+      "path": "src/engine/extraction/image/extractor.ts",
+      "blob": "8f30d6fdf7b6d00c6a470a69616b28f4e042fef4"
+    },
+    {
+      "path": "src/engine/extraction/index.ts",
+      "blob": "224c4756dc543e57f32ceaa7e086885e0d5a052b"
+    },
+    {
+      "path": "src/engine/extraction/markdown/extractor.ts",
+      "blob": "855c5b35a135aae5adfe3e62685d9dfc31277b60"
+    },
+    {
+      "path": "src/engine/extraction/runtime.ts",
+      "blob": "3588c25a7e690cca0edc131880526c30d2eff4c7"
+    },
+    {
+      "path": "src/engine/extraction/source.ts",
+      "blob": "e69e0e2575c15bf5a317b55cd2d4ab1235ec1a40"
+    },
+    {
+      "path": "src/engine/extraction/text/extractor.ts",
+      "blob": "fc1f5080fc0459fae9a35dbdcfbf527eaf10967f"
+    },
+    {
+      "path": "src/engine/extraction/types.ts",
+      "blob": "dac24ee9af250e56d69583a4344f2a44bea76552"
+    },
+    {
+      "path": "src/engine/extraction/vector-content.ts",
+      "blob": "67e55497a82e1776a5004325000cc4f6ed531be9"
+    },
+    {
+      "path": "src/engine/file-size-policy.ts",
+      "blob": "d6084d0edcc85f2303920330ce39f3ec3c348b70"
+    },
+    {
+      "path": "src/engine/file-type.ts",
+      "blob": "79222f29bb8fb681d524ca70f77a20dbabfefd5f"
+    },
+    {
+      "path": "src/engine/index-status.ts",
+      "blob": "4570c258dfc312e11ff450af6c8a67b3bea5016b"
+    },
+    {
+      "path": "src/engine/manifest.ts",
+      "blob": "72d71a186212ae4b15906faa189074ff2091d6ad"
+    },
+    {
+      "path": "src/engine/models/backends/llama-cpp.ts",
+      "blob": "a5f3c757b56bb4228b5848f826a94d4ae29fdb32"
+    },
+    {
+      "path": "src/engine/models/backends/model2vec-runtime.ts",
+      "blob": "29f38a8eee97e8e8b19b347dbb9fef999b2714bd"
+    },
+    {
+      "path": "src/engine/models/backends/model2vec-tokenizer.ts",
+      "blob": "6f502f8bb57792713e441d7b39aaa8d0005dfbe4"
+    },
+    {
+      "path": "src/engine/models/backends/model2vec-worker-pool.ts",
+      "blob": "61b29394c87f6a9380fb42c37deed391aff69d60"
+    },
+    {
+      "path": "src/engine/models/backends/model2vec-worker.ts",
+      "blob": "16fc709ea2e31fec7d5e76d4ac20a207db317213"
+    },
+    {
+      "path": "src/engine/models/backends/model2vec.ts",
+      "blob": "a57568b7fb76e5a12feef1fd1c7e23e908781a32"
+    },
+    {
+      "path": "src/engine/models/backends/qwen.ts",
+      "blob": "083cf89240ab00012b532bffd51d1c61e04eef42"
+    },
+    {
+      "path": "src/engine/models/backends/transformers-js.ts",
+      "blob": "0f23c21d460d97c34dc5d5a1fcf6e0c07b675dc5"
+    },
+    {
+      "path": "src/engine/models/catalog.ts",
+      "blob": "0df92bbb157b1c68e2c753e05d21b42b8f816aee"
+    },
+    {
+      "path": "src/engine/models/download-progress.ts",
+      "blob": "de3016334b2509f0009ffbfae9ef2bc94d1a72b3"
+    },
+    {
+      "path": "src/engine/models/embeddings.ts",
+      "blob": "1fb755397b065d1a4fa6b0efb4b70a442cc0ec3c"
+    },
+    {
+      "path": "src/engine/models/factory.ts",
+      "blob": "18f3d537bcc1de1a84a73a4746e8691aa5471f14"
+    },
+    {
+      "path": "src/engine/models/index.ts",
+      "blob": "3e78469247a414c1df68a4cdd12f6a6d774551d2"
+    },
+    {
+      "path": "src/engine/models/ranking.ts",
+      "blob": "6a985ae441fefb0012e85426a1af443a10488e62"
+    },
+    {
+      "path": "src/engine/models/resolution.ts",
+      "blob": "2d6223ad8c8a43744ff81589d0724bd26210ac75"
+    },
+    {
+      "path": "src/engine/pipeline/indexing/index.ts",
+      "blob": "90f61d994d7284834a08151b2c6766c4a5bbde8b"
+    },
+    {
+      "path": "src/engine/pipeline/indexing/input-budget.ts",
+      "blob": "e1c5ba131aef9dbdd9116546124fa448d5c041b6"
+    },
+    {
+      "path": "src/engine/pipeline/indexing/root-paths.ts",
+      "blob": "b38164858b8951943d59b5d6db7aebbbd07f6647"
+    },
+    {
+      "path": "src/engine/pipeline/indexing/scanner/index.ts",
+      "blob": "66133abfd6f59f80887e38e85c9a16cdaf8a1d53"
+    },
+    {
+      "path": "src/engine/pipeline/search/index.ts",
+      "blob": "ce47a8f16d1e1f467c3bc7c6fa7532a16498504a"
+    },
+    {
+      "path": "src/engine/service/index.ts",
+      "blob": "27af345e74fd3f996273ca5be6444508471d0f16"
+    },
+    {
+      "path": "src/engine/service/lexical.ts",
+      "blob": "5d7d129d665746cdfc22b660811a90badafc5bc9"
+    },
+    {
+      "path": "src/engine/service/root.ts",
+      "blob": "e0844e0b2cb3a679ff3436a97fb30d04838fe449"
+    },
+    {
+      "path": "src/engine/service/structure-enrichment.ts",
+      "blob": "776b40a040064f7c65caa68b29a0643fcb2ecc51"
+    },
+    {
+      "path": "src/engine/service/types.ts",
+      "blob": "1017431714998992853136dbfc5f9b4d959899e9"
+    },
+    {
+      "path": "src/engine/service/workspace-index.ts",
+      "blob": "b82bb1a5e54747d944a98941fd22fab9eb382591"
+    },
+    {
+      "path": "src/engine/service/zvec-grep.ts",
+      "blob": "11e6a763c325a7b882631710b08a87f9ebb2f084"
+    },
+    {
+      "path": "src/engine/storage/index.ts",
+      "blob": "0d37b8c41162b8b4fdb2620f22c2056b4bc2d4f8"
+    },
+    {
+      "path": "src/engine/storage/layout.ts",
+      "blob": "1f084cde02cf3befdd8661ce3c0605a8c8a47da6"
+    },
+    {
+      "path": "src/engine/storage/zvec.ts",
+      "blob": "c1040e6a5555224e9dc57e7bda554039d1e71a5d"
+    },
+    {
+      "path": "src/engine/types.ts",
+      "blob": "3dfb531b33af3b9fc8a43836dd827d19caaaafc9"
+    },
+    {
+      "path": "src/engine/utils/daemon-lease.ts",
+      "blob": "4e05299dec81e0af0874710ae5040a4e9fa04cf5"
+    },
+    {
+      "path": "src/engine/utils/file-selection.ts",
+      "blob": "84f2d2f476888b245ee2d58e0c6481ff2cd439a2"
+    },
+    {
+      "path": "src/engine/utils/glob.ts",
+      "blob": "261ff316d5aaa3f8d9d73a216c2d8036860864e7"
+    },
+    {
+      "path": "src/engine/utils/hash.ts",
+      "blob": "82f970901e329b39dbeb33a51d6c775d4e6b714f"
+    },
+    {
+      "path": "src/engine/utils/json.ts",
+      "blob": "0bc5cbd57097fbdbbcbfd06515e0e882158f5d0e"
+    },
+    {
+      "path": "src/engine/utils/lock.ts",
+      "blob": "c921511f16a9782c1824276d92a862ee11f728cf"
+    },
+    {
+      "path": "src/engine/utils/path.ts",
+      "blob": "53fc2b1c5365337e95d4eafab59f2b025a8d585a"
+    },
+    {
+      "path": "src/engine/utils/timing.ts",
+      "blob": "9fcc38980843d23dc343df1d9f00939f27428869"
+    },
+    {
+      "path": "src/index-progress.ts",
+      "blob": "daa83f3dcd4bbbb954d8cd370e27c264cfc12fce"
+    },
+    {
+      "path": "src/index.ts",
+      "blob": "bca021366c5715decd5d6a7a71c2e537315fd2ae"
+    },
+    {
+      "path": "src/mcp/http-transport.ts",
+      "blob": "488d570a88ee9f73d840ca81aaf43df60c75025d"
+    },
+    {
+      "path": "src/mcp/input-normalization.ts",
+      "blob": "b526b21c3b15568b5ed8e4fceaa05c67ee4be8cd"
+    },
+    {
+      "path": "src/mcp/progress-heartbeat.ts",
+      "blob": "31e69104b6ef58f10bfda6af01044f57f149a687"
+    },
+    {
+      "path": "src/mcp/request-metadata.ts",
+      "blob": "3f9af2b1238401780253368f8953dee2ccd07c9e"
+    },
+    {
+      "path": "src/mcp/request-state.ts",
+      "blob": "7b8f460cc132b5d13fefd8011e07c7b0c3200c5e"
+    },
+    {
+      "path": "src/mcp/result-format.ts",
+      "blob": "8527ab1c9108fb6cea859d1832e3f93564cbf110"
+    },
+    {
+      "path": "src/mcp/schemas.ts",
+      "blob": "5a6a2c2d212b008cf6971ca68139bfa59daef6e7"
+    },
+    {
+      "path": "src/mcp/stdio-bridge.ts",
+      "blob": "1cc4984b2bb1b004a650e8b25d48e026dc823454"
+    },
+    {
+      "path": "src/mcp/tools.ts",
+      "blob": "09e66109220a5a351db147822d2867cfd714092f"
+    },
+    {
+      "path": "src/mcp/toolset.ts",
+      "blob": "f835efea3eeb59c8f83875205a51781877f73a03"
+    },
+    {
+      "path": "src/observability/trace-context.ts",
+      "blob": "aa0d5625dd9bffd8ef3fde1a94eb11f7ac083029"
+    },
+    {
+      "path": "src/prompts/zvec-grep-guidance.ts",
+      "blob": "8bf1572624d5159ee8c22aeda503a3beb96af067"
+    },
+    {
+      "path": "test/authorization.test.mjs",
+      "blob": "3d58f53fb58d04d75e1f1af54e38b85db5110f1c"
+    },
+    {
+      "path": "test/change-set.test.mjs",
+      "blob": "c8f7eb5ebe6c5390707fa7cbcb41cbfd105fdad3"
+    },
+    {
+      "path": "test/config-cli.test.mjs",
+      "blob": "705c638d799fcdd82939a97117e0839e28c34f95"
+    },
+    {
+      "path": "test/config.test.mjs",
+      "blob": "172a913513645d7b5835a59aa619e850db966cd7"
+    },
+    {
+      "path": "test/daemon-backend.test.mjs",
+      "blob": "d5e5062344737917f985a154a414efc7198121c9"
+    },
+    {
+      "path": "test/daemon-cache.test.mjs",
+      "blob": "1fe1c366f7a48e2a8ddaee706fe8b1dc42f51f6c"
+    },
+    {
+      "path": "test/daemon-logger.test.mjs",
+      "blob": "515ec4e6fb06c75460f0ac1f9552b602fbd63dc6"
+    },
+    {
+      "path": "test/e2e/cli.test.mjs",
+      "blob": "9ebe7446586cb26adda460d9c3a37bbfcb952732"
+    },
+    {
+      "path": "test/embedding-runtime.test.mjs",
+      "blob": "77caa1e1a9d60486afdc5db329171ccd0329a028"
+    },
+    {
+      "path": "test/fixtures/model2vec-worker.mjs",
+      "blob": "cf6531254fb8cfff92289bca1f73ece25552ea64"
+    },
+    {
+      "path": "test/helpers/fake-embedding.mjs",
+      "blob": "8a62218065f41b0bea72c140233d023baaed7f04"
+    },
+    {
+      "path": "test/helpers/fake-model-download.mjs",
+      "blob": "4bcb026de765a55751780860829a47d0167e763d"
+    },
+    {
+      "path": "test/helpers/fixtures.mjs",
+      "blob": "c929311f9da54b3c607e68c92ee2e22ea5d6b305"
+    },
+    {
+      "path": "test/index-coordinator.test.mjs",
+      "blob": "e6c8a573e01ffb55b42b830f62e43ef4c51cf35c"
+    },
+    {
+      "path": "test/install.test.mjs",
+      "blob": "0a8cd58cacfc6d3a21c132d927b46ea4c2d09ce5"
+    },
+    {
+      "path": "test/integration/manifest.test.mjs",
+      "blob": "949173d2e8fe200b472521a483148577a94ea6c8"
+    },
+    {
+      "path": "test/integration/service.test.mjs",
+      "blob": "e5f1d472f288dc915688ad48cb4ae0452276ca0f"
+    },
+    {
+      "path": "test/job-scheduler.test.mjs",
+      "blob": "ed49c30c80d15d5ef1aeca65ca6fd4296441fe77"
+    },
+    {
+      "path": "test/mcp-contract.test.mjs",
+      "blob": "55a061941979bdea67f947f2ceca8e64b22bf4ea"
+    },
+    {
+      "path": "test/mcp-legacy-http.test.mjs",
+      "blob": "e186fad8df3adc79724c22e50713565815a7f407"
+    },
+    {
+      "path": "test/mcp-modern-http.test.mjs",
+      "blob": "14b48f76ee93efdcc35ed3dc68a46d7cdb1950ac"
+    },
+    {
+      "path": "test/mcp-request-state.test.mjs",
+      "blob": "867e8ba5af6c45145421d7d766e141d35d8115db"
+    },
+    {
+      "path": "test/mcp.test.mjs",
+      "blob": "9c07d9f0cca153ee8ea22c63b3be6f8e98c0bc51"
+    },
+    {
+      "path": "test/mode-router.test.mjs",
+      "blob": "f661a6d346d1d2ad37a7e6dce8f40a571014310d"
+    },
+    {
+      "path": "test/package/package.test.mjs",
+      "blob": "5bd9c81a7a8b928ba40c96e4bb7da68a6c5c68ef"
+    },
+    {
+      "path": "test/path-indexing.test.mjs",
+      "blob": "a67d217167f877718dbea912e3c9e744727c701e"
+    },
+    {
+      "path": "test/rg-cli.test.mjs",
+      "blob": "f785cfb8322b865cb6f69090c2fdb779e3b2427d"
+    },
+    {
+      "path": "test/root-lease.test.mjs",
+      "blob": "922c9019e6d2707dff5153a72741e1f0c897d9ee"
+    },
+    {
+      "path": "test/server-cli.test.mjs",
+      "blob": "64b24425c4b73019640fdc2dc2944b98264e86d9"
+    },
+    {
+      "path": "test/server-controller.test.mjs",
+      "blob": "66a01112ff19f78a5dac2ad3d72777e66bb2b774"
+    },
+    {
+      "path": "test/server-http.test.mjs",
+      "blob": "b6ff7c50a2c4180600cfb1224c77aaaf43b2849a"
+    },
+    {
+      "path": "test/service-config-reload.test.mjs",
+      "blob": "272701242a29d8c9952d828226aa668f5be4f4ea"
+    },
+    {
+      "path": "test/service-model-cache.test.mjs",
+      "blob": "557969b6eb8d71acb7c5c0850126e32f3362ea3f"
+    },
+    {
+      "path": "test/smoke/local-model-package.test.mjs",
+      "blob": "345a00a21d64d6c44a4c8881c6cb001d41dd141d"
+    },
+    {
+      "path": "test/stdio-bridge.test.mjs",
+      "blob": "f4725238557febd2b6f9bbf0ee20bdcad020d374"
+    },
+    {
+      "path": "test/trace-context.test.mjs",
+      "blob": "43b6106e10d38d610ec28caca63df67a13ea9dfd"
+    },
+    {
+      "path": "test/unit/authorization-prompt.test.mjs",
+      "blob": "bbd06bae00bd32e244ccd5c939c73349d2b19bdb"
+    },
+    {
+      "path": "test/unit/cli-format.test.mjs",
+      "blob": "f7951860b1fa8f942a96ace93b84cd9b0d5cb7f0"
+    },
+    {
+      "path": "test/unit/core.test.mjs",
+      "blob": "ddf139b99f24410d161bd7f6ee317b19fca0a49d"
+    },
+    {
+      "path": "test/unit/daemon-client.test.mjs",
+      "blob": "b8ad413503c850209ce92f6bcf7774c2b0eed8e1"
+    },
+    {
+      "path": "test/unit/extraction/code.test.mjs",
+      "blob": "4848f8b9511cac91193aece104f99de577fe86b5"
+    },
+    {
+      "path": "test/unit/extraction/core.test.mjs",
+      "blob": "47725e4e543145dd1bb5a169e3db56fe039757a8"
+    },
+    {
+      "path": "test/unit/extraction/structure-enrichment.test.mjs",
+      "blob": "d26638ce2f33515084ac79aa8ec2859bff7044c3"
+    },
+    {
+      "path": "test/unit/index-input-budget.test.mjs",
+      "blob": "16860a5bcf04b198e124fc5ed4f177624132cfc1"
+    },
+    {
+      "path": "test/unit/index-status.test.mjs",
+      "blob": "afab3b91b25a11399149cccb66bfa83c1e3e564a"
+    },
+    {
+      "path": "test/unit/models/embeddings.test.mjs",
+      "blob": "c6d4a9770333d0469c4c5a89c29a12ffa815f0d6"
+    },
+    {
+      "path": "test/unit/models/factory.test.mjs",
+      "blob": "3da891b2a519824f08f2c4e5f7045e2e9b832263"
+    },
+    {
+      "path": "test/unit/models/llama-cpp.test.mjs",
+      "blob": "fc936bc4e65fc77d61f027864a97776f9651df5a"
+    },
+    {
+      "path": "test/unit/models/model2vec-tokenizer.test.mjs",
+      "blob": "a6705b0e57f9267e9763d383c92dbdf8176a44de"
+    },
+    {
+      "path": "test/unit/models/model2vec-worker-pool.test.mjs",
+      "blob": "a78b52a5b1dec516a4858c653ab127abf75c9ae3"
+    },
+    {
+      "path": "test/unit/models/model2vec.test.mjs",
+      "blob": "3c365e0bf807236bd91aa983e3096f24b0cc12f5"
+    },
+    {
+      "path": "test/unit/models/qwen.test.mjs",
+      "blob": "f7f00459c183f869f4ed5f7cc43846bd2998c214"
+    },
+    {
+      "path": "test/unit/models/transformers-js.test.mjs",
+      "blob": "fde9632ff94382e4a4c35c17cdd3ca175bd1b6c3"
+    },
+    {
+      "path": "test/unit/scanner-utils.test.mjs",
+      "blob": "9c173807497ff488ec77b93f1ef92de9c105f3dd"
+    },
+    {
+      "path": "test/unit/search.test.mjs",
+      "blob": "30fe4ac6ef11289c83a0c4f14aae54b06311242e"
+    },
+    {
+      "path": "test/unit/server-search.test.mjs",
+      "blob": "c30442b412a6df7e1378cede262b22cc7d5d3b9f"
+    },
+    {
+      "path": "test/unit/service-root.test.mjs",
+      "blob": "f4b9561299b4040262fa10d3b6011cf87c5e7954"
+    },
+    {
+      "path": "test/unit/zvec-storage.test.mjs",
+      "blob": "de81cd8488433280fc602ebe8a35b6efa33ce7a0"
+    },
+    {
+      "path": "test/watch-manager.test.mjs",
+      "blob": "9106d6598fbe38248109cad96ede6c7589e877bc"
+    },
+    {
+      "path": "tsconfig.json",
+      "blob": "b0d2a33b9c16fc1778727e605faa7f45a591aebc"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "backend": "codegraph",
+  "case": "unsupported-operation",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+  "args": [
+    "unsupported-operation",
+    "--path",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+  ],
+  "code": 1,
+  "signal": null,
+  "stdout": "",
+  "stderr": "error: unknown command 'unsupported-operation'\n"
+}

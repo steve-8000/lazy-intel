@@ -1,0 +1,49 @@
+{
+  "unit": "U01",
+  "title": "Preserve and fix baseline correctness",
+  "status": "complete",
+  "baselineSourceIds": [
+    "L01",
+    "L02",
+    "L03",
+    "L04",
+    "L05",
+    "L07",
+    "L08",
+    "L09",
+    "L10",
+    "L21"
+  ],
+  "changedPaths": [
+    "test/engine.test.js",
+    "package.json"
+  ],
+  "newPaths": [],
+  "contractChanges": [],
+  "commands": [
+    {
+      "cmd": "node --test test/engine.test.js",
+      "exit": 0
+    },
+    {
+      "cmd": "npm test",
+      "exit": 0,
+      "note": "73 tests, 72 pass, 1 skipped (Node engine range), 0 fail"
+    }
+  ],
+  "tests": [
+    {
+      "name": "full suite",
+      "status": "pass",
+      "detail": "73 tests / 0 failures after the fixes below"
+    }
+  ],
+  "findings": [
+    "test/engine.test.js expected meta.status 'empty' from a nonsense query over real backends. That is unreachable: zvec is hybrid and its vector leg always returns nearest neighbours, so the `No matches.` sentinel that src/backends/zvec.js:17 keys on never appears over a non-empty index. Confirmed by running the pinned zg 0.2.1 CLI directly. The product was correct; the test assumption was not. The case now pins the reachable contract instead: status ok, stopReason plan_complete, and every evidence descriptor opaque, which is the real regression guard (CLI prose must never become a typed locator). The reachable `empty` contract stays pinned on the captured fixture in test/backends.test.js.",
+    "Second latent bad assertion at the same test: `meta.backends[].backend` is 'serena' while `meta.routes` is 'serena:references', so `routes.includes(backend)` could never hold. Replaced with the real invariant, that each reported backend is the backend part of some planned route.",
+    "Third: the cancellation case passed maxChars 100000, above the 4000..80000 bound enforced by src/engine.js:387, so the request failed input validation instead of being cancelled. The bound is correct product behaviour; the test now uses 80000.",
+    "`npm test` was `node --test` with no scope, which after vendoring started executing the upstream trees' own test suites. Scoped to test/**/*.test.js."
+  ],
+  "knownLimitations": [],
+  "rollback": "Revert test/engine.test.js and the package.json scripts block. No product behaviour changed in this unit."
+}

@@ -1,0 +1,35 @@
+{
+  "unit": "U07",
+  "title": "Shared snapshots and per-language parser convergence",
+  "status": "complete",
+  "newPaths": [
+    "vendor/codegraph/src/extraction/snapshot-input.ts",
+    "vendor/zvec-grep/src/engine/pipeline/indexing/prepared.ts",
+    "packages/core/src/workspace/code-unit.ts",
+    "test/parity/extraction.test.js",
+    "test/parity/retrieval.test.js",
+    "test/parity/graph.test.js",
+    "docs/unified/parser-convergence.json"
+  ],
+  "changedPaths": [
+    "vendor/codegraph/src/extraction/index.ts",
+    "vendor/zvec-grep/src/engine/pipeline/indexing/index.ts",
+    "vendor/zvec-grep/src/engine/service/workspace-index.ts"
+  ],
+  "tests": [
+    {
+      "name": "test/parity/*.test.js",
+      "status": "pass",
+      "detail": "4/4: snapshot-fed extraction equals stock disk extraction; prepared ingestion preserves the embedding input composition and reuses finalizeWrites; deletion, rename and definitionDelta rebind identically including cross-file incoming edges"
+    }
+  ],
+  "findings": [
+    "Convergence is enabled for javascript, typescript and python only, each backed by a passing parity test. Every other language keeps its existing extractor; the release gate fails if any language claims convergence without evidence.",
+    "Prepared ingestion reuses replaceFile/deleteFile/finalizeWrites and does not introduce a second durability point."
+  ],
+  "knownLimitations": [
+    "Sixteen listed languages are not attempted. They are recorded as converged:false with a reason rather than assumed equivalent."
+  ],
+  "rollback": "Point the extractors back at the disk-reading path; the snapshot input is additive.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

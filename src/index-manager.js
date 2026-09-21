@@ -1,13 +1,15 @@
 import { watch } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
-import { canonicalDirectory } from "./lib/roots.js";
+import { canonicalDirectory, containsPath } from "./lib/roots.js";
 import { homedir } from "node:os";
 import path from "node:path";
 import { resolveBin, run } from "./lib/process.js";
 import { log } from "./lib/log.js";
 
 const roots = new Map();
+const processEpoch = randomUUID();
 const MAX_ROOTS = intEnv("LAZY_INTEL_MAX_ROOTS", 8, 1, 64);
 const MAINTENANCE_MS = intEnv("LAZY_INTEL_MAINTENANCE_MS", 5_000, 0, 300_000);
 // Only used when the filesystem watcher is unavailable: without change events, time is
@@ -31,24 +33,37 @@ const IGNORED_SEGMENTS = new Set([
 // Agent private state is not a source workspace. The OMP home holds ~100k session
 // transcripts, blobs, logs and SQLite WALs that the harness rewrites every second, so a
 // watcher rooted there can never settle: every sync re-embeds files the running agent is
-// still appending to. Matched by exact directory, never by prefix, so a real project nested
-// inside one — such as ~/.omp/agent — stays indexable.
-const DENIED_ROOTS = new Set(
+// still appending to. The deny covers the whole tree, not only the exact directory: the
+// harness keeps a real git repository at ~/.omp/agent holding rules, memories, skills and
+// session databases, so an exact-match deny still embedded precisely the private state
+// this rule exists to protect.
+const DENIED_TREES = [...new Set(
   [
     process.env.OMP_HOME || path.join(homedir(), ".omp"),
     process.env.ZVEC_GREP_HOME || path.join(homedir(), ".zvec-grep"),
     ...(process.env.LAZY_INTEL_DENY_ROOTS ?? "").split(path.delimiter),
-  ].filter(Boolean).map((entry) => path.resolve(entry)),
-);
+  ].filter(Boolean).map(canonicalPath),
+)];
+
+// The home directory itself is never a workspace: a single session started from ~ would
+// index every repository, download and credential file on the machine. Descendants of the
+// home directory stay indexable — only ~ as the root is refused.
+const DENIED_EXACT = new Set([canonicalPath(homedir())]);
 
 let maintenanceTimer;
 
+function canonicalPath(entry) {
+  try { return realpathSync(entry); } catch { return path.resolve(entry); }
+}
+
 export function isDeniedRoot(root) {
-  let canonical;
-  try { canonical = realpathSync(root); } catch { canonical = path.resolve(root); }
-  for (const denied of DENIED_ROOTS) {
-    if (denied === canonical) return true;
-    try { if (realpathSync(denied) === canonical) return true; } catch {}
+  const canonical = canonicalPath(root);
+  if (DENIED_EXACT.has(canonical)) return true;
+  for (const denied of DENIED_TREES) {
+    if (containsPath(denied, canonical)) return true;
+    // A deny entry that did not exist at import time — a fresh agent home, or a symlinked
+    // tmpdir such as macOS /var -> /private/var — only resolves once it is created.
+    try { if (containsPath(realpathSync(denied), canonical)) return true; } catch {}
   }
   return false;
 }
@@ -70,6 +85,19 @@ export async function bootstrapRoot(root) {
   return state;
 }
 
+export function observeIndexState(root) {
+  const state = roots.get(canonicalPath(root));
+  if (!state) return null;
+  const applied = INDEX_BACKENDS.map((backend) => state.backends[backend].applied).filter((generation) => generation > 0);
+  return {
+    processEpoch,
+    generation: state.generation,
+    appliedGeneration: applied.length ? Math.min(...applied) : null,
+    watcher: state.watcherState,
+    baseline: applied.length ? "applied" : "unverified",
+  };
+}
+
 export async function ensureIndexes(root, backends, options = {}) {
   const state = await ensureState(root);
   startMaintenanceLoop();
@@ -80,14 +108,14 @@ export async function syncIndexes(root, backends = INDEX_BACKENDS, options = {})
   const state = await ensureState(root);
   return serialPerBackend(state, indexBackends(backends), async (backend) => {
     const created = await ensureCreated(state, backend, options);
-    if (created?.building) return created;
+    if (created?.action === "building") return created;
     return refreshBackend(state, backend, options);
-  });
+  }, options.signal);
 }
 
 export async function reindexIndexes(root, backends = INDEX_BACKENDS, options = {}) {
   const state = await ensureState(root);
-  return serialPerBackend(state, indexBackends(backends), (backend) => rebuildBackend(state, backend, options));
+  return serialPerBackend(state, indexBackends(backends), (backend) => rebuildBackend(state, backend, options), options.signal);
 }
 
 export async function repairIndexes(root, backends = INDEX_BACKENDS, options = {}) {
@@ -95,14 +123,14 @@ export async function repairIndexes(root, backends = INDEX_BACKENDS, options = {
   return serialPerBackend(state, indexBackends(backends), async (backend) => {
     try {
       const created = await ensureCreated(state, backend, options);
-      if (created?.building) return created;
+      if (created?.action === "building") return created;
       return await refreshBackend(state, backend, options);
     } catch (first) {
       options.signal?.throwIfAborted();
       log("warn", "index repair escalating to rebuild", { root: state.root, backend, error: first.message });
       return rebuildBackend(state, backend, options);
     }
-  });
+  }, options.signal);
 }
 
 export async function indexStatus(root, options = {}) {
@@ -153,13 +181,13 @@ async function ensureState(root) {
     generation: 1,
     watcher: null,
     watcherActive: false,
+    watcherState: "unknown",
     backends: { zvec: backendState(), codegraph: backendState() },
   };
   roots.set(absolute, state);
   attachWatcher(state);
   return state;
 }
-
 function backendState() {
   return {
     applied: 0, lastSyncAt: 0, consecutiveFailures: 0, lastError: null,
@@ -188,15 +216,22 @@ function failureBackoffMs(failures) {
 function attachWatcher(state) {
   try {
     state.watcher = watch(state.root, { recursive: true, persistent: false }, (_event, filename) => {
-      if (!filename || shouldIgnore(String(filename))) return;
+      if (!filename) {
+        state.generation += 1;
+        return;
+      }
+      if (shouldIgnore(String(filename))) return;
       state.generation += 1;
     });
     state.watcher.on("error", (error) => {
       state.watcherActive = false;
+      state.watcherState = "unavailable";
       log("warn", "filesystem watcher failed; explicit sync still available", { root: state.root, error: error.message });
     });
     state.watcherActive = true;
+    state.watcherState = "active";
   } catch (error) {
+    state.watcherState = "unavailable";
     log("warn", "filesystem watcher unavailable; explicit sync still available", { root: state.root, error: error.message });
   }
 }
@@ -211,9 +246,15 @@ function shouldIgnore(filename) {
 async function ensureBackends(state, backends, options) {
   return serialPerBackend(state, backends, async (backend) => {
     const b = state.backends[backend];
+    if (!options.force && b.nextAttemptAt > Date.now()) {
+      return row(backend, false, "failed", {
+        error: b.lastError ?? "index retry is backed off",
+        retryAfterMs: b.nextAttemptAt - Date.now(),
+      });
+    }
     try {
       const created = await ensureCreated(state, backend, options);
-      if (created?.building) return created;
+      if (created?.action === "building") return created;
       const freshness = options.freshness ?? "auto";
       // Without a baseline from this process, changes made while it was down are unknown:
       // reconcile exactly once, then stay change-driven.
@@ -243,14 +284,14 @@ async function ensureBackends(state, backends, options) {
       }
       return row(backend, false, "failed", { error: b.lastError, retryAfterMs: Math.max(0, b.nextAttemptAt - Date.now()) });
     }
-  });
+  }, options.signal);
 }
 
 async function ensureCreated(state, backend, options = {}) {
   const b = state.backends[backend];
   if (b.ready) return null;
   const probe = await probeBackend(state, backend, options);
-  if (probe.building) return row(backend, true, "building", { detail: probe.detail });
+  if (probe.building) return row(backend, false, "building", { detail: probe.detail });
   if (probe.ready) {
     b.ready = true;
     if (!b.lastSyncAt) b.lastSyncAt = Date.now();
@@ -351,16 +392,21 @@ function markApplied(b, generation) {
   b.lastSyncAt = Date.now();
   b.consecutiveFailures = 0;
   b.lastError = null;
+  b.nextAttemptAt = 0;
   b.ready = true;
 }
 
 // FIFO per backend: a queued reindex/repair runs after the in-flight job instead of
 // silently inheriting its result.
-function serialPerBackend(state, backends, fn) {
+function serialPerBackend(state, backends, fn, signal) {
   return Promise.all(backends.map((backend) => {
     const b = state.backends[backend];
     const previous = b.queue ?? Promise.resolve();
-    const result = previous.then(() => fn(backend), () => fn(backend));
+    const run = () => {
+      if (signal?.aborted) signal.throwIfAborted();
+      return fn(backend);
+    };
+    const result = previous.then(run, run);
     const settled = result.then(ignore, ignore);
     b.queue = settled;
     settled.then(() => {
@@ -409,7 +455,10 @@ function pickLine(text, pattern) {
 }
 
 function row(backend, ok, action, detail = {}) {
-  return { backend, ok, action, ...detail };
+  const building = detail.building ?? action === "building";
+  const ready = building ? false : (detail.ready ?? (ok && action !== "failed"));
+  const { building: _building, ready: _ready, ...extra } = detail;
+  return { backend, ok: building ? false : Boolean(ok), ready: Boolean(ready), building: Boolean(building), action, ...extra };
 }
 
 function intEnv(name, fallback, min, max) {

@@ -1,0 +1,17 @@
+{
+  "backend": "codegraph",
+  "case": "zero-result",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+  "args": [
+    "explore",
+    "definitely-no-fixture-match",
+    "--path",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+    "--max-files",
+    "4"
+  ],
+  "code": 0,
+  "signal": null,
+  "stdout": "No relevant code found for \"definitely-no-fixture-match\"\n",
+  "stderr": ""
+}

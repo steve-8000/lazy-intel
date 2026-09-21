@@ -1,0 +1,297 @@
+{
+  "formatVersion": 1,
+  "capturedAt": "2026-09-21T05:31:07.500Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "node": "v26.7.0",
+  "fixtureSourceSha256": "e3665d98e368a193fc4a05c78cb0f71070d30c1e2768d16fb91917cdf0874beb",
+  "workspace": "disposable temporary workspace",
+  "backends": {
+    "zvec": {
+      "package": "@zvec/zvec-grep",
+      "version": "0.2.1",
+      "packageJson": "/Users/steve/lazy-project/lazy-intel/node_modules/@zvec/zvec-grep/package.json"
+    },
+    "codegraph": {
+      "package": "@colbymchenry/codegraph",
+      "version": "1.6.0",
+      "packageJson": "/Users/steve/lazy-project/lazy-intel/node_modules/@colbymchenry/codegraph/package.json"
+    },
+    "serena": {
+      "package": "serena-agent",
+      "version": "Serena 1.7.0",
+      "packageJson": null,
+      "packageMetadataUnavailable": "Pinned executable is a Python tool entry point; no package.json is installed beside it.",
+      "versionCommand": {
+        "command": "/Users/steve/.local/bin/serena",
+        "args": [
+          "--version"
+        ],
+        "code": 0,
+        "signal": null,
+        "stdout": "Serena 1.7.0\n",
+        "stderr": ""
+      }
+    }
+  },
+  "cases": [
+    {
+      "backend": "zvec",
+      "case": "success",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+      "args": [
+        "query",
+        "--rg",
+        "add",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+      ],
+      "available": true
+    },
+    {
+      "backend": "zvec",
+      "case": "zero-result",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+      "args": [
+        "query",
+        "--rg",
+        "definitely-no-fixture-match",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+      ],
+      "available": true
+    },
+    {
+      "backend": "zvec",
+      "case": "truncated-limited",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+      "args": [
+        "query",
+        "--rg",
+        "--limit",
+        "1",
+        "add",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+      ],
+      "available": true
+    },
+    {
+      "backend": "zvec",
+      "case": "unsupported-operation",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+      "args": [
+        "unsupported-operation",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+      ],
+      "available": true
+    },
+    {
+      "backend": "zvec",
+      "case": "error",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+      "args": [
+        "query",
+        "--rg",
+        "add",
+        "/definitely/missing/path"
+      ],
+      "available": true
+    },
+    {
+      "backend": "codegraph",
+      "case": "success",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+      "args": [
+        "explore",
+        "add",
+        "--path",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--max-files",
+        "4"
+      ],
+      "available": true
+    },
+    {
+      "backend": "codegraph",
+      "case": "zero-result",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+      "args": [
+        "explore",
+        "definitely-no-fixture-match",
+        "--path",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--max-files",
+        "4"
+      ],
+      "available": true
+    },
+    {
+      "backend": "codegraph",
+      "case": "truncated-limited",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+      "args": [
+        "explore",
+        "add",
+        "--path",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--max-files",
+        "1"
+      ],
+      "available": true
+    },
+    {
+      "backend": "codegraph",
+      "case": "unsupported-operation",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+      "args": [
+        "unsupported-operation",
+        "--path",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+      ],
+      "available": true
+    },
+    {
+      "backend": "codegraph",
+      "case": "error",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+      "args": [
+        "impact",
+        "MissingSymbol",
+        "--path",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--json"
+      ],
+      "available": true
+    },
+    {
+      "backend": "codegraph",
+      "case": "impact-json",
+      "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+      "args": [
+        "impact",
+        "add",
+        "--path",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--depth",
+        "2",
+        "--json"
+      ],
+      "available": true
+    },
+    {
+      "backend": "serena",
+      "case": "success",
+      "command": "/Users/steve/.local/bin/serena",
+      "args": [
+        "start-mcp-server",
+        "--transport",
+        "stdio",
+        "--context",
+        "agent",
+        "--project",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--enable-web-dashboard",
+        "false",
+        "--enable-gui-log-window",
+        "false",
+        "--log-level",
+        "ERROR"
+      ],
+      "available": true
+    },
+    {
+      "backend": "serena",
+      "case": "zero-result",
+      "command": "/Users/steve/.local/bin/serena",
+      "args": [
+        "start-mcp-server",
+        "--transport",
+        "stdio",
+        "--context",
+        "agent",
+        "--project",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--enable-web-dashboard",
+        "false",
+        "--enable-gui-log-window",
+        "false",
+        "--log-level",
+        "ERROR"
+      ],
+      "available": true
+    },
+    {
+      "backend": "serena",
+      "case": "truncated-limited",
+      "command": "/Users/steve/.local/bin/serena",
+      "args": [
+        "start-mcp-server",
+        "--transport",
+        "stdio",
+        "--context",
+        "agent",
+        "--project",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--enable-web-dashboard",
+        "false",
+        "--enable-gui-log-window",
+        "false",
+        "--log-level",
+        "ERROR"
+      ],
+      "available": true
+    },
+    {
+      "backend": "serena",
+      "case": "unsupported-operation",
+      "command": "/Users/steve/.local/bin/serena",
+      "args": [
+        "start-mcp-server",
+        "--transport",
+        "stdio",
+        "--context",
+        "agent",
+        "--project",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--enable-web-dashboard",
+        "false",
+        "--enable-gui-log-window",
+        "false",
+        "--log-level",
+        "ERROR"
+      ],
+      "available": true
+    },
+    {
+      "backend": "serena",
+      "case": "error",
+      "command": "/Users/steve/.local/bin/serena",
+      "args": [
+        "start-mcp-server",
+        "--transport",
+        "stdio",
+        "--context",
+        "agent",
+        "--project",
+        "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+        "--enable-web-dashboard",
+        "false",
+        "--enable-gui-log-window",
+        "false",
+        "--log-level",
+        "ERROR"
+      ],
+      "available": true
+    }
+  ],
+  "codegraphInit": {
+    "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+    "args": [
+      "init",
+      "--yes",
+      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+    ],
+    "code": 0,
+    "signal": null,
+    "stdout": "┌  Initializing CodeGraph\n│\n◆  Initialized in /var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM\n│\nScanning files...\nParsing code...\nResolving refs...\nLinking dynamic dispatch...\n│\n◆  Indexed 2 files\n│\n●  6 nodes, 8 edges in 71ms\n│\n└  Done\n\n",
+    "stderr": ""
+  }
+}

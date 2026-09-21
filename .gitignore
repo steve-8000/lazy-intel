@@ -8,3 +8,19 @@ node_modules/
 .zvec-grep/
 .codegraph/
 .serena/
+
+# Vendored upstream build outputs. The source under vendor/ is tracked and is verified
+# against vendor/*/UPSTREAM.json; compiled output is reproduced by scripts/build-unified.mjs.
+vendor/*/dist/
+vendor/*/.venv/
+packages/*/dist/
+workers/*/.venv/
+
+# Python bytecode from our own workers, scoped so it cannot reach vendor/.
+/workers/**/__pycache__/
+
+# Each vendored tree carries its own .gitignore, and a nested rule beats every root
+# rule for its own subtree. Fifteen files in the UPSTREAM.json manifests are ignored
+# by those nested rules even though upstream tracks them, so they are force-added
+# once (`git add -f`) and stay tracked. Re-importing a tree must repeat that, or a
+# fresh clone is missing files and `npm run verify:vendor` fails only for other people.

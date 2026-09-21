@@ -1,0 +1,15 @@
+{
+  "backend": "zvec",
+  "case": "success",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+  "args": [
+    "query",
+    "--rg",
+    "add",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+  ],
+  "code": 0,
+  "signal": null,
+  "stdout": "../../../../../../../var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM/src/consumer.js\n  1:\timport { add } from './main.js';\n  2:\texport const value = add(1, 2);\n../../../../../../../var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM/src/main.js\n  1:\texport function add(a, b) { return a + b; }\n  2:\texport function answer() { return add(40, 2); }\n",
+  "stderr": ""
+}

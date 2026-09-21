@@ -1,0 +1,15 @@
+{
+  "backend": "zvec",
+  "case": "zero-result",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+  "args": [
+    "query",
+    "--rg",
+    "definitely-no-fixture-match",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+  ],
+  "code": 0,
+  "signal": null,
+  "stdout": "No matches.\n",
+  "stderr": ""
+}

@@ -1,15 +1,44 @@
 import { realpathSync } from "node:fs";
 import { realpath, stat } from "node:fs/promises";
 import path from "node:path";
+import { log } from "./log.js";
+
+/**
+ * A single bad entry in the configuration must never take the server down: a stdio server that
+ * throws while loading closes stdout before answering `initialize`, and the client only sees
+ * "MCP subprocess closed stdout before responding". Roots that are deleted, relative or otherwise
+ * unresolvable are dropped with a warning, so every other workspace keeps working and a request
+ * for the bad root fails with the explicit "outside allowed workspaces" error.
+ */
+function resolveConfiguredRoot(root) {
+  if (!path.isAbsolute(root)) {
+    log("warn", "ignoring non-absolute allowed root", { root });
+    return undefined;
+  }
+  try {
+    return realpathSync(root);
+  } catch (error) {
+    log("warn", "ignoring unresolvable allowed root", { root, error: error.message });
+    return undefined;
+  }
+}
+
+function resolveBootRoot() {
+  const configured = process.env.LAZY_INTEL_ROOT;
+  if (configured) {
+    const resolved = resolveConfiguredRoot(configured);
+    if (resolved) return resolved;
+    log("warn", "falling back to process cwd for boot root", { root: configured });
+  }
+  return realpathSync(process.cwd());
+}
 
 // Capture trusted process configuration once, before accepting any MCP request.
-export const bootRoot = realpathSync(process.env.LAZY_INTEL_ROOT || process.cwd());
+export const bootRoot = resolveBootRoot();
 const allowedRoots = [...new Set([
   bootRoot,
-  ...(process.env.LAZY_INTEL_ALLOWED_ROOTS ?? "").split(path.delimiter).filter(Boolean).map((root) => {
-    if (!path.isAbsolute(root)) throw new Error("LAZY_INTEL_ALLOWED_ROOTS entries must be absolute paths");
-    return realpathSync(root);
-  }),
+  ...(process.env.LAZY_INTEL_ALLOWED_ROOTS ?? "").split(path.delimiter).filter(Boolean)
+    .map(resolveConfiguredRoot).filter(Boolean),
 ])];
 
 export function containsPath(root, target) {

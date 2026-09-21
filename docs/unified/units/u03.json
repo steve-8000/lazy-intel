@@ -1,0 +1,55 @@
+{
+  "unit": "U03",
+  "title": "Typed embedded adapters in supervised workers",
+  "status": "complete",
+  "newPaths": [
+    "packages/core/src/runtime/protocol.ts",
+    "packages/core/src/runtime/supervisor.ts",
+    "packages/core/src/runtime/worker-client.ts",
+    "packages/core/src/adapters/retrieval.ts",
+    "packages/core/src/adapters/graph.ts",
+    "packages/core/src/adapters/semantic.ts",
+    "workers/retrieval/main.mjs",
+    "workers/graph/main.mjs",
+    "test/contracts/worker-lifecycle.test.js",
+    "test/contracts/retrieval-adapter.test.js",
+    "test/contracts/graph-adapter.test.js"
+  ],
+  "changedPaths": [
+    "vendor/codegraph/src/context/index.ts",
+    "vendor/codegraph/src/index.ts",
+    "vendor/codegraph/src/lazy-entry.ts"
+  ],
+  "contractChanges": [
+    "Protocol v1 over the fork IPC channel, 8 MiB message ceiling.",
+    "CanonicalAnchor gained relativePath: a live read has no CapturedManifest to resolve a FileId back to a path, and every consumer needs one."
+  ],
+  "tests": [
+    {
+      "name": "test/contracts/worker-lifecycle.test.js",
+      "status": "pass",
+      "detail": "7/7: cancellation releases the caller without killing the worker; an abandoned job's late answer is discarded; a crash is typed and retryable and the next call gets a new pid; an oversized response is a bound, not a truncation; stdout cannot forge protocol; an unknown operation does not kill the worker; an expired budget never reaches the worker"
+    },
+    {
+      "name": "test/contracts/retrieval-adapter.test.js",
+      "status": "pass",
+      "detail": "real zvec library, real worker, real crash and cancel"
+    },
+    {
+      "name": "test/contracts/graph-adapter.test.js",
+      "status": "pass",
+      "detail": "real indexed project, typed call paths, byte anchors, one handle per workspace"
+    }
+  ],
+  "findings": [
+    "Protocol travels on the fork IPC channel, never stdout. Proven: a worker that prints a protocol-shaped object on stdout cannot forge a response.",
+    "The zvec read API has no AbortSignal, so cancellation is modelled as caller release plus job abandonment plus worker recycling past a threshold. Nothing pretends the call aborts.",
+    "CodeGraph's OpenOptions.readOnly is declared but never forwarded to the database, and open runs migrations and healing. The graph worker therefore enforces exactly one handle per workspace.",
+    "The typed path surfaces zvec's diagnostics.emptyReason, which the CLI text path could not see: a genuine zero-hit is now `empty` instead of an opaque block."
+  ],
+  "knownLimitations": [
+    "The design named workers/graph/main.cjs; it is main.mjs because @lazy-intel/core is ESM. CodeGraph's CommonJS build is loaded with createRequire."
+  ],
+  "rollback": "Unset LAZY_INTEL_ENGINE. The legacy adapters are untouched.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

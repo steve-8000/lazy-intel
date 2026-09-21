@@ -1,0 +1,13 @@
+{
+  "backend": "zvec",
+  "case": "unsupported-operation",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/zg",
+  "args": [
+    "unsupported-operation",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM"
+  ],
+  "code": 1,
+  "signal": null,
+  "stdout": "",
+  "stderr": "Error: Unknown command: unsupported-operation\n"
+}

@@ -1,0 +1,17 @@
+{
+  "backend": "codegraph",
+  "case": "success",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+  "args": [
+    "explore",
+    "add",
+    "--path",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+    "--max-files",
+    "4"
+  ],
+  "code": 0,
+  "signal": null,
+  "stdout": "**Exploration: add**\n\nFound 2 symbols across 1 file.\n\n**Blast radius — what depends on these (update/verify before editing)**\n\n- `add` (src/main.js:1) — 2 callers in `src/consumer.js`, `src/main.js`; no tests found within 3 caller hops\n\n**Source Code**\n\n> The code below is the **verbatim, current on-disk source** of these files — re-read from disk on this call and line-numbered, byte-for-byte identical to what the Read tool returns. It is NOT a summary, outline, or stale cache. Treat each block as a Read you have already performed: do not Read a file shown here.\n\n**`src/main.js`** — add(function), answer(function)\n\n```javascript\n1\texport function add(a, b) { return a + b; }\n2\texport function answer() { return add(40, 2); }\n```\n\n**Not shown above — explore these names for their source**\n\n- src/consumer.js: value:2, consumer.js:1\n",
+  "stderr": ""
+}

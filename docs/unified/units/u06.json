@@ -1,0 +1,26 @@
+{
+  "unit": "U06",
+  "title": "Captured manifests, read gates and crash recovery",
+  "status": "complete",
+  "newPaths": [
+    "packages/core/src/workspace/publication.ts",
+    "test/faults/publication.test.js"
+  ],
+  "tests": [
+    {
+      "name": "test/faults/publication.test.js",
+      "status": "pass",
+      "detail": "crash injected before a component write, after the write but before its ack, and after the ack but before catalog publication; recovery serves the old view completely or the new view completely"
+    }
+  ],
+  "findings": [
+    "observedSeq is never substituted for an applied view; a read is served from appliedManifestId.",
+    "An applying store does not serve, and does not serve the previous revision label while partially mutated.",
+    "Two projections at different applied manifests is a detectable mixed-views condition, not a guess the reader has to make."
+  ],
+  "knownLimitations": [
+    "Same as U04: implemented and tested, not yet the gate in front of the derived indexes."
+  ],
+  "rollback": "Not on the default query path.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

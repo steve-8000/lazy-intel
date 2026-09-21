@@ -1,0 +1,47 @@
+{
+  "unit": "U00",
+  "title": "Immutable source/provenance preflight",
+  "status": "complete",
+  "baselineSourceIds": "all 65 ids in docs/unified/source-checks.json",
+  "sourceCheckReport": "docs/unified/source-checks.json",
+  "changedPaths": [],
+  "newPaths": [
+    "docs/unified/source-checks.json",
+    "docs/unified/dependency-audit.json",
+    "docs/unified/distribution-provenance.json"
+  ],
+  "contractChanges": [],
+  "commands": [
+    {
+      "cmd": "python3 scripts/bootstrap_sources.py --destination /Users/steve/lazy-project/lazy-intel-source-baselines",
+      "exit": 0,
+      "note": "fetched 4 pinned commits into new directories"
+    },
+    {
+      "cmd": "python3 scripts/verify_sources.py --source-root <baselines>",
+      "exit": 0,
+      "note": "65/65 verified, 0 failures"
+    },
+    {
+      "cmd": "npm view @zvec/zvec-grep@0.2.1 / @colbymchenry/codegraph@1.6.0 dist.integrity gitHead",
+      "exit": 0
+    }
+  ],
+  "tests": [
+    {
+      "name": "verify_sources.py identity check",
+      "status": "pass",
+      "detail": "PASS, exit 0, 65 files, commit+path+blob+bytes+worktree+anchors"
+    }
+  ],
+  "findings": [
+    "The published @colbymchenry/codegraph root package is a thin installer around a per-platform bundle carrying a 120,573,328-byte vendored Node runtime, with a GitHub Releases download fallback in npm-shim.js. Its root package.json is rewritten at publish time and differs from the tag's.",
+    "Both Node distributions are nevertheless byte-reproducible from the pinned commits; measured in U02.",
+    "@img/sharp-libvips-darwin-arm64@1.2.4 (LGPL-3.0-or-later) is the only non-permissive licence in the installed Node closure.",
+    "Five installed packages run install scripts and belong to the authorised setup boundary, never the query path."
+  ],
+  "knownLimitations": [
+    "Python transitive licences unresolved; no interpreter environment was created. Closed in U05."
+  ],
+  "rollback": "Read-only unit. No baseline or user worktree was modified."
+}

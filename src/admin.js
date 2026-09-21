@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { indexStatus, ensureIndexes, reindexIndexes } from "./index-manager.js";
 import { pathExists, resolveBin, run } from "./lib/process.js";
+import { ENGINE_MODE } from "./unified.js";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
 // OMP must expose exactly one code-intelligence MCP; the standalone backends are subsumed.
@@ -33,10 +34,17 @@ export async function doctor(root = process.cwd()) {
   const nodeOk = (nodeMajor > 22 || (nodeMajor === 22 && nodeMinor >= 5)) && nodeMajor < 25;
   rows.push({ item: "node", ok: nodeOk, detail: `${process.version} (${process.execPath}); required ${range}` });
 
-  rows.push(await checkVersion("zg", ["version"], pin.zg));
-  rows.push(await checkVersion("codegraph", ["version"], pin.codegraph));
-  rows.push(await checkVersion("serena", ["--version"], pin.serena));
-  rows.push(await zvecRuntimeRow());
+  rows.push({ item: "engine", ok: true, detail: `${ENGINE_MODE}; set LAZY_INTEL_ENGINE=unified for the embedded forks, unset it to roll back to the standalone backends` });
+  rows.push(await vendorRow());
+
+  if (ENGINE_MODE === "legacy") {
+    // Only the legacy reader shells out to these. Probing them in unified mode
+    // would report a missing external install as a fault when nothing uses it.
+    rows.push(await checkVersion("zg", ["version"], pin.zg));
+    rows.push(await checkVersion("codegraph", ["version"], pin.codegraph));
+    rows.push(await checkVersion("serena", ["--version"], pin.serena));
+    rows.push(await zvecRuntimeRow());
+  }
 
   const status = await indexStatus(path.resolve(root));
   rows.push({ item: "embedding", ok: true, detail: status.embedding });
@@ -51,6 +59,33 @@ export async function doctor(root = process.cwd()) {
     });
   }
   return rows;
+}
+
+/**
+ * The vendored forks and whether they are built. In unified mode an unbuilt
+ * vendor tree is a hard fault: the query path has nothing to load.
+ */
+async function vendorRow() {
+  const lock = JSON.parse(await readFile(path.join(repoRoot, "upstreams.lock.json"), "utf8"));
+  const parts = [];
+  let built = true;
+  for (const [name, entry] of Object.entries(lock.upstreams)) {
+    if (!entry.vendor) continue;
+    let revision = "no ledger";
+    try {
+      const ledger = JSON.parse(await readFile(path.join(repoRoot, entry.ledger), "utf8"));
+      revision = `patch ${ledger.patch_revision ?? 0}`;
+    } catch { /* reported as "no ledger" below */ }
+    parts.push(`${name}@${entry.commit.slice(0, 12)} (${revision})`);
+  }
+  for (const artefact of ["packages/core/dist/index.js", "vendor/zvec-grep/dist/lazy-entry.js", "vendor/codegraph/dist/lazy-entry.js"]) {
+    if (!(await pathExists(path.join(repoRoot, artefact)))) built = false;
+  }
+  return {
+    item: "vendored forks",
+    ok: ENGINE_MODE === "legacy" || built,
+    detail: `${parts.join(", ")}; build ${built ? "present" : "MISSING — run npm run build"}`,
+  };
 }
 
 async function checkVersion(item, args, expected) {

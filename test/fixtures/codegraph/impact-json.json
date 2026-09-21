@@ -1,0 +1,18 @@
+{
+  "backend": "codegraph",
+  "case": "impact-json",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+  "args": [
+    "impact",
+    "add",
+    "--path",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+    "--depth",
+    "2",
+    "--json"
+  ],
+  "code": 0,
+  "signal": null,
+  "stdout": "{\n  \"symbol\": \"add\",\n  \"depth\": 2,\n  \"nodeCount\": 3,\n  \"edgeCount\": 3,\n  \"affected\": [\n    {\n      \"name\": \"add\",\n      \"kind\": \"function\",\n      \"filePath\": \"src/main.js\",\n      \"startLine\": 1\n    },\n    {\n      \"name\": \"consumer.js\",\n      \"kind\": \"file\",\n      \"filePath\": \"src/consumer.js\",\n      \"startLine\": 1\n    },\n    {\n      \"name\": \"answer\",\n      \"kind\": \"function\",\n      \"filePath\": \"src/main.js\",\n      \"startLine\": 2\n    }\n  ]\n}\n",
+  "stderr": ""
+}

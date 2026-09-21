@@ -33,6 +33,40 @@ OMP / Sharpshooter(memory)
 
 There is no manual index lifecycle in the normal path.
 
+## Two engines, one tool
+
+lazy-intel now **vendors** the source of its three backends under `vendor/`, at pinned commits, and can run them as embedded libraries in private worker processes. The old path — `zg` and `codegraph` CLI subprocesses plus an external Serena MCP server — is still there, and is still the default.
+
+| | `legacy` (default) | `unified` |
+|---|---|---|
+| selector | `LAZY_INTEL_ENGINE` unset | `LAZY_INTEL_ENGINE=unified` |
+| transport | CLI subprocess per query; Serena over MCP stdio | long-lived private workers over a Node IPC channel |
+| evidence | formatted text, preserved as opaque blocks | canonical anchors with UTF-8 byte spans plus the backend's own native id |
+| external installs on the query path | `zg`, `codegraph`, `serena` must be installed | none |
+
+Rolling back is unsetting one environment variable. It migrates nothing: both engines call the same index-manager, so the derived indexes under `.zvec-grep/` and `.codegraph/` keep the same layout and the same owner. `node src/cli.js doctor` reports the active mode and the vendored pins.
+
+```bash
+PATH="$(brew --prefix node@22)/bin:$PATH" npm run build          # build the vendored forks and the control plane
+npm run verify:vendor                                            # every vendored file still matches its UPSTREAM.json ledger
+npm run verify:release                                           # the release gate; writes docs/unified/release-evidence.json
+```
+
+### Why the source is vendored rather than depended on
+
+The published `@colbymchenry/codegraph` package contains no executable JavaScript. It is a thin installer around a per-platform bundle that carries its own Node runtime and can download a release archive from GitHub when that bundle is missing — a network install reachable from an ordinary invocation. Vendoring the pinned Git source removes that from the query path entirely.
+
+Both Node distributions were checked against their pinned commits rather than trusted: building each pinned tree locally reproduces the shipped output byte for byte (zvec-grep 390/390 files; CodeGraph 742/742 files in the platform bundle, including all 29 tree-sitter grammars and `db/schema.sql`). The method is recorded in `docs/unified/distribution-provenance.json`.
+
+Every vendored file is hashed in `vendor/<name>/UPSTREAM.json`. A file may differ from upstream only if the ledger declares the patch with its original and resulting blob hashes, the reason, and the test that covers it. `npm run verify:vendor` fails on anything else, including an undeclared new file.
+
+### What the unified engine does not claim
+
+- Single-parse convergence is enabled only for the languages marked `converged: true` in `docs/unified/parser-convergence.json`. Every other language keeps its existing extractor.
+- Semantic reads cover `symbol` and `references`. `implementations` and `diagnostics` return `unsupported_capability` rather than a substituted answer from a file overview.
+- A retrieval read cannot be cancelled cooperatively: the upstream `context()` API takes no `AbortSignal`. A cancelled caller is released immediately, its job is abandoned, and its eventual answer is discarded — the supervisor recycles the worker when too many jobs pile up. Nothing pretends the call aborted.
+- Python is still part of the product. It is the semantic worker's runtime, owned internally rather than provisioned by the user.
+
 ## Autonomous indexing
 
 With the default configuration:
@@ -157,7 +191,7 @@ Optional: `LAZY_INTEL_ROOT` pins the bootstrap root, `LAZY_INTEL_EMBEDDING` over
 
 The agent home (`OMP_HOME`, default `~/.omp`) and the zvec-grep home (`ZVEC_GREP_HOME`, default `~/.zvec-grep`) are never indexed. They are agent private state — session transcripts, blobs, logs, SQLite WALs — that the running harness rewrites continuously, so a watcher rooted there never settles and every sync re-embeds files that are still being appended to.
 
-The match is on the exact directory, never a prefix, so a real repository nested inside one — such as `~/.omp/agent` — is still indexed normally. Automatic bootstrap skips a denied root silently; an explicit `code_intel` call against one fails with the reason instead of quietly indexing it. `LAZY_INTEL_DENY_ROOTS` adds further directories, separated by the platform path delimiter.
+The deny covers the **whole tree**, not just the exact directory. The harness keeps a real git repository at `~/.omp/agent` holding rules, memories, skills and session databases; an exact-match deny indexed it like any other project and embedded precisely the private state this rule exists to protect. The home directory itself is refused as a root as well, so a session started from `~` cannot index every repository and credential file on the machine — its descendants stay indexable. Automatic bootstrap skips a denied root silently; an explicit `code_intel` call against one fails with the reason instead of quietly indexing it. `LAZY_INTEL_DENY_ROOTS` adds further trees, separated by the platform path delimiter.
 
 ## Pinned upstreams (2026-09-08)
 

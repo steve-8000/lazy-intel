@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "unit": "U00",
+  "generated_at": "2026-09-21T07:17:57.120Z",
+  "question": "Is the installed npm/PyPI distribution byte-equivalent to the pinned Git tag source, and may lazy-intel treat the distribution as the fork source?",
+  "answer": "The executable payload of both Node distributions is byte-reproducible from the pinned Git commits (measured). The CodeGraph *root npm package* is still not a build of the tag: it is a thin installer around a per-platform bundle, with a GitHub Releases download fallback. The fork is therefore taken from the pinned Git checkout, which is exactly the source those bundles were built from.",
+  "distributions": {
+    "@zvec/zvec-grep@0.2.1": {
+      "pinned_commit": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+      "registry_tarball": "https://registry.npmjs.org/@zvec/zvec-grep/-/zvec-grep-0.2.1.tgz",
+      "registry_integrity": "sha512-trVTNazVGbF5IDr6r7tKzfsuXArhxLRUCD1R3lVdPt9VppwldJ5OjUkjVBqXUMO2/3zZ5Wefl0+34X0TWG8KkQ==",
+      "registry_gitHead": null,
+      "gitHead_note": "The registry record carries no gitHead, so the registry itself does not assert a source commit.",
+      "published_layout": {
+        "files": [
+          "README.md",
+          "README_CN.md",
+          "LICENSE",
+          "docs",
+          "dist"
+        ],
+        "main_exports": {
+          ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+          }
+        },
+        "bin": {
+          "zg": "dist/cli/index.js"
+        }
+      },
+      "tag_layout": {
+        "files": [
+          "README.md",
+          "README_CN.md",
+          "LICENSE",
+          "docs",
+          "dist"
+        ],
+        "exports": {
+          ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+          }
+        },
+        "bin": {
+          "zg": "dist/cli/index.js"
+        },
+        "build": "tsc -p tsconfig.json",
+        "prepack": "npm run build"
+      },
+      "package_json_identical_fields": {
+        "exports": true,
+        "bin": true,
+        "license": true,
+        "dependencies": true
+      },
+      "verdict": "reproduced_byte_identical",
+      "evidence": "prepack runs `npm run build` = `tsc -p tsconfig.json` only; `files` publishes dist + docs + licence. dist/ contains only compiled JS/d.ts/maps, no vendored runtime and no prebuilt native code. A tsc build of the pinned commit should therefore reproduce dist/.",
+      "gate": "CLOSED in U02 by the measurement above.",
+      "reproducible_build_measured": {
+        "method": "npm ci then npm run build (tsc -p tsconfig.json) in vendor/zvec-grep on Node v22.22.3, then sha256 of every file in dist/ against node_modules/@zvec/zvec-grep/dist/",
+        "files_built": 390,
+        "files_published": 390,
+        "identical": 390,
+        "differing": 0,
+        "only_in_build": 0,
+        "only_in_published": 0,
+        "conclusion": "All 390 published dist files are byte-identical to a local build of the pinned commit. The npm distribution is a faithful build of 309a6699 even though the registry record carries no gitHead."
+      }
+    },
+    "@colbymchenry/codegraph@1.6.0": {
+      "pinned_commit": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+      "registry_tarball": "https://registry.npmjs.org/@colbymchenry/codegraph/-/codegraph-1.6.0.tgz",
+      "registry_integrity": "sha512-nCN40MqmYxF7gH1QTKqlxJ1d2mzwhw3fzSdGV2wjnQKsymjM3JZnH/5rpGqhBkcUEom0qWq0WjDRvOZh2t8mFA==",
+      "registry_gitHead": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+      "gitHead_note": "The registry asserts exactly the pinned commit, so the release was cut from this source tree.",
+      "published_layout": {
+        "main": "npm-sdk.js",
+        "bin": {
+          "codegraph": "npm-shim.js"
+        },
+        "exports": {
+          ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./npm-sdk.js"
+          },
+          "./package.json": "./package.json"
+        },
+        "files": [
+          "npm-shim.js",
+          "npm-sdk.js",
+          "dist",
+          "README.md"
+        ],
+        "optionalDependencies": [
+          "@colbymchenry/codegraph-darwin-arm64",
+          "@colbymchenry/codegraph-darwin-x64",
+          "@colbymchenry/codegraph-linux-arm64",
+          "@colbymchenry/codegraph-linux-x64",
+          "@colbymchenry/codegraph-win32-arm64",
+          "@colbymchenry/codegraph-win32-x64"
+        ]
+      },
+      "tag_layout": {
+        "main": "dist/index.js",
+        "bin": {
+          "codegraph": "./dist/bin/codegraph.js"
+        },
+        "files": [
+          "dist",
+          "scripts",
+          "README.md"
+        ],
+        "build": "tsc && npm run copy-assets && node -e \"require('fs').chmodSync('dist/bin/codegraph.js', 0o755)\""
+      },
+      "verdict": "published_package_is_NOT_a_plain_build_of_the_tag",
+      "findings": [
+        "The published root package.json is rewritten at release time: main becomes ./npm-sdk.js and bin becomes ./npm-shim.js, while the tag declares main dist/index.js and bin ./dist/bin/codegraph.js.",
+        "The published root `dist/` contains only .d.ts declarations. There is no executable JavaScript in the root package at all.",
+        "All executable code ships in the per-platform optionalDependency @colbymchenry/codegraph-<platform>-<arch>, which bundles a 120,573,328-byte vendored Node runtime plus lib/dist and lib/kernel.",
+        "npm-shim.js contains a GitHub Releases download fallback (CODEGRAPH_DOWNLOAD_BASE / CODEGRAPH_INSTALL_DIR, disabled by CODEGRAPH_NO_DOWNLOAD=1) that fires whenever the platform bundle cannot be resolved. That is a network install reachable from ordinary invocation."
+      ],
+      "asset_parity_measured": {
+        "method": "sha256 of every tree-sitter grammar and the SQL schema, pinned checkout src/ versus the installed platform bundle lib/dist/",
+        "wasm_files_compared": 29,
+        "wasm_identical": 29,
+        "wasm_differing": 0,
+        "src/db/schema.sql": "identical",
+        "bundle_inner_package_json_matches_tag": {
+          "main": true,
+          "bin": true,
+          "dependencies": true,
+          "engines": true
+        },
+        "conclusion": "The platform bundle is a build of this tag: its inner package.json equals the tag's and every copy-assets artefact is byte-identical. JavaScript byte parity is still unproven because no reproducible tsc build was run."
+      },
+      "consequences_for_lazy_intel": [
+        "vendor/codegraph MUST be imported from the pinned Git checkout. The npm root package has no source to fork.",
+        "The current runtime dependency @colbymchenry/codegraph@1.6.0 executes on a vendored Node 24, not on the host Node. Moving CodeGraph in-process changes its runtime; node:sqlite availability on the host Node must be proven in U03.",
+        "The shim's release-download fallback must be unreachable once vendored. U09 must prove an offline cold start."
+      ],
+      "gate": "CLOSED in U02 for the executable payload. The wrapper remains out-of-tree by design and is dropped by vendoring.",
+      "reproducible_build_measured": {
+        "method": "npm ci then npm run build (tsc + copy-assets) in vendor/codegraph on Node v22.22.3, then sha256 of every file in dist/ against node_modules/@colbymchenry/codegraph-darwin-arm64/lib/dist/",
+        "files_built": 742,
+        "files_published": 742,
+        "identical": 742,
+        "differing": 0,
+        "only_in_build": 0,
+        "only_in_published": 0,
+        "conclusion": "All 742 files of the platform bundle's lib/dist are byte-identical to a local build of the pinned commit. The executable payload is exactly this source; only the packaging wrapper (npm-shim.js, npm-sdk.js, the vendored Node runtime and the rewritten root package.json) has no counterpart in the tag."
+      }
+    },
+    "serena-agent@1.7.0": {
+      "pinned_commit": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+      "verdict": "not_evaluated_no_python_environment",
+      "evidence": "lazy-intel does not install serena-agent from PyPI today; src/backends/serena.js speaks MCP stdio to an externally provisioned Serena (src/backends/serena.js:1-6, StdioMcpClient + resolveBin).",
+      "gate": "U05 pins the exact interpreter and the real import closure of the private semantic worker; only then is a distribution comparison meaningful."
+    }
+  },
+  "rules_upheld": [
+    "No tag, semver range, or published tarball was substituted for a pinned commit.",
+    "Pinned tag source is not treated as proof of package byte equivalence."
+  ]
+}

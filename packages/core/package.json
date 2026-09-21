@@ -1,0 +1,29 @@
+{
+  "name": "@lazy-intel/core",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Internal control plane for lazy-intel: typed contracts, worker supervision and the retrieval/graph/semantic adapters over the vendored forks.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./contracts": {
+      "types": "./dist/contracts.d.ts",
+      "import": "./dist/contracts.js"
+    }
+  },
+  "engines": {
+    "node": ">=22.5 <25"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.7.0"
+  }
+}

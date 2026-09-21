@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "unit": "U09",
+  "generated_at": "2026-09-21T09:02:00.900Z",
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.22.3"
+  },
+  "status": "PASS",
+  "required_failures": [],
+  "blocked": [],
+  "gates": [
+    {
+      "id": "runtime",
+      "title": "Gates run on the declared Node runtime",
+      "required": true,
+      "status": "PASS",
+      "detail": "engines.node=>=22.5 <25 running=v22.22.3"
+    },
+    {
+      "id": "pin-agreement",
+      "title": "upstreams.lock.json agrees with every vendor ledger",
+      "required": true,
+      "status": "PASS",
+      "detail": "{\"zvec-grep\":{\"lock\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"ledger\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"patchRevision\":1},\"codegraph\":{\"lock\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"ledger\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"patchRevision\":3},\"serena\":{\"lock\":\"949a27ef1e5fda1a6e7b561e777bcece345c6ffd\",\"ledger\":\"949a27ef1e5fda1a6e7b561e777bcece345c6ffd\",\"patchRevision\":0}}",
+      "pins": {
+        "zvec-grep": {
+          "lock": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+          "ledger": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+          "patchRevision": 1
+        },
+        "codegraph": {
+          "lock": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+          "ledger": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+          "patchRevision": 3
+        },
+        "serena": {
+          "lock": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+          "ledger": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+          "patchRevision": 0
+        }
+      }
+    },
+    {
+      "id": "vendor-integrity",
+      "title": "Vendored trees match their UPSTREAM.json ledgers",
+      "required": true,
+      "status": "PASS",
+      "detail": "codegraph@dfccdf62547f 830/833 verbatim, 3 declared patches; serena@949a27ef1e5f 1048/1048 verbatim, 0 declared patches; zvec-grep@309a66995809 367/369 verbatim, 2 declared patches",
+      "vendors": [
+        {
+          "vendor": "codegraph",
+          "commit": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+          "files": 833,
+          "verbatim": 830,
+          "patched": [
+            "src/context/index.ts",
+            "src/extraction/index.ts",
+            "src/index.ts"
+          ]
+        },
+        {
+          "vendor": "serena",
+          "commit": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+          "files": 1048,
+          "verbatim": 1048,
+          "patched": []
+        },
+        {
+          "vendor": "zvec-grep",
+          "commit": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+          "files": 369,
+          "verbatim": 367,
+          "patched": [
+            "src/engine/pipeline/indexing/index.ts",
+            "src/engine/service/workspace-index.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "title": "npm run build reproduces every target from source",
+      "required": true,
+      "status": "PASS",
+      "detail": "core:ok zvec-grep:ok codegraph:ok",
+      "targets": [
+        {
+          "target": "core",
+          "status": "ok",
+          "outputs": [
+            "dist/contracts.js",
+            "dist/index.js"
+          ]
+        },
+        {
+          "target": "zvec-grep",
+          "status": "ok",
+          "outputs": [
+            "dist/index.js",
+            "dist/lazy-entry.js"
+          ]
+        },
+        {
+          "target": "codegraph",
+          "status": "ok",
+          "outputs": [
+            "dist/index.js",
+            "dist/lazy-entry.js",
+            "dist/db/schema.sql",
+            "dist/extraction/wasm/tree-sitter-typescript.wasm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "no-query-time-install",
+      "title": "No installer, updater or telemetry module is reachable from a fork entry",
+      "required": true,
+      "status": "PASS",
+      "detail": "headless-entries contract test passed"
+    },
+    {
+      "id": "tests",
+      "title": "The full test suite passes",
+      "required": true,
+      "status": "PASS",
+      "detail": "{\"tests\":104,\"pass\":103,\"fail\":0,\"skipped\":1}",
+      "counts": {
+        "tests": 104,
+        "pass": 103,
+        "fail": 0,
+        "skipped": 1
+      }
+    },
+    {
+      "id": "unified-query",
+      "title": "The unified engine answers a real query end to end",
+      "required": true,
+      "status": "PASS",
+      "detail": "status=ok anchored=3 opaque=0 coldMs=5849",
+      "measurement": {
+        "status": "ok",
+        "isError": false,
+        "backends": [
+          {
+            "backend": "zvec",
+            "ok": true,
+            "outcome": "ok",
+            "latencyMs": 5825
+          }
+        ],
+        "anchored": 3,
+        "opaque": 0,
+        "coldMs": 5849
+      }
+    },
+    {
+      "id": "rollback-switch",
+      "title": "Engine selection is one reversible environment variable",
+      "required": true,
+      "status": "PASS",
+      "detail": "unset=legacy unified=unified"
+    },
+    {
+      "id": "parser-convergence",
+      "title": "Single-parse convergence is claimed only where measured",
+      "required": false,
+      "status": "PASS",
+      "detail": "3 converged languages, each with parity evidence",
+      "languages": {
+        "javascript": {
+          "converged": true,
+          "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
+          "reason": null
+        },
+        "typescript": {
+          "converged": true,
+          "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
+          "reason": null
+        },
+        "python": {
+          "converged": true,
+          "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
+          "reason": null
+        },
+        "tsx": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "jsx": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "go": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "rust": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "java": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "c": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "cpp": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "csharp": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "php": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "ruby": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "swift": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "kotlin": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "dart": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "svelte": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Not attempted in this corpus; remains on its existing extractor."
+        },
+        "markdown": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Retrieval-only content; no CodeGraph parser convergence claim."
+        },
+        "text": {
+          "converged": false,
+          "evidence": null,
+          "reason": "Retrieval-only content; no CodeGraph parser convergence claim."
+        }
+      }
+    },
+    {
+      "id": "semantic",
+      "title": "The private semantic worker is exercised",
+      "required": false,
+      "status": "PASS",
+      "detail": "semantic adapter contract test passed"
+    }
+  ],
+  "digest": "ea08b41be89abd3079f9e9ed6c34fa729176cb9e8496a3f7efa816a3aff0f452"
+}

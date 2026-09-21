@@ -2,6 +2,26 @@ import { spawn } from "node:child_process";
 import readline from "node:readline";
 import { log } from "../lib/log.js";
 
+
+export const SUPPORTED_PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26"];
+
+export class McpRpcError extends Error {
+  constructor(message, code, data) {
+    super(message);
+    this.name = "McpRpcError";
+    this.code = code;
+    this.data = data;
+  }
+}
+
+export class McpRequestTimeoutError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "McpRequestTimeoutError";
+        this.code = "TIMEOUT";
+  }
+}
+
 export class StdioMcpClient {
   constructor(command, args, options = {}) {
     this.command = command;
@@ -13,6 +33,7 @@ export class StdioMcpClient {
     this.nextId = 1;
     this.pending = new Map();
     this.closed = false;
+    this.protocolVersion = null;
   }
 
   async start() {
@@ -29,17 +50,24 @@ export class StdioMcpClient {
     const rl = readline.createInterface({ input: this.child.stdout, crlfDelay: Infinity });
     rl.on("line", (line) => this.#onLine(line));
 
-    await this.request("initialize", {
-      protocolVersion: "2025-03-26",
+    const initialize = await this.request("initialize", {
+      protocolVersion: SUPPORTED_PROTOCOL_VERSIONS[0],
       capabilities: {},
-      clientInfo: { name: "lazy-intel", version: "0.2.0" },
+      clientInfo: { name: "lazy-intel", version: "0.3.0" },
     });
+    if (!SUPPORTED_PROTOCOL_VERSIONS.includes(initialize?.protocolVersion)) {
+      const error = new McpRpcError(`Unsupported negotiated protocol version: ${initialize?.protocolVersion ?? "missing"}`, "UNSUPPORTED_VERSION", { protocolVersion: initialize?.protocolVersion });
+      this.#closeAll(error);
+      this.child?.kill("SIGTERM");
+      throw error;
+    }
+    this.protocolVersion = initialize.protocolVersion;
     this.notify("notifications/initialized", {});
     return this;
   }
 
   request(method, params = {}, { signal, timeoutMs = this.timeoutMs } = {}) {
-    if (signal?.aborted) return Promise.reject(signal.reason);
+    if (method !== "initialize" && signal?.aborted) return Promise.reject(signal.reason);
     if (this.closed) return Promise.reject(new Error(`${this.name} is closed`));
     const id = this.nextId++;
     const message = { jsonrpc: "2.0", id, method, params };
@@ -53,7 +81,6 @@ export class StdioMcpClient {
       const cancel = (error) => {
         if (!this.pending.has(id)) return;
         cleanup();
-        // MCP initialize is not cancellable. Notification failure must not hide the abort.
         if (method !== "initialize") {
           try { this.notify("notifications/cancelled", { requestId: id }); } catch {}
         }
@@ -64,14 +91,18 @@ export class StdioMcpClient {
         resolve: (result) => { cleanup(); resolve(result); },
         reject: (error) => { cleanup(); reject(error); },
       });
-      signal?.addEventListener("abort", onAbort, { once: true });
-      timer = timeoutMs > 0 ? setTimeout(() => cancel(new Error(`${this.name} MCP timeout: ${method}`)), timeoutMs) : null;
+            if (method !== "initialize") signal?.addEventListener("abort", onAbort, { once: true });
+      timer = timeoutMs > 0 && method !== "initialize"
+        ? setTimeout(() => cancel(new McpRequestTimeoutError(`${this.name} MCP timeout: ${method}`)), timeoutMs)
+        : null;
       timer?.unref();
       try {
         this.child.stdin.write(`${JSON.stringify(message)}\n`, (error) => {
-          if (error) this.pending.get(id)?.reject(error);
+          if (error) this.#closeAll(error);
         });
-      } catch (error) { this.pending.get(id)?.reject(error); }
+      } catch (error) {
+        this.#closeAll(error);
+      }
     });
   }
 
@@ -89,9 +120,8 @@ export class StdioMcpClient {
 
   close() {
     if (this.closed) return;
-    this.closed = true;
-    this.child?.kill("SIGTERM");
     this.#closeAll(new Error(`${this.name} closed`));
+    this.child?.kill("SIGTERM");
   }
 
   #onLine(line) {
@@ -106,16 +136,14 @@ export class StdioMcpClient {
     const pending = this.pending.get(msg.id);
     if (!pending) return;
     this.pending.delete(msg.id);
-    if (msg.error) pending.reject(new Error(`${this.name}: ${msg.error.message ?? JSON.stringify(msg.error)}`));
+    if (msg.error) pending.reject(new McpRpcError(`${this.name}: ${msg.error.message ?? JSON.stringify(msg.error)}`, msg.error.code, msg.error.data));
     else pending.resolve(msg.result);
   }
 
   #closeAll(error) {
     if (this.closed && this.pending.size === 0) return;
     this.closed = true;
-    for (const { reject } of this.pending.values()) {
-      reject(error);
-    }
+    for (const { reject } of this.pending.values()) reject(error);
     this.pending.clear();
   }
 }

@@ -1,0 +1,29 @@
+{
+  "unit": "U04",
+  "title": "Workspace scope, storage paths and single lifecycle owner",
+  "status": "complete",
+  "newPaths": [
+    "packages/core/src/workspace/runtime.ts",
+    "packages/core/src/workspace/journal.ts",
+    "packages/core/src/workspace/snapshots.ts",
+    "packages/core/src/evidence/identity.ts",
+    "test/contracts/workspace-scope.test.js"
+  ],
+  "tests": [
+    {
+      "name": "test/contracts/workspace-scope.test.js",
+      "status": "pass",
+      "detail": "sourceRoot/stateRoot separation, cross-process lock refusal, dead-holder reclaim, canonical alias collapse"
+    }
+  ],
+  "findings": [
+    "Ownership is enforced across processes by an on-disk lock carrying the holder pid with a liveness check, not only in memory.",
+    "Canonical aliases (symlinks, macOS /var versus /private/var) resolve to one owner.",
+    "Construction starts no watcher and no auto-index."
+  ],
+  "knownLimitations": [
+    "The runtime is implemented and tested but is not yet the gate in front of the derived indexes; src/index-manager.js remains the lifecycle owner on the query path in both engine modes, which is what keeps the two readers from racing."
+  ],
+  "rollback": "The module is not on the default query path; removing it changes no behaviour.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

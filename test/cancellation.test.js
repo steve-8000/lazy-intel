@@ -15,7 +15,7 @@ readline.createInterface({input:process.stdin}).on('line', line => {
  const m=JSON.parse(line), name=m.params?.arguments?.name_path_pattern ?? m.params?.name;
  if(m.method==='notifications/cancelled') { cancelled.push(m.params.requestId);active.delete(m.params.requestId);return; }
  if(m.id == null) return;
- if(m.method==='initialize') return send(m.id,{});
+ if(m.method==='initialize') return send(m.id,{protocolVersion:'2025-06-18'});
  if(m.method==='tools/list') return send(m.id,{tools:['find_symbol','find_referencing_symbols','find_implementations','get_symbols_overview','get_diagnostics_for_file'].map(name=>({name}))});
  if(name==='slow') { active.add(m.id);for(const id of waiting.splice(0))send(id,text({pid:process.pid,active:[...active]}));return; }
  if(name==='await-started' && !active.size) {waiting.push(m.id);return;}
@@ -65,7 +65,11 @@ test("engine cancellation reaches Serena without retrying or replacing a shared 
   const startedResult = await codeIntel(query("await-started"));
   const started = JSON.parse(startedResult.text.match(/\{"pid"[^\n]+/)[0]);
   controller.abort();
-  assert.equal((await pending).name, "AbortError");
+  // Peer cancellation is now a distinct, typed cause: an AbortError name alone never
+  // proved the client cancelled, so the engine reports the reason it actually observed.
+  const cancelled = await pending;
+  assert.equal(cancelled.name, "RequestCancelledError");
+  assert.equal(cancelled.code, "CANCELLED");
   const result = await codeIntel(query("state"));
   const state = JSON.parse(result.text.match(/\{"pid"[^\n]+/)[0]);
   assert.equal(state.pid, started.pid);

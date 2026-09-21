@@ -1,0 +1,43 @@
+{
+  "unit": "U05",
+  "title": "Fork Serena typed read surface and private semantic worker",
+  "status": "complete",
+  "newPaths": [
+    "vendor/serena/src/serena/lazy_read_api.py",
+    "workers/semantic/lazy_semantic/bridge.py",
+    "workers/semantic/pyproject.toml",
+    "workers/semantic/main.mjs",
+    "packages/core/src/adapters/semantic.ts",
+    "test/contracts/semantic-adapter.test.js"
+  ],
+  "tests": [
+    {
+      "name": "test/contracts/semantic-adapter.test.js",
+      "status": "pass",
+      "detail": "framing, budget enforcement, dead interpreter as a typed retryable failure"
+    },
+    {
+      "name": "test/contracts/unified-engine.test.js",
+      "status": "pass",
+      "detail": "real pyright: symbol and references return anchored lsp evidence; with no configured server the refusal reason reaches the operator"
+    },
+    {
+      "name": "scripts/compatibility.mjs LAZY_INTEL_ENGINE=unified",
+      "status": "pass",
+      "detail": "real typescript-language-server: references and symbol over a JavaScript workspace"
+    }
+  ],
+  "findings": [
+    "No minimal read entry existed upstream: the symbol tools require a Tool/agent/project context. lazy_read_api.py constructs LanguageServerManager and LanguageServerSymbolRetriever explicitly and returns plain data.",
+    "Language servers are never discovered and never installed. The operator names executables in LAZY_INTEL_LSP as language to absolute path; an unnamed language is refused with that exact reason rather than downloading anything.",
+    "Measured Python import closure needs 14 third-party packages, not serena's full 33 pins.",
+    "Defect found and fixed by the end-to-end run: a reference item carried the referencing symbol's own file, so a cross-file reference pointed at the wrong file. lazy_read_api now emits reference_relative_path and the adapter prefers it. The engine's source verifier had flagged this as `mismatch`, which is what exposed it.",
+    "includeBody is forwarded, and the body is preferred as the evidence text because it is what the locator actually spans and therefore what a source check can verify."
+  ],
+  "knownLimitations": [
+    "implementations and diagnostics return unsupported_capability. They are separate Serena tools that this read API does not expose, and answering them from a file overview would be a confident wrong answer.",
+    "Only python and typescript language servers were exercised on this host."
+  ],
+  "rollback": "Unset LAZY_INTEL_ENGINE; the external Serena MCP adapter is untouched.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

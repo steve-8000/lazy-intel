@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "unit": "U09",
+  "generated_at": "2026-09-21T08:21:03.969Z",
+  "summary": "The unified engine is built, tested and selectable. It is not yet the default: LAZY_INTEL_ENGINE must be set to `unified`. Rollback is unsetting that variable, which needs no state migration because the two readers share one derived-state owner.",
+  "engine_modes": {
+    "legacy": {
+      "selector": "LAZY_INTEL_ENGINE unset or any value other than `unified`",
+      "reader": "src/backends/{zvec,codegraph,serena}.js",
+      "transport": "zg and codegraph CLI subprocesses plus an externally provisioned Serena MCP server over stdio",
+      "evidence_quality": "retrieval and graph results arrive as formatted text and are preserved as opaque blocks; no locator may be derived from them",
+      "status": "default"
+    },
+    "unified": {
+      "selector": "LAZY_INTEL_ENGINE=unified",
+      "reader": "src/unified.js over packages/core adapters",
+      "transport": "long-lived private worker processes loading the vendored fork libraries over a Node IPC channel",
+      "evidence_quality": "retrieval, graph and semantic results carry canonical anchors with UTF-8 byte spans and the backend's own native id",
+      "status": "selectable, verified by scripts/verify-release.mjs"
+    }
+  },
+  "state_compatibility": {
+    "derived_indexes": "Unchanged. Both readers call ensureIndexes in src/index-manager.js, so .zvec-grep/ and .codegraph/ keep the same layout, the same owner and the same leases. Switching modes migrates nothing and invalidates nothing.",
+    "new_state": "packages/core/src/workspace writes under a .lazy-intel state root. Nothing on the default query path writes there yet; it is exercised by test/contracts/workspace-scope.test.js and test/faults/publication.test.js.",
+    "external_backends": "In unified mode the external `zg`, `codegraph` and `serena` executables are not invoked on the query path. They remain installed and are still used by the legacy reader, which is what makes rollback instant."
+  },
+  "rollback": {
+    "procedure": [
+      "Unset LAZY_INTEL_ENGINE (or set it to `legacy`) and restart the MCP server.",
+      "No index rebuild, no state deletion and no downgrade of a database is required.",
+      "Confirm with `node src/cli.js doctor`: the `engine` row reports the active mode and the legacy rows reappear."
+    ],
+    "verified_by": "scripts/verify-release.mjs gate `rollback-switch`, which asserts the selector resolves to `legacy` when unset and `unified` when set."
+  },
+  "not_yet_migrated": [
+    "The unified reader is not the default. Flipping the default is a separate, deliberate release decision.",
+    "The workspace publication layer is implemented and tested but is not yet the gate in front of the derived indexes; the index-manager still owns readiness.",
+    "Single-parse convergence is enabled only for the languages in docs/unified/parser-convergence.json with `converged: true`. Every other language keeps its existing extractor.",
+    "Semantic reads cover `symbol` and `references`. `implementations` and `diagnostics` return unsupported_capability rather than a substituted answer."
+  ]
+}

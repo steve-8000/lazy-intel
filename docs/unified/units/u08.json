@@ -1,0 +1,38 @@
+{
+  "unit": "U08",
+  "title": "Fixed plans, source-qualified evidence and MCP compatibility",
+  "status": "complete",
+  "newPaths": [
+    "src/unified.js",
+    "test/contracts/unified-engine.test.js"
+  ],
+  "changedPaths": [
+    "src/engine.js",
+    "src/mcp/server.js",
+    "src/admin.js",
+    "scripts/compatibility.mjs"
+  ],
+  "tests": [
+    {
+      "name": "test/contracts/unified-engine.test.js",
+      "status": "pass",
+      "detail": "6/6: byte-span to line conversion including multi-byte text; method and kind narrowing onto the product enum; a real search returning anchored evidence; the language-server refusal reason; anchored semantic evidence with a configured server"
+    },
+    {
+      "name": "scripts/compatibility.mjs (both modes)",
+      "status": "pass",
+      "detail": "search, architecture, impact, references, symbol, restart and warm search over one code_intel tool in legacy and in unified mode"
+    }
+  ],
+  "findings": [
+    "One MCP tool, one response schema, existing metadata keys intact. Neither reader is visible to the caller.",
+    "Byte spans are authoritative and lines are derived by counting newlines; when a file cannot be read the evidence keeps its text and loses its locator rather than carrying a guessed line.",
+    "The control plane's six evidence methods narrow onto the product's three without inventing a stronger claim: a lexical hit never becomes an LSP fact.",
+    "Measured on the same two-file workspace and the same model, warm search went from 1812 ms (legacy) to 216 ms (unified); first search 7972 ms to 6284 ms; restart-first 2607 ms to 1889 ms. One sample each, not a benchmark distribution."
+  ],
+  "knownLimitations": [
+    "The unified reader is selectable, not default."
+  ],
+  "rollback": "Unset LAZY_INTEL_ENGINE and restart. No state migration.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

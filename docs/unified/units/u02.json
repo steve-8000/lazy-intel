@@ -1,0 +1,96 @@
+{
+  "unit": "U02",
+  "title": "Import source snapshots and define headless fork entries",
+  "status": "complete",
+  "baselineSourceIds": [
+    "Z01",
+    "Z03",
+    "Z16",
+    "Z17",
+    "C01",
+    "C07",
+    "C08",
+    "S01",
+    "C09"
+  ],
+  "changedPaths": [
+    "package.json",
+    "THIRD_PARTY_NOTICES.md",
+    "upstreams.lock.json",
+    ".gitignore",
+    "vendor/codegraph/src/index.ts"
+  ],
+  "newPaths": [
+    "vendor/zvec-grep/** (369 files @ 309a6699)",
+    "vendor/codegraph/** (833 files @ dfccdf62)",
+    "vendor/serena/** (1048 files @ 949a27ef)",
+    "vendor/*/UPSTREAM.json",
+    "vendor/zvec-grep/src/lazy-entry.ts",
+    "vendor/codegraph/src/lazy-entry.ts",
+    "packages/core/package.json",
+    "packages/core/tsconfig.json",
+    "packages/core/src/contracts.ts",
+    "packages/core/src/index.ts",
+    "packages/core/src/runtime/protocol.ts",
+    "packages/core/src/runtime/supervisor.ts",
+    "packages/core/src/runtime/worker-client.ts",
+    "scripts/build-unified.mjs",
+    "scripts/verify-vendor.mjs",
+    "test/contracts/headless-entries.test.js"
+  ],
+  "contractChanges": [
+    "packages/core/src/contracts.ts is now the owned internal contract (seeded from the design package's proposal).",
+    "packages/core/src/runtime/protocol.ts defines the parent<->worker wire, protocol version 1, 8 MiB message ceiling."
+  ],
+  "commands": [
+    {
+      "cmd": "git archive HEAD | tar -x  (per vendor)",
+      "exit": 0
+    },
+    {
+      "cmd": "per-file git blob sha comparison against the pinned trees",
+      "exit": 0,
+      "note": "369/369, 833/833, 1048/1048 byte-identical"
+    },
+    {
+      "cmd": "npm ci && npm run build in vendor/zvec-grep and vendor/codegraph (Node v22.22.3)",
+      "exit": 0
+    },
+    {
+      "cmd": "sha256 of built dist vs published dist",
+      "exit": 0,
+      "note": "zvec 390/390 identical; codegraph 742/742 identical against the platform bundle lib/dist"
+    },
+    {
+      "cmd": "node scripts/build-unified.mjs --clean",
+      "exit": 0
+    },
+    {
+      "cmd": "node scripts/verify-vendor.mjs",
+      "exit": 0,
+      "note": "PASS with 1 declared patch"
+    },
+    {
+      "cmd": "node --test test/contracts/headless-entries.test.js",
+      "exit": 0,
+      "note": "5/5 pass"
+    }
+  ],
+  "tests": [
+    {
+      "name": "test/contracts/headless-entries.test.js",
+      "status": "pass",
+      "detail": "forbidden-subtree reachability, no started resources on import, exported surface, ledger parity"
+    }
+  ],
+  "findings": [
+    "Both published Node distributions are byte-reproducible from the pinned commits. This closes the tag-source vs package-parity gate that U00 left open.",
+    "One local patch was required to satisfy the headless exit condition: upstream vendor/codegraph/src/index.ts:96 re-exported MCPServer from './mcp', which made src/upgrade/update-check (a background GitHub update probe reached from src/mcp/index.ts:53) and src/telemetry reachable from the library entry. Removed; the only in-tree consumer, src/bin/codegraph.ts:1867, uses a dynamic import and is unaffected.",
+    "Deliberately NOT an npm workspace. Hoisting would resolve zvec-grep and CodeGraph onto one dependency set and invalidate their pinned locks. One command, one ordering, three independent node_modules."
+  ],
+  "knownLimitations": [
+    "vendor/codegraph/dist/lazy-entry.js still reaches mcp/version.js, a leaf that only reads package.json for the version string. The test pins that exact module and forbids every other MCP module.",
+    "vendor/serena is imported and verified but not yet built or exercised; that is U05."
+  ],
+  "rollback": "Remove vendor/, packages/core/, scripts/build-unified.mjs, scripts/verify-vendor.mjs and revert the four modified root files. The existing CLI/MCP query path is untouched by this unit and keeps working."
+}

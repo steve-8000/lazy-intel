@@ -1,0 +1,36 @@
+{
+  "unit": "U09",
+  "title": "Real integration, activation and rollback",
+  "status": "complete",
+  "newPaths": [
+    "scripts/verify-release.mjs",
+    "docs/unified/release-evidence.json",
+    "docs/unified/migration-state.json"
+  ],
+  "changedPaths": [
+    "package.json",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md",
+    "src/admin.js",
+    "scripts/compatibility.mjs"
+  ],
+  "tests": [
+    {
+      "name": "node scripts/verify-release.mjs",
+      "status": "pass",
+      "detail": "PASS: 8 required gates and 2 optional gates, all executed. 104 tests, 103 pass, 1 skipped, 0 fail."
+    }
+  ],
+  "findings": [
+    "Every gate runs a command and reads its exit status. A gate that cannot run reports blocked_environment and is never counted as a pass.",
+    "doctor reports the active engine, the vendored pins with their patch revisions, and whether the build is present; it probes the external CLIs only in legacy mode, where they are actually used.",
+    "Rollback is one environment variable and is asserted by a gate."
+  ],
+  "knownLimitations": [
+    "The unified reader is not the default. Flipping it is a separate release decision.",
+    "Not exercised: installing lazy-intel into a real OMP host in unified mode, and multi-root operation. Both need a host this session did not drive.",
+    "Language coverage is claimed only for python and typescript semantics and for javascript/typescript/python parser convergence."
+  ],
+  "rollback": "Unset LAZY_INTEL_ENGINE and restart. Derived indexes and their leases are shared by both readers and need no downgrade.",
+  "sourceCheckReport": "docs/unified/source-checks.json"
+}

@@ -1,26 +1,48 @@
 {
-  "generated": "2026-09-08",
+  "schema_version": 2,
+  "generated": "2026-09-21",
+  "purpose": "Immutable source pins for the vendored forks. This is not a dependency lockfile; each vendored tree keeps its own package-lock.json or uv.lock.",
+  "rules": [
+    "Never substitute main, latest, a semver range, or a tag alone for a commit.",
+    "A published package is never a substitute for the pinned source; see docs/unified/distribution-provenance.json.",
+    "Grammars, native binaries, model weights and LSP executables need their own release pins."
+  ],
   "upstreams": {
     "zvec-grep": {
       "repo": "https://github.com/zvec-ai/zvec-grep",
+      "commit": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+      "ref": "v0.2.1",
       "package": "@zvec/zvec-grep",
       "version": "0.2.1",
       "license": "Apache-2.0",
-      "role": "hybrid workspace retrieval"
+      "role": "hybrid workspace retrieval",
+      "vendor": "vendor/zvec-grep",
+      "ledger": "vendor/zvec-grep/UPSTREAM.json",
+      "distribution_parity": "reproduced_byte_identical"
     },
     "codegraph": {
       "repo": "https://github.com/colbymchenry/codegraph",
+      "commit": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+      "ref": "v1.6.0",
       "package": "@colbymchenry/codegraph",
       "version": "1.6.0",
       "license": "MIT",
-      "role": "architecture, call paths, impact"
+      "role": "architecture, call paths, impact",
+      "vendor": "vendor/codegraph",
+      "ledger": "vendor/codegraph/UPSTREAM.json",
+      "distribution_parity": "payload_reproduced_byte_identical; published root package is a thin installer, not a build of the tag"
     },
     "serena": {
       "repo": "https://github.com/oraios/serena",
+      "commit": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+      "ref": "v1.7.0",
       "package": "serena-agent",
       "version": "1.7.0",
       "license": "MIT",
-      "role": "LSP-backed symbol semantics"
+      "role": "LSP-backed symbol semantics",
+      "vendor": "vendor/serena",
+      "ledger": "vendor/serena/UPSTREAM.json",
+      "distribution_parity": "not_evaluated_no_python_environment"
     }
   }
 }

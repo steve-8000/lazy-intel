@@ -1,0 +1,16 @@
+{
+  "backend": "codegraph",
+  "case": "error",
+  "command": "/Users/steve/lazy-project/lazy-intel/node_modules/.bin/codegraph",
+  "args": [
+    "impact",
+    "MissingSymbol",
+    "--path",
+    "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-fixture-qUGNgM",
+    "--json"
+  ],
+  "code": 0,
+  "signal": null,
+  "stdout": "ℹ Symbol \"MissingSymbol\" not found\n",
+  "stderr": ""
+}

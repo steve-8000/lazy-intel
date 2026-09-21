@@ -1,0 +1,1251 @@
+{
+  "schema_version": 1,
+  "unit": "U00",
+  "generated_at": "2026-09-21T07:17:01.056Z",
+  "method": {
+    "node": "Direct read of every package.json under /Users/steve/lazy-project/lazy-intel/node_modules (the installed closure of the current lazy-intel dependencies @zvec/zvec-grep@0.2.1 and @colbymchenry/codegraph@1.6.0).",
+    "python": "Declared pins read from the pinned serena checkout pyproject.toml. No Python environment was resolved or installed, so transitive Python licences are NOT verified."
+  },
+  "retained_upstream_licences": {
+    "zvec-ai/zvec-grep@309a6699": {
+      "declared": "Apache-2.0",
+      "notice_file_required": true,
+      "source_license_path": "LICENSE"
+    },
+    "colbymchenry/codegraph@dfccdf62": {
+      "declared": "MIT",
+      "notice_file_required": true,
+      "source_license_path": "LICENSE"
+    },
+    "oraios/serena@949a27ef": {
+      "declared": "MIT",
+      "notice_file_required": true,
+      "source_license_path": "LICENSE"
+    },
+    "steve-8000/lazy-intel@485e0af": {
+      "declared": "MIT",
+      "notice_file_required": false,
+      "source_license_path": "LICENSE"
+    }
+  },
+  "node_closure": {
+    "package_count": 189,
+    "license_totals": {
+      "MIT": 139,
+      "Apache-2.0": 10,
+      "LGPL-3.0-or-later": 1,
+      "ISC": 17,
+      "BSD-3-Clause": 13,
+      "BlueOak-1.0.0": 6,
+      "(BSD-2-Clause OR MIT OR Apache-2.0)": 1,
+      "Unlicense": 1,
+      "(MIT OR CC0-1.0)": 1
+    },
+    "copyleft_present": [
+      "@img/sharp-libvips-darwin-arm64@1.2.4 :: LGPL-3.0-or-later"
+    ],
+    "undeclared": [],
+    "install_scripts": [
+      "@zvec/zvec@0.7.1",
+      "node-llama-cpp@3.18.1",
+      "onnxruntime-node@1.21.0",
+      "protobufjs@7.6.6",
+      "sharp@0.34.5"
+    ],
+    "packages": [
+      {
+        "name": "@colbymchenry/codegraph",
+        "version": "1.6.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@colbymchenry/codegraph-darwin-arm64",
+        "version": "1.6.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@hono/node-server",
+        "version": "1.19.17",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@huggingface/jinja",
+        "version": "0.5.10",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@huggingface/tokenizers",
+        "version": "0.1.3",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@huggingface/transformers",
+        "version": "3.8.1",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@img/colour",
+        "version": "1.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@img/sharp-darwin-arm64",
+        "version": "0.34.5",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@img/sharp-libvips-darwin-arm64",
+        "version": "1.2.4",
+        "license": "LGPL-3.0-or-later",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@isaacs/fs-minipass",
+        "version": "4.0.1",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@kwsites/file-exists",
+        "version": "1.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@kwsites/promise-deferred",
+        "version": "1.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@modelcontextprotocol/client",
+        "version": "2.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@modelcontextprotocol/core",
+        "version": "2.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@modelcontextprotocol/node",
+        "version": "2.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@modelcontextprotocol/server",
+        "version": "2.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@node-llama-cpp/mac-arm64-metal",
+        "version": "3.18.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/aspromise",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/base64",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/codegen",
+        "version": "2.0.5",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/eventemitter",
+        "version": "1.1.1",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/fetch",
+        "version": "1.1.1",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/float",
+        "version": "1.0.2",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/path",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/pool",
+        "version": "1.1.0",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@protobufjs/utf8",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@reflink/reflink",
+        "version": "0.1.19",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@reflink/reflink-darwin-arm64",
+        "version": "0.1.19",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@simple-git/args-pathspec",
+        "version": "1.0.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@simple-git/argv-parser",
+        "version": "1.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@tinyhttp/content-disposition",
+        "version": "2.2.4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@types/node",
+        "version": "26.5.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@vscode/ripgrep",
+        "version": "1.18.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@vscode/ripgrep-darwin-arm64",
+        "version": "1.18.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@zvec/bindings-darwin-arm64",
+        "version": "0.7.1",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "@zvec/zvec",
+        "version": "0.7.1",
+        "license": "Apache-2.0",
+        "hasInstallScript": true
+      },
+      {
+        "name": "@zvec/zvec-grep",
+        "version": "0.2.1",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-escapes",
+        "version": "6.2.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-regex",
+        "version": "5.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-regex",
+        "version": "6.3.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-regex",
+        "version": "5.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-regex",
+        "version": "5.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-styles",
+        "version": "4.3.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ansi-styles",
+        "version": "6.2.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "async-retry",
+        "version": "1.3.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "boolean",
+        "version": "3.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "bytes",
+        "version": "3.1.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "chalk",
+        "version": "5.6.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "chmodrp",
+        "version": "1.0.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "chownr",
+        "version": "3.0.0",
+        "license": "BlueOak-1.0.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ci-info",
+        "version": "4.4.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "cli-cursor",
+        "version": "5.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "cli-spinners",
+        "version": "3.4.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "cli-spinners",
+        "version": "2.9.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "cliui",
+        "version": "8.0.1",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "cmake-js",
+        "version": "8.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "color-convert",
+        "version": "2.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "color-name",
+        "version": "1.1.4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "commander",
+        "version": "10.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "cross-spawn",
+        "version": "7.0.6",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "debug",
+        "version": "4.4.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "deep-extend",
+        "version": "0.6.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "define-data-property",
+        "version": "1.1.4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "define-properties",
+        "version": "1.2.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "detect-libc",
+        "version": "2.1.2",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "detect-node",
+        "version": "2.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "emoji-regex",
+        "version": "10.6.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "emoji-regex",
+        "version": "8.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "env-var",
+        "version": "7.5.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "es-define-property",
+        "version": "1.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "es-errors",
+        "version": "1.3.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "es6-error",
+        "version": "4.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "escalade",
+        "version": "3.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "escape-string-regexp",
+        "version": "4.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "eventemitter3",
+        "version": "5.0.4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "eventsource",
+        "version": "3.0.7",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "eventsource-parser",
+        "version": "3.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "filename-reserved-regex",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "filenamify",
+        "version": "6.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "flatbuffers",
+        "version": "25.9.23",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "fs-extra",
+        "version": "11.4.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "get-caller-file",
+        "version": "2.0.5",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "get-east-asian-width",
+        "version": "1.6.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "global-agent",
+        "version": "3.0.0",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "globalthis",
+        "version": "1.0.4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "gopd",
+        "version": "1.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "graceful-fs",
+        "version": "4.2.11",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "guid-typescript",
+        "version": "1.0.9",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "has-property-descriptors",
+        "version": "1.0.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "hono",
+        "version": "4.13.7",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ignore",
+        "version": "7.0.9",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ini",
+        "version": "1.3.8",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ipull",
+        "version": "3.9.5",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "is-fullwidth-code-point",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "is-fullwidth-code-point",
+        "version": "5.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "is-fullwidth-code-point",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "is-fullwidth-code-point",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "is-interactive",
+        "version": "2.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "is-unicode-supported",
+        "version": "2.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "isexe",
+        "version": "4.0.0",
+        "license": "BlueOak-1.0.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "isexe",
+        "version": "4.0.0",
+        "license": "BlueOak-1.0.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "isexe",
+        "version": "2.0.0",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "jose",
+        "version": "6.2.12",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "json-stringify-safe",
+        "version": "5.0.1",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "jsonc-parser",
+        "version": "3.3.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "jsonfile",
+        "version": "6.2.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "lifecycle-utils",
+        "version": "2.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "lifecycle-utils",
+        "version": "3.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "lodash.debounce",
+        "version": "4.0.8",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "log-symbols",
+        "version": "7.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "long",
+        "version": "5.3.2",
+        "license": "Apache-2.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "lowdb",
+        "version": "7.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "matcher",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "mimic-function",
+        "version": "5.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "minimist",
+        "version": "1.2.8",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "minipass",
+        "version": "7.1.3",
+        "license": "BlueOak-1.0.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "minizlib",
+        "version": "3.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ms",
+        "version": "2.1.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "nanoid",
+        "version": "5.1.16",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "node-addon-api",
+        "version": "8.9.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "node-api-headers",
+        "version": "1.9.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "node-llama-cpp",
+        "version": "3.18.1",
+        "license": "MIT",
+        "hasInstallScript": true
+      },
+      {
+        "name": "object-keys",
+        "version": "1.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "onetime",
+        "version": "7.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "onnxruntime-common",
+        "version": "1.22.0-dev.20250409-89f8206ba4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "onnxruntime-common",
+        "version": "1.21.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "onnxruntime-node",
+        "version": "1.21.0",
+        "license": "MIT",
+        "hasInstallScript": true
+      },
+      {
+        "name": "onnxruntime-web",
+        "version": "1.22.0-dev.20250409-89f8206ba4",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "ora",
+        "version": "9.4.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "parse-ms",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "parse-ms",
+        "version": "4.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "path-key",
+        "version": "3.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "pkce-challenge",
+        "version": "5.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "platform",
+        "version": "1.3.6",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "pretty-bytes",
+        "version": "6.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "pretty-ms",
+        "version": "8.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "pretty-ms",
+        "version": "9.3.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "proper-lockfile",
+        "version": "4.1.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "protobufjs",
+        "version": "7.6.6",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": true
+      },
+      {
+        "name": "rc",
+        "version": "1.2.8",
+        "license": "(BSD-2-Clause OR MIT OR Apache-2.0)",
+        "hasInstallScript": false
+      },
+      {
+        "name": "require-directory",
+        "version": "2.1.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "restore-cursor",
+        "version": "5.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "retry",
+        "version": "0.13.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "retry",
+        "version": "0.12.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "roarr",
+        "version": "2.15.4",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "semver",
+        "version": "7.8.5",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "semver-compare",
+        "version": "1.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "serialize-error",
+        "version": "7.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "sharp",
+        "version": "0.34.5",
+        "license": "Apache-2.0",
+        "hasInstallScript": true
+      },
+      {
+        "name": "shebang-command",
+        "version": "2.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "shebang-regex",
+        "version": "3.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "signal-exit",
+        "version": "3.0.7",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "signal-exit",
+        "version": "4.1.0",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "simple-git",
+        "version": "3.36.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "sleep-promise",
+        "version": "9.1.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "slice-ansi",
+        "version": "7.1.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "slice-ansi",
+        "version": "8.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "sprintf-js",
+        "version": "1.1.3",
+        "license": "BSD-3-Clause",
+        "hasInstallScript": false
+      },
+      {
+        "name": "stdin-discarder",
+        "version": "0.3.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "stdout-update",
+        "version": "4.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "steno",
+        "version": "4.0.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "string-width",
+        "version": "4.2.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "string-width",
+        "version": "4.2.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "string-width",
+        "version": "4.2.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "string-width",
+        "version": "8.2.2",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "string-width",
+        "version": "7.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "strip-ansi",
+        "version": "7.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "strip-ansi",
+        "version": "6.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "strip-ansi",
+        "version": "6.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "strip-ansi",
+        "version": "6.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "strip-json-comments",
+        "version": "2.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "tar",
+        "version": "7.5.22",
+        "license": "BlueOak-1.0.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "tree-sitter-wasms",
+        "version": "0.1.13",
+        "license": "Unlicense",
+        "hasInstallScript": false
+      },
+      {
+        "name": "type-fest",
+        "version": "0.13.1",
+        "license": "(MIT OR CC0-1.0)",
+        "hasInstallScript": false
+      },
+      {
+        "name": "undici-types",
+        "version": "8.9.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "universalify",
+        "version": "2.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "url-join",
+        "version": "4.0.1",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "validate-npm-package-name",
+        "version": "7.0.2",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "web-tree-sitter",
+        "version": "0.20.8",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "which",
+        "version": "6.0.1",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "which",
+        "version": "6.0.1",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "which",
+        "version": "2.0.2",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "wrap-ansi",
+        "version": "7.0.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "y18n",
+        "version": "5.0.8",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "yallist",
+        "version": "5.0.0",
+        "license": "BlueOak-1.0.0",
+        "hasInstallScript": false
+      },
+      {
+        "name": "yargs",
+        "version": "17.7.3",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "yargs-parser",
+        "version": "21.1.1",
+        "license": "ISC",
+        "hasInstallScript": false
+      },
+      {
+        "name": "yoctocolors",
+        "version": "2.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      },
+      {
+        "name": "zod",
+        "version": "4.2.0",
+        "license": "MIT",
+        "hasInstallScript": false
+      }
+    ]
+  },
+  "python_declared_pins": {
+    "count": 33,
+    "pins": [
+      "requests==2.33.0",
+      "overrides==7.7.0",
+      "python-dotenv==1.2.2",
+      "mcp==1.28.1",
+      "flask==3.1.3",
+      "sensai-utils==1.5.0",
+      "pydantic==2.12.5",
+      "types-pyyaml==6.0.12.20250516",
+      "pyyaml==6.0.2",
+      "ruamel.yaml==0.18.14",
+      "jinja2==3.1.6",
+      "dotenv==0.9.9",
+      "pathspec==0.12.1",
+      "psutil==7.0.0",
+      "docstring_parser==0.17.0",
+      "joblib==1.5.1",
+      "tqdm==4.67.1",
+      "tiktoken==0.12.0",
+      "anthropic==0.117.0",
+      "beautifulsoup4==4.14.2",
+      "pywebview==6.2",
+      "pystray==0.19.5",
+      "pygls==2.1.1",
+      "lsprotocol==2025.0.0",
+      "urllib3==2.7.0",
+      "werkzeug==3.1.7",
+      "starlette==1.3.1",
+      "python-multipart==0.0.31",
+      "filelock==3.25.2",
+      "cryptography==50.0.0",
+      "regex==2026.2.28",
+      "pythonnet==3.1.0 ; sys_platform == 'win32'",
+      "oslex==2.0.0"
+    ],
+    "licences_verified": false
+  },
+  "findings": [
+    {
+      "id": "DEP-1",
+      "severity": "review",
+      "statement": "@img/sharp-libvips-darwin-arm64@1.2.4 is LGPL-3.0-or-later and is the only non-permissive licence in the installed Node closure. It arrives transitively through @huggingface/transformers -> sharp, which zvec-grep depends on.",
+      "action": "Ship it as an unmodified dynamically-linked prebuilt binary and record it in THIRD_PARTY_NOTICES, or exclude the image path from the vendored build. Do not statically relink it."
+    },
+    {
+      "id": "DEP-2",
+      "severity": "blocking-for-setup-boundary",
+      "statement": "Five installed packages run install/preinstall/postinstall scripts: @zvec/zvec@0.7.1, node-llama-cpp@3.18.1, onnxruntime-node@1.21.0, protobufjs@7.6.6, sharp@0.34.5. These are native build/download steps.",
+      "action": "They belong to the authorised setup boundary (AGENT_RUNBOOK section 7). The query path must never trigger them; U09 must prove an offline cold start after setup."
+    },
+    {
+      "id": "DEP-3",
+      "severity": "unverified",
+      "statement": "Python transitive licences for serena's 30 declared pins were not resolved; no interpreter environment was created in this session.",
+      "action": "Resolve in U05 when the private semantic worker's real import closure is known; a full serena dependency set is NOT required by that closure."
+    }
+  ]
+}

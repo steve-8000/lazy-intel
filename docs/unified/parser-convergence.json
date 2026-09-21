@@ -1,0 +1,99 @@
+{
+  "languages": {
+    "javascript": {
+      "converged": true,
+      "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
+      "reason": null
+    },
+    "typescript": {
+      "converged": true,
+      "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
+      "reason": null
+    },
+    "python": {
+      "converged": true,
+      "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
+      "reason": null
+    },
+    "tsx": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "jsx": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "go": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "rust": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "java": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "c": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "cpp": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "csharp": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "php": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "ruby": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "swift": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "kotlin": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "dart": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "svelte": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Not attempted in this corpus; remains on its existing extractor."
+    },
+    "markdown": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Retrieval-only content; no CodeGraph parser convergence claim."
+    },
+    "text": {
+      "converged": false,
+      "evidence": null,
+      "reason": "Retrieval-only content; no CodeGraph parser convergence claim."
+    }
+  }
+}

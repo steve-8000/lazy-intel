@@ -5,36 +5,48 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { StdioMcpClient } from '../src/mcp/client.js';
+import { StdioMcpClient, SUPPORTED_PROTOCOL_VERSIONS } from '../src/mcp/client.js';
 import { resolveBin, run } from '../src/lib/process.js';
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
 const root = await mkdtemp(path.join(tmpdir(), 'lazy-intel-compat-'));
 const pins = JSON.parse(await readFile(path.join(repo, 'upstreams.lock.json'), 'utf8')).upstreams;
-const report = { status: 'FAIL', versions: {}, operations: [], latencyMs: {}, scope: 'Real local pinned backends; disposable two-file JavaScript workspace; no model calls. Restart latency is one sample, not a benchmark percentile.' };
+const engineMode = process.env.LAZY_INTEL_ENGINE === 'unified' ? 'unified' : 'legacy';
+const report = { status: 'FAIL', engine: engineMode, versions: {}, operations: [], latencyMs: {}, scope: 'Real local pinned backends; disposable two-file JavaScript workspace; no model calls. Restart latency is one sample, not a benchmark percentile. Latency from a legacy run and a unified run are only comparable against the same workspace and model.' };
 let client;
 const open = async () => {
   client = new StdioMcpClient(process.execPath, [path.join(repo, 'src/cli.js'), 'serve'], {
     cwd: root, timeoutMs: 900000,
-    env: { LAZY_INTEL_ROOT: root, LAZY_INTEL_ALLOWED_ROOTS: '', LAZY_INTEL_AUTO_INDEX: 'false', LAZY_INTEL_MAINTENANCE_MS: '0' },
+    env: { LAZY_INTEL_ROOT: root, LAZY_INTEL_ALLOWED_ROOTS: '', LAZY_INTEL_AUTO_INDEX: 'false', LAZY_INTEL_MAINTENANCE_MS: '0', ...(engineMode === 'unified' ? { LAZY_INTEL_ENGINE: 'unified' } : {}) },
   });
   await client.start();
+  assert.ok(SUPPORTED_PROTOCOL_VERSIONS.includes(client.protocolVersion), `unsupported negotiated version: ${client.protocolVersion}`);
+  assert.equal(client.protocolVersion, '2025-06-18');
   assert.deepEqual((await client.listTools()).tools.map(tool => tool.name), ['code_intel']);
 };
 const query = async (operation, args) => {
   const started = performance.now();
   const result = await client.callTool('code_intel', { operation, root, ...args, indexTimeoutMs: 600000, timeoutMs: 120000 });
   assert.equal(result.isError, false, JSON.stringify(result));
-  assert.ok(result.structuredContent.backends.every(backend => backend.ok), JSON.stringify(result.structuredContent));
+    assert.ok(result.structuredContent, JSON.stringify(result));
+    for (const field of ['root', 'operation', 'routes', 'backends']) assert.ok(Object.hasOwn(result.structuredContent, field), `missing legacy metadata: ${field}`);
+    assert.ok(result.structuredContent.backends.every(backend => backend.ok), JSON.stringify(result.structuredContent));
   report.operations.push(operation);
   return { text: result.content.map(block => block.text ?? '').join('\n'), ms: Math.round(performance.now() - started) };
 };
 try {
-  for (const [name, key, args] of [['zg', 'zvec-grep', ['version']], ['codegraph', 'codegraph', ['version']], ['serena', 'serena', ['--version']]]) {
-    const result = await run(await resolveBin(name), args, { timeoutMs: 30000 });
-    const version = (result.stdout || result.stderr).match(/\d+\.\d+\.\d+/)?.[0];
-    assert.equal(version, pins[key].version, `${name} compatibility pin`);
-    report.versions[key] = version;
+  // The external executables exist only on the legacy path. In unified mode the
+  // query path loads the vendored libraries instead, so pinning an installed CLI
+  // would assert a fact about software this run never executes.
+  if (engineMode === 'legacy') {
+    for (const [name, key, args] of [['zg', 'zvec-grep', ['version']], ['codegraph', 'codegraph', ['version']], ['serena', 'serena', ['--version']]]) {
+      const result = await run(await resolveBin(name), args, { timeoutMs: 30000 });
+      const version = (result.stdout || result.stderr).match(/\d+\.\d+\.\d+/)?.[0];
+      assert.equal(version, pins[key].version, `${name} compatibility pin`);
+      report.versions[key] = version;
+    }
+  } else {
+    for (const [key, entry] of Object.entries(pins)) report.versions[key] = `${entry.version} @ ${entry.commit.slice(0, 12)} (vendored)`;
   }
   await writeFile(path.join(root, 'package.json'), '{"type":"module"}\n');
   await writeFile(path.join(root, 'jsconfig.json'), JSON.stringify({ compilerOptions: { allowJs: true, checkJs: false, noEmit: true, module: 'NodeNext', moduleResolution: 'NodeNext' }, include: ['*.mjs'] }));

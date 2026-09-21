@@ -1,0 +1,4226 @@
+{
+  "schema_version": 1,
+  "vendor": "vendor/serena",
+  "upstream": {
+    "repository": "oraios/serena",
+    "clone_url": "https://github.com/oraios/serena.git",
+    "commit": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+    "ref": "v1.7.0",
+    "version": "1.7.0",
+    "license": "MIT",
+    "commit_url": "https://github.com/oraios/serena/commit/949a27ef1e5fda1a6e7b561e777bcece345c6ffd"
+  },
+  "import": {
+    "unit": "U02",
+    "method": "git archive --format=tar HEAD from the pinned detached checkout, extracted verbatim; no export-ignore, no submodules, no symlinks, no LFS pointers in this tree",
+    "imported_at": "2026-09-21T07:21:20.833Z",
+    "source_checkout": "/Users/steve/lazy-project/lazy-intel-source-baselines/serena",
+    "tree_sha": "6daa0fe28c2be66ed2462e02871426098ddecb69",
+    "file_count": 1048,
+    "manifest_sha256": "d4231cacd6c782a745f31be7665929917a0cc8e0296f71110c53ee1eaf861351",
+    "verified_identical_to_upstream_blobs": true
+  },
+  "local_patches": [],
+  "patch_revision": 0,
+  "rules": [
+    "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
+    "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
+    "Distribution artefacts (npm tarball, PyPI wheel) are never a substitute for this source."
+  ],
+  "added_files": ["src/serena/lazy_read_api.py"],
+  "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
+  "manifest": [
+    {
+      "path": ".devcontainer/devcontainer.json",
+      "blob": "465efd58fb9ceba62ed75ac6736fac8c34ba6724"
+    },
+    {
+      "path": ".dockerignore",
+      "blob": "237bd3b586a2ed07dcae03c15e6a1122f1893019"
+    },
+    {
+      "path": ".env.example",
+      "blob": "e2b161b182d6f3d6e0ae9220f514d295d15d099a"
+    },
+    {
+      "path": ".gitattributes",
+      "blob": "a1da894b4031e40a778b31f59c2aae2cb8cd2f3d"
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "blob": "78cd6adc003f8523e5b20ad877284ff1ddcd621d"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "blob": "ec4bb386bcf8a4946923eff961cc7cdf70c0aedf"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "blob": "bbcbbe7d61558adde3cbfd0c7a63a67c27ed6d30"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/issue--bug--performance-problem--question-.md",
+      "blob": "a438edfeaf5a9306c982bcfafa4d42b0d7f6e080"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "blob": "15a50f1f0643a56c3321210831024f8688b7eb59"
+    },
+    {
+      "path": ".github/pull_request_template.md",
+      "blob": "c5fb5e14938b5082c685f46b66d1d96048564fff"
+    },
+    {
+      "path": ".github/workflows/codeql.yml",
+      "blob": "718cbd4e4803f03febdd726a323c5e151195aef5"
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "blob": "32301680081a18aefa5f2826db9edc21ba422630"
+    },
+    {
+      "path": ".github/workflows/create-release.yml",
+      "blob": "05dc1d11912330b2bb043e567dd20327091f501f"
+    },
+    {
+      "path": ".github/workflows/docker.yml",
+      "blob": "2d5e17bda2bfff6c27db2191776e4ade97f2177b"
+    },
+    {
+      "path": ".github/workflows/docs.yaml",
+      "blob": "f69960c4ff93dce89c92f35a3d1cce8af8678bf3"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "blob": "c8b5395981fc6f3a5c88c0a57b243efd6b357d63"
+    },
+    {
+      "path": ".github/workflows/pytest.yml",
+      "blob": "b83544fd36d3275a0eb4fbdbb4a52075b3feff70"
+    },
+    {
+      "path": ".github/workflows/python-versions.yml",
+      "blob": "8c7eb734fb7f7d222c94bfa7a3ca142824b7c9fa"
+    },
+    {
+      "path": ".gitignore",
+      "blob": "9d8204679fe5b14bda1cd39af77f83972cdf4e43"
+    },
+    {
+      "path": ".serena/.gitignore",
+      "blob": "2e510aff5855ba46f96cbcd10991d9d588f77e6c"
+    },
+    {
+      "path": ".serena/memories/adding_new_language_support_guide.md",
+      "blob": "162683e7c0fcb92cd8ed056861372862ca5593f8"
+    },
+    {
+      "path": ".serena/memories/creating_pull_requests.md",
+      "blob": "2f3911c134abeed565efcdf419952104ad867aed"
+    },
+    {
+      "path": ".serena/memories/critical_info.md",
+      "blob": "d7e9023ee809d5b3f8dfe0afb41e3daba96bf8cd"
+    },
+    {
+      "path": ".serena/memories/memory_maintenance.md",
+      "blob": "ca2df4c5cf89efa242397e3f0790dd683272aca3"
+    },
+    {
+      "path": ".serena/memories/project_structure.md",
+      "blob": "f4654181f0f64e39637807ed29c263131501e02f"
+    },
+    {
+      "path": ".serena/memories/task_completion.md",
+      "blob": "a7addd2ff941128cf9c5e5f53f051582742acba3"
+    },
+    {
+      "path": ".serena/project.yml",
+      "blob": "7c5257c15e5b8d3c92f0120e356f75e8680e3465"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "blob": "6c3ee2cacce95f6829ff8e004b06b10f9839e521"
+    },
+    {
+      "path": "AGENTS.md",
+      "blob": "2b07df32f8bf0ea30ef60958a067e29cfd12c196"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "blob": "1cdff528a6d86fd46589957d207b34b68467973d"
+    },
+    {
+      "path": "CLAUDE.md",
+      "blob": "2b07df32f8bf0ea30ef60958a067e29cfd12c196"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "blob": "8ddbff4e7afa2f4a094a169520bf90013f987911"
+    },
+    {
+      "path": "DOCKER.md",
+      "blob": "bb77040cd45eb33efe64f214b03629f182cf12a5"
+    },
+    {
+      "path": "Dockerfile",
+      "blob": "1dccaf4020ac5579444959142d4c373179df0f56"
+    },
+    {
+      "path": "LICENSE",
+      "blob": "d27bba648a59b23cadf39b9e74fd0684ea2e15dd"
+    },
+    {
+      "path": "README-dev.md",
+      "blob": "6207719a53b4f282c832749a88971cf40ef42f84"
+    },
+    {
+      "path": "README.md",
+      "blob": "6e16380f712b3a5a71d917d45fa4ad18e93da412"
+    },
+    {
+      "path": "compose.yaml",
+      "blob": "edd530f08d856e0118bbfc8b4b0e549906ea39fd"
+    },
+    {
+      "path": "docker_build_and_run.sh",
+      "blob": "dd69afde419758aff5908ac349354458fade9a4a"
+    },
+    {
+      "path": "docs/.gitignore",
+      "blob": "d86fc2c23423a1808d35aaf5243aa1131e0f21fa"
+    },
+    {
+      "path": "docs/01-about/.gitignore",
+      "blob": "11bfb993f92c20ffeb0132d0e0c1c5f28bfaae76"
+    },
+    {
+      "path": "docs/01-about/020_programming-languages.md",
+      "blob": "331c15810363a270bb7dd0f2641ed456682ec177"
+    },
+    {
+      "path": "docs/01-about/030_serena-in-action.md",
+      "blob": "ec3212bd2076782a5580639222d4945db6b4a1c6"
+    },
+    {
+      "path": "docs/01-about/050_acknowledgements.md",
+      "blob": "334a4e6ea30d78f011057e828224e24a5f76fc12"
+    },
+    {
+      "path": "docs/02-usage/000_intro.md",
+      "blob": "a2f1fb058d0087820492025e9c54e84c03092e4f"
+    },
+    {
+      "path": "docs/02-usage/010_installation.md",
+      "blob": "dff3c1c6dc813c3c6329cb87cc07284fe28a674d"
+    },
+    {
+      "path": "docs/02-usage/020_running.md",
+      "blob": "26eb9b2ec6afb02c8098c754d1f89c65a10a02ab"
+    },
+    {
+      "path": "docs/02-usage/025_jetbrains_plugin.md",
+      "blob": "736384456b7855129730806137fda647e67267dd"
+    },
+    {
+      "path": "docs/02-usage/030_clients.md",
+      "blob": "c6a5184640799416f13e1072c51e46f47da13200"
+    },
+    {
+      "path": "docs/02-usage/040_workflow.md",
+      "blob": "f704b262f1cdd5b47b55cd3e5308136b64c64420"
+    },
+    {
+      "path": "docs/02-usage/045_memories.md",
+      "blob": "1aa8e3b9ee646af7bcc7353f86e81f2ff0e0fe44"
+    },
+    {
+      "path": "docs/02-usage/050_configuration.md",
+      "blob": "dd3b8a8d6bbc86d9eedb40ba44e37db62fac0e24"
+    },
+    {
+      "path": "docs/02-usage/060_dashboard.md",
+      "blob": "50a1dc16d02c4a4452522a8920329745d2694dea"
+    },
+    {
+      "path": "docs/02-usage/065_logs.md",
+      "blob": "fb8f4c5beb37ca9a3ea10c5e6c440c3a49d6da3c"
+    },
+    {
+      "path": "docs/02-usage/070_security.md",
+      "blob": "249409cf8cafb1e944278c4acde11d8c9d543cf1"
+    },
+    {
+      "path": "docs/02-usage/999_additional-usage.md",
+      "blob": "0fef1f8a989fed9424b17114d530ba3f8fd45963"
+    },
+    {
+      "path": "docs/03-special-guides/000_intro.md",
+      "blob": "d2d34716ae0a6eb4fe60880bda55120acf226d4a"
+    },
+    {
+      "path": "docs/03-special-guides/cpp_setup.md",
+      "blob": "dd5622ddf33ba10850ba334edfb25377c7d96fea"
+    },
+    {
+      "path": "docs/03-special-guides/custom_agent.md",
+      "blob": "add268ddb0eccf73646f56b7be8f56d03d3af360"
+    },
+    {
+      "path": "docs/03-special-guides/godot_gdscript_setup_guide_for_serena.md",
+      "blob": "dce20bcc402e3fc1358189d7800d513fb26e3456"
+    },
+    {
+      "path": "docs/03-special-guides/groovy_setup_guide_for_serena.md",
+      "blob": "50e5be23a09578b8e304181e8c69af28636ff0d4"
+    },
+    {
+      "path": "docs/03-special-guides/ocaml_setup_guide_for_serena.md",
+      "blob": "068fd057ac6ee516ae0235d597c26d75b3ff9586"
+    },
+    {
+      "path": "docs/03-special-guides/scala_setup_guide_for_serena.md",
+      "blob": "e682827cc6804a8deb77aad25c0b6be5d9f7869e"
+    },
+    {
+      "path": "docs/03-special-guides/serena_on_chatgpt.md",
+      "blob": "c8de60eb8f1303865f60823e8598e8575b77f486"
+    },
+    {
+      "path": "docs/03-special-guides/unreal_engine_setup_guide_for_serena.md",
+      "blob": "7c5d8b347b3146415a996f791a315ad4ce170432"
+    },
+    {
+      "path": "docs/04-evaluation/000_evaluation-intro.md",
+      "blob": "596685a5e78aa604f7dac92fcc55ed74941b4c2b"
+    },
+    {
+      "path": "docs/04-evaluation/010_methodology.md",
+      "blob": "feb7f2829fd5475224436a0242cfcc5ba81beab3"
+    },
+    {
+      "path": "docs/04-evaluation/020_prompts/000_prompts.md",
+      "blob": "5033e6fa219dac6f1905be5a969037464233d9a6"
+    },
+    {
+      "path": "docs/04-evaluation/020_prompts/010_evaluation-prompt.md",
+      "blob": "45009c4d32e3d5efc42364a9a0d3e712aff771ed"
+    },
+    {
+      "path": "docs/04-evaluation/020_prompts/020_summary-prompt.md",
+      "blob": "c09fb8a6ab013274431a792103c529bead4b841f"
+    },
+    {
+      "path": "docs/04-evaluation/030_results/000_evaluation-results.md",
+      "blob": "20fecab7a8924047165224a5ea6d35b38919e660"
+    },
+    {
+      "path": "docs/04-evaluation/030_results/010_cc_on_tianshou.md",
+      "blob": "f18a9d7a88f61984fa8c033eace43dcdd19a86ce"
+    },
+    {
+      "path": "docs/04-evaluation/030_results/020_codex_on_jbplugin.md",
+      "blob": "d9cb58e1cb67a2f2d16931fc7263d075b03b6489"
+    },
+    {
+      "path": "docs/04-evaluation/030_results/030_copilot_cli_on_ente.md",
+      "blob": "df51b69e97894d2695b7be5926c77efe0d7b4236"
+    },
+    {
+      "path": "docs/04-evaluation/030_results/040_glm_on_tianshou.md",
+      "blob": "437ce9058ec0d785cfa2eb7ce03deb4eeab21ca0"
+    },
+    {
+      "path": "docs/04-evaluation/030_results/050_junie_plugin_on_tianshou.md",
+      "blob": "cfafc462d202a421bd0d74cd01ac06e21500c6cb"
+    },
+    {
+      "path": "docs/_config.yml",
+      "blob": "42e89034e067c7a8762b65c92e8ecb0ac1f5b1b2"
+    },
+    {
+      "path": "docs/_static/images/jetbrains-marketplace-button.png",
+      "blob": "fd62f400b25910492c0034ea5b5001fdcde9c2bd"
+    },
+    {
+      "path": "docs/autogen_docs.py",
+      "blob": "43976fd91e4ad4577c71369ab38937b891483bff"
+    },
+    {
+      "path": "docs/create_toc.py",
+      "blob": "39490e88ee31d4dba327a2258e60abc157364089"
+    },
+    {
+      "path": "docs/index.md",
+      "blob": "8b9e5dc06791bfe9937156d3dcb610b04d3de9e0"
+    },
+    {
+      "path": "flake.lock",
+      "blob": "728ba12a9addb05ed500a8c136db6d52dfddc6c4"
+    },
+    {
+      "path": "flake.nix",
+      "blob": "3cdd06f71edd8ebe2e925dfff0feb689ae934ddb"
+    },
+    {
+      "path": "news/20260111.html",
+      "blob": "91fa50313f4024054a65bab363773fa0d27a117e"
+    },
+    {
+      "path": "news/20260303.html",
+      "blob": "c42233d7c5b1ec1cb4bc03c1e22c4d85a036af58"
+    },
+    {
+      "path": "news/20260321.html",
+      "blob": "f56221ebf0fdfe4824db8c4d814aab747764765d"
+    },
+    {
+      "path": "news/20260330.html",
+      "blob": "3eca05744a6373955f3b69b84bbc71578f7ff9ed"
+    },
+    {
+      "path": "news/20260404.html",
+      "blob": "debdfb632b370868e9accfa95111d15a736d8f4b"
+    },
+    {
+      "path": "news/20260411.html",
+      "blob": "c0da1719f49c8060626f1246cd0f0c2a851a07b1"
+    },
+    {
+      "path": "news/20260414.html",
+      "blob": "5e15e6a0b93b4ac91385f18ec052b2ab5fb50d31"
+    },
+    {
+      "path": "news/20260427.html",
+      "blob": "e20530b178bc3d973ae513e614e2b4e6a5f61ba1"
+    },
+    {
+      "path": "news/20260512.html",
+      "blob": "af5278402bd28dfe281e72f2aa4354793575b5b6"
+    },
+    {
+      "path": "news/20260716.html",
+      "blob": "a2b93922c84dd66340e9b4249c4ee44be62ceb28"
+    },
+    {
+      "path": "news/20260718.html",
+      "blob": "710eabe407bffe106714a7c8b42e900541c67860"
+    },
+    {
+      "path": "news/20260809.html",
+      "blob": "8f517e3a8f84a67a425ead6c247dc9a5b4ee0bce"
+    },
+    {
+      "path": "pyproject.toml",
+      "blob": "b6bc9e586019250fc4c1586b77dcb2f3c6566228"
+    },
+    {
+      "path": "repo_dir_sync.py",
+      "blob": "874a362fbb6d7f6ccab184fd3a321f8ef4aeb023"
+    },
+    {
+      "path": "resources/jetbrains-marketplace-button.cdr",
+      "blob": "9c5daae963ba738a8ad20ef33d34ab59303a5b91"
+    },
+    {
+      "path": "resources/serena-block-diagram.afdesign",
+      "blob": "49b898a1f4f03e6e313e2023eebbbf4d5a1b18ed"
+    },
+    {
+      "path": "resources/serena-block-diagram.svg",
+      "blob": "7cccd01158f526766e8e166e16c2a67e047e9bdd"
+    },
+    {
+      "path": "resources/serena-icons.cdr",
+      "blob": "9499136188157561af5283cf514c61eeb8db63ef"
+    },
+    {
+      "path": "resources/serena-logo-dark-mode.svg",
+      "blob": "3b1d929ee68ac5b83ba2bfe3a37b910251910476"
+    },
+    {
+      "path": "resources/serena-logo.cdr",
+      "blob": "9dd6623d54045260d57eb5f48ae57ccc4ffa5e93"
+    },
+    {
+      "path": "resources/serena-logo.svg",
+      "blob": "c7ca22339999e393e366af436c601a3b9fba1ec3"
+    },
+    {
+      "path": "resources/serena-mac-dock-icon.cdr",
+      "blob": "3f3f164cd7fe096eb86d2af4223f1b2e661b55e9"
+    },
+    {
+      "path": "resources/serena-mac-tray-icon.cdr",
+      "blob": "98a26a13fc9d523ce083acb6c4c0cd88107a4147"
+    },
+    {
+      "path": "resources/vscode_sponsor_logo.png",
+      "blob": "5f253cfdd4ebf471c0c721859079d1dd56f55a50"
+    },
+    {
+      "path": "scripts/agno_agent.py",
+      "blob": "53473fd2d831d33f2a48c04816a72f17b54f81dc"
+    },
+    {
+      "path": "scripts/build_news_json.py",
+      "blob": "8359604afa1284b50216705aca4cf276cea9ee3d"
+    },
+    {
+      "path": "scripts/bump_version.py",
+      "blob": "f657e6cbf9353549fb9926b6573dd32d2a9e2ab6"
+    },
+    {
+      "path": "scripts/demo_cli_call.py",
+      "blob": "9639a9a8eb19f24fbc243b38320d981e1dbecff5"
+    },
+    {
+      "path": "scripts/demo_diagnostics.py",
+      "blob": "5dc2f824c06bf86d9534ab12dbc466dd415168e0"
+    },
+    {
+      "path": "scripts/demo_find_defining_symbol.py",
+      "blob": "31957dd36e080531047d5122220b0d0e63090eaa"
+    },
+    {
+      "path": "scripts/demo_find_implementing_symbol.py",
+      "blob": "34393479e12a68541fd94dcc6994f79a2a5f2dbb"
+    },
+    {
+      "path": "scripts/demo_progressive_tool_shortening.py",
+      "blob": "3786021ffe21a72952d90bdd456e028212c1713b"
+    },
+    {
+      "path": "scripts/demo_run_tools.py",
+      "blob": "1c95365c3c3a1b8cfbe2a607fe979a3e54c9d45f"
+    },
+    {
+      "path": "scripts/gen_prompt_factory.py",
+      "blob": "4877d4d15fd328cf6372c6bb6924148b859b23d7"
+    },
+    {
+      "path": "scripts/live_test_grok.py",
+      "blob": "505a88d7b358b0aeece312211aee5303984c3ac8"
+    },
+    {
+      "path": "scripts/mcp_server.py",
+      "blob": "9b5c3f5a1c8eede5e58bca64055d011600299fda"
+    },
+    {
+      "path": "scripts/memory_graph.py",
+      "blob": "e764390939e280a1d23f79c05c4279693a111ccd"
+    },
+    {
+      "path": "scripts/print_language_list.py",
+      "blob": "bf43a34ef367d4610b7bed271b28552d3fcd7a17"
+    },
+    {
+      "path": "scripts/print_mode_context_options.py",
+      "blob": "fe7f768f5c45f8e1432546443ef290714c22bf1b"
+    },
+    {
+      "path": "scripts/print_tool_overview.py",
+      "blob": "3649a7d56ad93be6fad98e2fea31635cdde0196f"
+    },
+    {
+      "path": "scripts/profile_tool_call.py",
+      "blob": "1ee06081cc8f052e2598d5ddd880d47c108cce6e"
+    },
+    {
+      "path": "scripts/update_downloaded_dependency_hashes.py",
+      "blob": "ad25da464eafa34f8fe7611d396407533c6d599e"
+    },
+    {
+      "path": "server.json",
+      "blob": "18fe98d0e6a2f576500aae0d2718242561223dc1"
+    },
+    {
+      "path": "src/README.md",
+      "blob": "41986273e25519be96751dc19678db48ca11501e"
+    },
+    {
+      "path": "src/interprompt/.syncCommitId.remote",
+      "blob": "8821570d83a7ac788ffc72f75330615ddaa6aa54"
+    },
+    {
+      "path": "src/interprompt/.syncCommitId.this",
+      "blob": "820e95d5a2a28ef998b3c134841f70d1138fbefe"
+    },
+    {
+      "path": "src/interprompt/__init__.py",
+      "blob": "354dfb11db4823de693dd8eb5385d4cca5f30ba8"
+    },
+    {
+      "path": "src/interprompt/jinja_template.py",
+      "blob": "85dec9fec9f8e2d6610b08735e9da0a8a4e0f649"
+    },
+    {
+      "path": "src/interprompt/multilang_prompt.py",
+      "blob": "ba953b4cd49e29ad54d3fbae5e3dc39f00c261db"
+    },
+    {
+      "path": "src/interprompt/prompt_factory.py",
+      "blob": "647b0ed2d504f528cbe8258b98a06d2553f43e0e"
+    },
+    {
+      "path": "src/interprompt/util/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "src/interprompt/util/class_decorators.py",
+      "blob": "2aeb3f8d60b43a20294fbc6fc60aaa74dc1cd150"
+    },
+    {
+      "path": "src/serena/__init__.py",
+      "blob": "68106ac5e74ced06330af65dfc2cfbef30cc6372"
+    },
+    {
+      "path": "src/serena/agent.py",
+      "blob": "175f338bfb4d1f5ef8feab483f7c9a75dbe6a0fd"
+    },
+    {
+      "path": "src/serena/agno.py",
+      "blob": "253c4a49c18bc6b81fc4998247b0640f053c28d3"
+    },
+    {
+      "path": "src/serena/analytics.py",
+      "blob": "add6fd0930c619f7038a349bf7b098c0aa2ef46a"
+    },
+    {
+      "path": "src/serena/cli.py",
+      "blob": "b2b04ac3f7d2855e0f3f07f72bf9d2fc6269607e"
+    },
+    {
+      "path": "src/serena/code_editor.py",
+      "blob": "7652de0965c6eeeb8e70e57d2cf479c7cc8e705f"
+    },
+    {
+      "path": "src/serena/config/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "src/serena/config/client_setup.py",
+      "blob": "6091812e550cf2e055f560a714640878bd5d2fb4"
+    },
+    {
+      "path": "src/serena/config/context_mode.py",
+      "blob": "16ef293a9be146e012952e99cbceda342db1010c"
+    },
+    {
+      "path": "src/serena/config/serena_config.py",
+      "blob": "9a169962443bfe5efd1bf6372429a8e0df6455cd"
+    },
+    {
+      "path": "src/serena/constants.py",
+      "blob": "043e0b0777a70d31a680f71464def2aa395df97d"
+    },
+    {
+      "path": "src/serena/dashboard.py",
+      "blob": "1a1718a237ee1cc893f89dd4666737d82ada398d"
+    },
+    {
+      "path": "src/serena/generated/generated_prompt_factory.py",
+      "blob": "7b0408e6787a778c5895f5a3182a3039646d1a22"
+    },
+    {
+      "path": "src/serena/gui_log_viewer.py",
+      "blob": "ccf42cd420e9352a819198c39fc9695ca5511e65"
+    },
+    {
+      "path": "src/serena/hooks.py",
+      "blob": "cd1fb84f82c4b01b36988b18115d0847949092c1"
+    },
+    {
+      "path": "src/serena/jetbrains/jetbrains_plugin_client.py",
+      "blob": "db69de9b39b579caaba280d8b978a470577fa439"
+    },
+    {
+      "path": "src/serena/jetbrains/jetbrains_types.py",
+      "blob": "89bdae76a426f386603a97ce18afb2c12d77e4db"
+    },
+    {
+      "path": "src/serena/ls_manager.py",
+      "blob": "2dd3aaf4082b9f030ad8c9d6fe5c5b6059c6cfe7"
+    },
+    {
+      "path": "src/serena/mcp.py",
+      "blob": "12aa3312123a3034a3d0c44b44b9beb41bdbc3b2"
+    },
+    {
+      "path": "src/serena/memories/memory_manager.py",
+      "blob": "daa037252ef3a9e4f6141899752799820dcb1710"
+    },
+    {
+      "path": "src/serena/memories/memory_reference_analysis.py",
+      "blob": "9846a4b91397233a3f2428da802239a345f41360"
+    },
+    {
+      "path": "src/serena/project.py",
+      "blob": "b337be68bff51a3a235bd22d2be95252da8b7027"
+    },
+    {
+      "path": "src/serena/project_server.py",
+      "blob": "0debaac0b0c87ed59eed1131a63162bd9ab7691d"
+    },
+    {
+      "path": "src/serena/prompt_factory.py",
+      "blob": "31be6f49429d63cd2dca6f2b2a25e1b7b0cfb42b"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/agent.yml",
+      "blob": "a3b324f0e862360f49881460177fc3c616bf8b3d"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/antigravity.yml",
+      "blob": "33411ac2f695f0d72a054244d2fa1c09dc69cca1"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/chatgpt.yml",
+      "blob": "494e9c42659cfdb45c38a4acd54fc35015a7cc9c"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/claude-code.yml",
+      "blob": "4a636e42b37aaadb40cdb12d7af7d355fbeef3cb"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/codebuddy.yml",
+      "blob": "9e2ff53e77d4840514ba841441be54183589d106"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/codex.yml",
+      "blob": "2dbd870aaedd13d42cdce0da948c27f016797d28"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/context.template.yml",
+      "blob": "1f8e37ab7dcc67ec54238d0fed6cffb9722163b1"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/copilot-cli.yml",
+      "blob": "c7da899efa5fa1e069335cb6d227c8e1a3c2d486"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/desktop-app.yml",
+      "blob": "aad51ac865b2de95bd21684f04efa6ec4fa5b5c5"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/grok.yml",
+      "blob": "ddd2e23e7d57d56beec719f56225454413fd1780"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/ide.yml",
+      "blob": "33411ac2f695f0d72a054244d2fa1c09dc69cca1"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/jb-ai-assistant.yml",
+      "blob": "33411ac2f695f0d72a054244d2fa1c09dc69cca1"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/jb-copilot-plugin.yml",
+      "blob": "9cbae115d15eafe82e4ec7453c21a2b80d89ec0e"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/junie.yml",
+      "blob": "8bfdc67d9c778a57792515f87a5bb15f67b111ed"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/oaicompat-agent.yml",
+      "blob": "cdec1eed15957c033bb69287b735c2c1702b5a5d"
+    },
+    {
+      "path": "src/serena/resources/config/contexts/vscode.yml",
+      "blob": "fd74fd4d1dac67130b7559f4da735bf670ba3cdd"
+    },
+    {
+      "path": "src/serena/resources/config/internal_modes/jetbrains.yml",
+      "blob": "e4eb218e5654c951d44c65d5bbde7c7aae19126a"
+    },
+    {
+      "path": "src/serena/resources/config/modes/benchmark.yml",
+      "blob": "636f5f4b41eddeae5da5cd225e917a88a0edb155"
+    },
+    {
+      "path": "src/serena/resources/config/modes/editing.yml",
+      "blob": "f877fc5108cf3641670eb7e9eb069843dc0f66b1"
+    },
+    {
+      "path": "src/serena/resources/config/modes/interactive.yml",
+      "blob": "74e438b95be2d786d15f30f5caf7112f4a3366ff"
+    },
+    {
+      "path": "src/serena/resources/config/modes/mode.template.yml",
+      "blob": "c62573d7b0007a84c2bff303e283a5160b620ee5"
+    },
+    {
+      "path": "src/serena/resources/config/modes/no-memories.yml",
+      "blob": "d4175eef4b1f7271e9a4b688217b15ddb7f88b55"
+    },
+    {
+      "path": "src/serena/resources/config/modes/no-onboarding.yml",
+      "blob": "d441b5d30894f3b9fab4dec7a257e897d7f8b236"
+    },
+    {
+      "path": "src/serena/resources/config/modes/onboarding.yml",
+      "blob": "dff45403611cd87c2c64b17860e5a51cbf92e5cf"
+    },
+    {
+      "path": "src/serena/resources/config/modes/one-shot.yml",
+      "blob": "ebbbfafc1ea264f83a6237d15c265fd6cb797af9"
+    },
+    {
+      "path": "src/serena/resources/config/modes/planning.yml",
+      "blob": "a24d0dfb150bc3c10b0c16be8c15014297cc6687"
+    },
+    {
+      "path": "src/serena/resources/config/modes/query-projects.yml",
+      "blob": "ed140de93565b6eea4e89bafffd7e77f5e1348af"
+    },
+    {
+      "path": "src/serena/resources/config/prompt_templates/info_prompts.yml",
+      "blob": "4c8964298b77e82d3d24d8f3437701ee270afdcf"
+    },
+    {
+      "path": "src/serena/resources/config/prompt_templates/simple_tool_outputs.yml",
+      "blob": "809bdb3088021267137601e1db3249c36a0d6747"
+    },
+    {
+      "path": "src/serena/resources/config/prompt_templates/system_prompt.yml",
+      "blob": "99604bf15bf5252f63290711649397948945319d"
+    },
+    {
+      "path": "src/serena/resources/dashboard/dashboard.css",
+      "blob": "f8e4e1af4812d7c283115ff5593a6e1ebd878cae"
+    },
+    {
+      "path": "src/serena/resources/dashboard/dashboard.js",
+      "blob": "74308c9314dcf5e6c0820962c88f9cdcd0efd68b"
+    },
+    {
+      "path": "src/serena/resources/dashboard/index.html",
+      "blob": "5129bbafc238ce9c88550e5ad4c643cfd18a25a5"
+    },
+    {
+      "path": "src/serena/resources/dashboard/jquery.min.js",
+      "blob": "7f37b5d99122b4928505d1e0ac5ca7279edd56ed"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-icon-1024-mac.png",
+      "blob": "2ad41dae7efa8844187336b802b9f006e3311795"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-icon-16.png",
+      "blob": "ffb6a5d02e44baa82ccfd4cb901381c031e22cc3"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-icon-32.png",
+      "blob": "1596e4703ae44066819cfc24fa12c4cc601ba809"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-icon-48.png",
+      "blob": "6aadd7b689af2b823d654e0916320a02fd2abf82"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-icon-64.png",
+      "blob": "28dc7d042e5957bd9106335a0d4790f1abefe524"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-icon-tray-mac.png",
+      "blob": "8e807057d5672cd245f1efce106427f927e8c347"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-logo-dark-mode.svg",
+      "blob": "3b1d929ee68ac5b83ba2bfe3a37b910251910476"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-logo.svg",
+      "blob": "c7ca22339999e393e366af436c601a3b9fba1ec3"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-logs-dark-mode.png",
+      "blob": "1b4f26008110c70d1ec55597dc288e9e6806b0e7"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena-logs.png",
+      "blob": "8f110b0578d04cab0b3a00c704d9dcdd1aa46258"
+    },
+    {
+      "path": "src/serena/resources/dashboard/serena.ico",
+      "blob": "e6ec48a1c22e5c9eb0ac5fd512bb3fab51c11d68"
+    },
+    {
+      "path": "src/serena/resources/memory_maintenance.md",
+      "blob": "6f84514d7c073ad726a1572c4c3e221ddf4ce7f2"
+    },
+    {
+      "path": "src/serena/resources/project.local.template.yml",
+      "blob": "36cd3defd719a2bf479631b0eff650f14447499b"
+    },
+    {
+      "path": "src/serena/resources/project.template.yml",
+      "blob": "5008aa08a045bd028a0fbbb35df69457dc0190a4"
+    },
+    {
+      "path": "src/serena/resources/serena_config.template.yml",
+      "blob": "369166a7fcdc6347a558f11bdd2f128fe2a1b6c2"
+    },
+    {
+      "path": "src/serena/symbol.py",
+      "blob": "8c230ae520120bdacc218426dd4077ac506f5390"
+    },
+    {
+      "path": "src/serena/task_executor.py",
+      "blob": "d6aefd0daa187656a99097d88b1177745b906024"
+    },
+    {
+      "path": "src/serena/tools/__init__.py",
+      "blob": "08bb4338f4dcd04ea13cc06b06149d636f7e1162"
+    },
+    {
+      "path": "src/serena/tools/cmd_tools.py",
+      "blob": "52afa95f0c473a481b7aabc8022c0f287efe170b"
+    },
+    {
+      "path": "src/serena/tools/config_tools.py",
+      "blob": "12e4baf08d61c9a098cc22a5011cb89fb9be8c74"
+    },
+    {
+      "path": "src/serena/tools/file_tools.py",
+      "blob": "1c03760e02fa91ccd2bf8a561fa8990619b7ca47"
+    },
+    {
+      "path": "src/serena/tools/jetbrains_tools.py",
+      "blob": "71cb9b5c281a5eacccd0405282d9a4b65a430945"
+    },
+    {
+      "path": "src/serena/tools/memory_tools.py",
+      "blob": "6ebffd9b1f36c17590f2b2ab8df79df6cc158c7d"
+    },
+    {
+      "path": "src/serena/tools/query_project_tools.py",
+      "blob": "2340b5386546d961d991032bc40e26534d74b4ca"
+    },
+    {
+      "path": "src/serena/tools/symbol_tools.py",
+      "blob": "32ea7abf9a385150a2b796b0ba2fee4ac228eb1a"
+    },
+    {
+      "path": "src/serena/tools/tools_base.py",
+      "blob": "665f8a2e26106db7ec162c888701d85307cc3b79"
+    },
+    {
+      "path": "src/serena/tools/workflow_tools.py",
+      "blob": "6a0f51d9125f2f2b498a9c83602d35c544ceb42e"
+    },
+    {
+      "path": "src/serena/util/class_decorators.py",
+      "blob": "6beadbde2a05c62e7be260c97f1085b09575bc8e"
+    },
+    {
+      "path": "src/serena/util/cli_util.py",
+      "blob": "807ae7c0e9f6aa338951799bf3bb340af5aa6778"
+    },
+    {
+      "path": "src/serena/util/dataclass.py",
+      "blob": "c5518bf41fd7085b1cb4036b3ce6c397c96d1fa5"
+    },
+    {
+      "path": "src/serena/util/dotnet.py",
+      "blob": "595fdf683ae8a7ad0d26b9e3f912284ad4c3f426"
+    },
+    {
+      "path": "src/serena/util/exception.py",
+      "blob": "8ab2f0078a2a649185d7fa2287f66e68c8c731bf"
+    },
+    {
+      "path": "src/serena/util/file_proxy.py",
+      "blob": "1362aa163019fea1c9c261d01b51a1e9bca6a9c7"
+    },
+    {
+      "path": "src/serena/util/file_system.py",
+      "blob": "fcde0e0991ae11768e9abc879ed495524de3d382"
+    },
+    {
+      "path": "src/serena/util/git.py",
+      "blob": "ec88179fd8b778b81f4f416f7d69e67010c336f4"
+    },
+    {
+      "path": "src/serena/util/gui.py",
+      "blob": "f87236d49d5acf04a95c80c86e000967ca978aed"
+    },
+    {
+      "path": "src/serena/util/inspection.py",
+      "blob": "0f2ebcf2a25d9fb55d93b57c460d4a36562fb2a7"
+    },
+    {
+      "path": "src/serena/util/logging.py",
+      "blob": "279f955dc991a76416712bd54616bee81bb61770"
+    },
+    {
+      "path": "src/serena/util/ls_diagnostics.py",
+      "blob": "13b505eaac184e2c6adfee5af7f7d3299b23e25e"
+    },
+    {
+      "path": "src/serena/util/pypi.py",
+      "blob": "3ac0c2c46284914671c8d5b49611e11220eb6fd9"
+    },
+    {
+      "path": "src/serena/util/pywebview.py",
+      "blob": "6489437a990d35965b057e00179d7cd519f91bb8"
+    },
+    {
+      "path": "src/serena/util/shell.py",
+      "blob": "8de5a67c4d4f107178c3eec4df97b3acb8f323b5"
+    },
+    {
+      "path": "src/serena/util/text_utils.py",
+      "blob": "8ab6f9439ae2f73bd37a2df67a08c3d58186caa5"
+    },
+    {
+      "path": "src/serena/util/thread.py",
+      "blob": "6d21ebed6435ac7aed812ed63185fd949cccf6fe"
+    },
+    {
+      "path": "src/serena/util/version.py",
+      "blob": "142d4356c6c2f98dab6d5ebb38f5136a1eb216ac"
+    },
+    {
+      "path": "src/serena/util/yaml.py",
+      "blob": "1859989147b329ff6ff079bded6cdefcfe837c04"
+    },
+    {
+      "path": "src/solidlsp/.gitignore",
+      "blob": "c6d33567c688695b02c77930458aa7e6c4acc38f"
+    },
+    {
+      "path": "src/solidlsp/__init__.py",
+      "blob": "0378e2d6e3367de0e6980cc58c414c9168fa9b87"
+    },
+    {
+      "path": "src/solidlsp/dependency_provider.py",
+      "blob": "21dccb4eead46d877aba3cfd5a65016526b3d45b"
+    },
+    {
+      "path": "src/solidlsp/initialize_params.py",
+      "blob": "90c5b4db9fc619616a7ac52e6d829b5be8657718"
+    },
+    {
+      "path": "src/solidlsp/language_servers/ada_language_server.py",
+      "blob": "30040ec23ff5f1c4ecc05022a101e5ec53151690"
+    },
+    {
+      "path": "src/solidlsp/language_servers/al_language_server.py",
+      "blob": "f3b725000419cb29de6c8c2dd9fb535ec9e8c578"
+    },
+    {
+      "path": "src/solidlsp/language_servers/angular_language_server.py",
+      "blob": "c25ed83792b56ccb7a933cf5968a2e55a4b7d0bf"
+    },
+    {
+      "path": "src/solidlsp/language_servers/ansible_language_server.py",
+      "blob": "6ebbfe5987fc14ed109c3d43ef2985ddf266bb2d"
+    },
+    {
+      "path": "src/solidlsp/language_servers/basedpyright_server.py",
+      "blob": "4c87f01dc27be23b43ab5a31026a70c9e995f0f9"
+    },
+    {
+      "path": "src/solidlsp/language_servers/bash_language_server.py",
+      "blob": "5d52bbbc6392833a59323bfe7d870eada0ac5e65"
+    },
+    {
+      "path": "src/solidlsp/language_servers/bsl_language_server.py",
+      "blob": "4d40acdfe675abb8a9eee6cee301ace69e8e0b7e"
+    },
+    {
+      "path": "src/solidlsp/language_servers/ccls_language_server.py",
+      "blob": "1c7c1fa66fc546168b95f0b62531a08c16f726bd"
+    },
+    {
+      "path": "src/solidlsp/language_servers/clangd_language_server.py",
+      "blob": "4633298f41a2891008ca9027d4291b40d436dc65"
+    },
+    {
+      "path": "src/solidlsp/language_servers/clojure_lsp.py",
+      "blob": "a8cb9d8301b7cdc9ea1f907f3b9198aa3d6c53cd"
+    },
+    {
+      "path": "src/solidlsp/language_servers/common.py",
+      "blob": "d5be68078e56c8c7120462ee4e194e15f09b62fb"
+    },
+    {
+      "path": "src/solidlsp/language_servers/crystal_language_server.py",
+      "blob": "2e04c99590006d12fa8dae9a1a2ad88f0ba09beb"
+    },
+    {
+      "path": "src/solidlsp/language_servers/csharp_language_server.py",
+      "blob": "1281c5a0f66df44f959c0baa1b4ad49fc2cd344b"
+    },
+    {
+      "path": "src/solidlsp/language_servers/cue_language_server.py",
+      "blob": "444c5f2670e327744c59f63fba3fdb007b7f9cc4"
+    },
+    {
+      "path": "src/solidlsp/language_servers/dart_language_server.py",
+      "blob": "553d753bb7be970d77d9da7b072bdd81231a7d37"
+    },
+    {
+      "path": "src/solidlsp/language_servers/deno_language_server.py",
+      "blob": "c9649ced697e463445f7796cf5a80ef1f6343f0e"
+    },
+    {
+      "path": "src/solidlsp/language_servers/eclipse_jdtls.py",
+      "blob": "baa45de9695756f46ee75f4bc2e36913444af724"
+    },
+    {
+      "path": "src/solidlsp/language_servers/elixir_tools/README.md",
+      "blob": "56f2e03c9d0ed1c52503421e1fa5cbc17f0469f6"
+    },
+    {
+      "path": "src/solidlsp/language_servers/elixir_tools/__init__.py",
+      "blob": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "src/solidlsp/language_servers/elixir_tools/elixir_tools.py",
+      "blob": "4ef806298573b3e45a325363f2229f0952ed2ae9"
+    },
+    {
+      "path": "src/solidlsp/language_servers/elm_language_server.py",
+      "blob": "e3fe77902639bfbbda4f14bbfba3e72b2453210e"
+    },
+    {
+      "path": "src/solidlsp/language_servers/erlang_language_server.py",
+      "blob": "f34c93f0873904c33efd44bcc99ebfe8002d417f"
+    },
+    {
+      "path": "src/solidlsp/language_servers/fortran_language_server.py",
+      "blob": "134460abb127fc0720612694912c2c5d960cc26b"
+    },
+    {
+      "path": "src/solidlsp/language_servers/fsharp_language_server.py",
+      "blob": "660c4335b27385a3af7440e14e8d8b3dd170a8a6"
+    },
+    {
+      "path": "src/solidlsp/language_servers/gleam_language_server.py",
+      "blob": "3c550626d2169d0462882b4e6dab28853226cb51"
+    },
+    {
+      "path": "src/solidlsp/language_servers/godot_language_server.py",
+      "blob": "59302693b9277355414f2130d0edbd04dcb44273"
+    },
+    {
+      "path": "src/solidlsp/language_servers/gopls.py",
+      "blob": "1dccdb0ce3ed4c2f57768fdd8baa26ef0ed2c03c"
+    },
+    {
+      "path": "src/solidlsp/language_servers/groovy_language_server.py",
+      "blob": "4d7a2f76a1b0b54e4de7fee80c0457a9bd794f33"
+    },
+    {
+      "path": "src/solidlsp/language_servers/haskell_language_server.py",
+      "blob": "c732c4b27e2c59f8bdb68ea777e65ade6868ce3f"
+    },
+    {
+      "path": "src/solidlsp/language_servers/haxe_language_server.py",
+      "blob": "3d4a154cec5ee322e93a0e8c26cf685f51407cb8"
+    },
+    {
+      "path": "src/solidlsp/language_servers/hlsl_language_server.py",
+      "blob": "a41713eb17274779d0bbe1cc49ddefa6a433e8cc"
+    },
+    {
+      "path": "src/solidlsp/language_servers/intelephense.py",
+      "blob": "b84f6a3b91c6a7627fd89fdfe50eeb354b102a19"
+    },
+    {
+      "path": "src/solidlsp/language_servers/jedi_server.py",
+      "blob": "7ad3b227bcd92889d8d2c0e4891eb99b683aa03a"
+    },
+    {
+      "path": "src/solidlsp/language_servers/json_language_server.py",
+      "blob": "654f2cc42149f795d2f994d0d501e908e8177d7f"
+    },
+    {
+      "path": "src/solidlsp/language_servers/julia_server.py",
+      "blob": "c84ecda4fb02fcad3be686d1e901b6be54e51c60"
+    },
+    {
+      "path": "src/solidlsp/language_servers/kotlin_language_server.py",
+      "blob": "df51dfd1879140616e61f9ed4802be572c19bcf4"
+    },
+    {
+      "path": "src/solidlsp/language_servers/lean4_language_server.py",
+      "blob": "77800988f943c06aeb47f5d5a68f36a4cecfa2a2"
+    },
+    {
+      "path": "src/solidlsp/language_servers/lua_ls.py",
+      "blob": "36c8b362ebb55200d463277f7f9e984d548b859e"
+    },
+    {
+      "path": "src/solidlsp/language_servers/luau_lsp.py",
+      "blob": "a23daed7a3464ed81ed477d7188269652ea327c1"
+    },
+    {
+      "path": "src/solidlsp/language_servers/marksman.py",
+      "blob": "98696f53f3699c19a70ec63890aa39e317015503"
+    },
+    {
+      "path": "src/solidlsp/language_servers/matlab_language_server.py",
+      "blob": "d66943555438d1a6b0b8cce860ea71dbd002eb14"
+    },
+    {
+      "path": "src/solidlsp/language_servers/msl_language_server.py",
+      "blob": "e8c89c1cd29314ffc1364f11c31eae8e4564c7c2"
+    },
+    {
+      "path": "src/solidlsp/language_servers/msl_lsp_server.py",
+      "blob": "e87d3d16aa0806a10bcc91bacfa722067dad6475"
+    },
+    {
+      "path": "src/solidlsp/language_servers/nextflow_language_server.py",
+      "blob": "0b3fcf17669c40f642ca6c96fe090c5f8f6e506d"
+    },
+    {
+      "path": "src/solidlsp/language_servers/nixd_ls.py",
+      "blob": "00ab995eecc81536b448fbddc999be1ecf882704"
+    },
+    {
+      "path": "src/solidlsp/language_servers/ocaml_lsp_server.py",
+      "blob": "56968123b2312c2691615b917e53c2816d81bd2b"
+    },
+    {
+      "path": "src/solidlsp/language_servers/omnisharp.py",
+      "blob": "8a089f2d14cd85b48359a85cda30dc2f123218f4"
+    },
+    {
+      "path": "src/solidlsp/language_servers/omnisharp/initialize_params.json",
+      "blob": "f9ee86c3bf373fdb86fa6c2495731eb5dacbd0c4"
+    },
+    {
+      "path": "src/solidlsp/language_servers/omnisharp/runtime_dependencies.json",
+      "blob": "7f884b93f0d918b33e9fffa9a81c498685df6f5f"
+    },
+    {
+      "path": "src/solidlsp/language_servers/omnisharp/workspace_did_change_configuration.json",
+      "blob": "148841c3e09033c6ace3dcccb35e956614430f0c"
+    },
+    {
+      "path": "src/solidlsp/language_servers/pascal_server.py",
+      "blob": "4b1ab28255a45210c823677093ec3376d2e77708"
+    },
+    {
+      "path": "src/solidlsp/language_servers/perl_language_server.py",
+      "blob": "cce7a0412fd4cf5c445ee2fe610569dcc1aef3d5"
+    },
+    {
+      "path": "src/solidlsp/language_servers/phpactor.py",
+      "blob": "0070e9f78686af4c69b98b9658e583e5aaed7f8c"
+    },
+    {
+      "path": "src/solidlsp/language_servers/phpantom.py",
+      "blob": "b461981c01aad7b74aeab2481ab10d86872ee8aa"
+    },
+    {
+      "path": "src/solidlsp/language_servers/powershell_language_server.py",
+      "blob": "5e0d4aee5b727f6b37e5acb55838dd29fb9559b2"
+    },
+    {
+      "path": "src/solidlsp/language_servers/pyrefly_server.py",
+      "blob": "ce6899e6494bd23c010c7fd1cedbbb74daca5ded"
+    },
+    {
+      "path": "src/solidlsp/language_servers/pyright_server.py",
+      "blob": "4a8c9fbc3b74b257f0b731015cee16730a9ccc59"
+    },
+    {
+      "path": "src/solidlsp/language_servers/qml_language_server.py",
+      "blob": "e1ac3031ee0cf2f15eeb827837cadf940c0f8553"
+    },
+    {
+      "path": "src/solidlsp/language_servers/r_language_server.py",
+      "blob": "0ac34135a10970697f18b2aa9c4f0ab19583a491"
+    },
+    {
+      "path": "src/solidlsp/language_servers/regal_server.py",
+      "blob": "c19f556ee1f66964477eeed73b69e9776dbf5d4a"
+    },
+    {
+      "path": "src/solidlsp/language_servers/ruby_lsp.py",
+      "blob": "bc511c842342b968f552221020461166a1adae1c"
+    },
+    {
+      "path": "src/solidlsp/language_servers/rust_analyzer.py",
+      "blob": "5b53c17e9f8b4d7a62aeba9715c4371212fbf30b"
+    },
+    {
+      "path": "src/solidlsp/language_servers/scala_language_server.py",
+      "blob": "450627dd9bc075c1b23d9f87154624cbb4eb35a1"
+    },
+    {
+      "path": "src/solidlsp/language_servers/solargraph.py",
+      "blob": "2abf019486a8816bb4a6c4a1a2eb90197a21f93f"
+    },
+    {
+      "path": "src/solidlsp/language_servers/solidity_language_server.py",
+      "blob": "434c536a73c2eede99d4d16707c204fefd64f477"
+    },
+    {
+      "path": "src/solidlsp/language_servers/some_sass_language_server.py",
+      "blob": "abce6596f4ca11cfc3208c0d4f5bd24a983a2eee"
+    },
+    {
+      "path": "src/solidlsp/language_servers/sourcekit_lsp.py",
+      "blob": "7dea0cbdbe191e425f71494b2a94eefea23a733d"
+    },
+    {
+      "path": "src/solidlsp/language_servers/svelte_language_server.py",
+      "blob": "e716dea06f3d35fc22a3883ed64dc32f8b812ce1"
+    },
+    {
+      "path": "src/solidlsp/language_servers/systemverilog_server.py",
+      "blob": "4a08f19e8ee1ffffd68b5ad55d7f5b1d3fcf907a"
+    },
+    {
+      "path": "src/solidlsp/language_servers/taplo_server.py",
+      "blob": "69511d7bccd15a6ea46408f9359f1821aaa4e6fa"
+    },
+    {
+      "path": "src/solidlsp/language_servers/terraform_ls.py",
+      "blob": "d9b0531c45e6352287fe26309f446bb16ab50796"
+    },
+    {
+      "path": "src/solidlsp/language_servers/texlab_language_server.py",
+      "blob": "91f0e09be86bd13329969448c1940a428c3b3f21"
+    },
+    {
+      "path": "src/solidlsp/language_servers/ty_server.py",
+      "blob": "ea20f54a3b9454bedc8be363839528026e924143"
+    },
+    {
+      "path": "src/solidlsp/language_servers/typescript_language_server.py",
+      "blob": "063b252474514364c0a40bc48d3b57c9bd37e1c5"
+    },
+    {
+      "path": "src/solidlsp/language_servers/vscode_html_language_server.py",
+      "blob": "9b329bc36de4a52c39be2188094037acc5615427"
+    },
+    {
+      "path": "src/solidlsp/language_servers/vts_language_server.py",
+      "blob": "1f2cf1ae5f57d8e3a0a870938867f8089b5a69a9"
+    },
+    {
+      "path": "src/solidlsp/language_servers/vue_language_server.py",
+      "blob": "74519276ddcb3b0231bb779f22f9b14b3668154a"
+    },
+    {
+      "path": "src/solidlsp/language_servers/wolfram_language_server.py",
+      "blob": "a3c3790d9feba5170421b4b20780ee5980a14d6b"
+    },
+    {
+      "path": "src/solidlsp/language_servers/yaml_language_server.py",
+      "blob": "b229f15f258648074aef1b8572974cb6622a786f"
+    },
+    {
+      "path": "src/solidlsp/language_servers/zls.py",
+      "blob": "5480723afc56f6f1a1c2a8411e0dba9fd9f06b2b"
+    },
+    {
+      "path": "src/solidlsp/ls.py",
+      "blob": "cba90723dcdec4083093133e6fe89c6f70949df5"
+    },
+    {
+      "path": "src/solidlsp/ls_config.py",
+      "blob": "67d77b02e5c9bde0cce7365f813ece7950194dfe"
+    },
+    {
+      "path": "src/solidlsp/ls_exceptions.py",
+      "blob": "5b34c40658fb2fa044c482ee0d7d9b0ede5e57f1"
+    },
+    {
+      "path": "src/solidlsp/ls_process.py",
+      "blob": "e231d967cf2cd4e5d374cb5990a188f93466841c"
+    },
+    {
+      "path": "src/solidlsp/ls_request.py",
+      "blob": "e2a42ced5af8f90d570f8222cb407dcbb2de05d9"
+    },
+    {
+      "path": "src/solidlsp/ls_types.py",
+      "blob": "24d512663a9a88195d517492bf5d28644f0d4592"
+    },
+    {
+      "path": "src/solidlsp/ls_utils.py",
+      "blob": "f46f09ea994afcf4d7e0384bc3ea69547768d05d"
+    },
+    {
+      "path": "src/solidlsp/lsp_protocol_handler/lsp_constants.py",
+      "blob": "467237dc276436ac97b93ef51796549d3d5866a8"
+    },
+    {
+      "path": "src/solidlsp/lsp_protocol_handler/lsp_requests.py",
+      "blob": "78f308b23b5df79a8cc57021597cdc872eb8242a"
+    },
+    {
+      "path": "src/solidlsp/lsp_protocol_handler/lsp_types.py",
+      "blob": "8dfc92e75b9b124b105ee99d320ff9a30364b4ac"
+    },
+    {
+      "path": "src/solidlsp/lsp_protocol_handler/server.py",
+      "blob": "da94e1eb29d21dd351a2d1b60e6ab10f5f7fe09c"
+    },
+    {
+      "path": "src/solidlsp/resources/downloaded_dependency_hashes.json",
+      "blob": "d1006ff895627b6c478f2fb987578f778ea31386"
+    },
+    {
+      "path": "src/solidlsp/settings.py",
+      "blob": "a1fa30037fc475a5a5a6158bc2b8373591225848"
+    },
+    {
+      "path": "src/solidlsp/util/cache.py",
+      "blob": "64ee134511ee389f70b6bb50be1edc3cb3af899b"
+    },
+    {
+      "path": "src/solidlsp/util/metals_db_utils.py",
+      "blob": "9e91eebfaaa69475eb1798bab82a4f5b551010fe"
+    },
+    {
+      "path": "src/solidlsp/util/subprocess_util.py",
+      "blob": "8763f745fe6b9061cef03acc612c13b27c8cb84f"
+    },
+    {
+      "path": "src/solidlsp/util/zip.py",
+      "blob": "d93d942170898002768913924833919afd90ae39"
+    },
+    {
+      "path": "sync.py",
+      "blob": "08cb8d5d15d43f0a93f1c442c1fbdc7935a365eb"
+    },
+    {
+      "path": "test/__init__.py",
+      "blob": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "test/conftest.py",
+      "blob": "c06076b6181271e753f9dce04d415c3166a9c291"
+    },
+    {
+      "path": "test/resources/repos/ada/test_repo/.gitignore",
+      "blob": "5aff2b5037fd7b224f6344abb3ccc81e182129d1"
+    },
+    {
+      "path": "test/resources/repos/ada/test_repo/default.gpr",
+      "blob": "07dbd6e90443e235567bce45b20e89a066b3a830"
+    },
+    {
+      "path": "test/resources/repos/ada/test_repo/src/diagnostics_sample.adb",
+      "blob": "eb6c70b983a717dd029e6df4d9fea005c2595bfd"
+    },
+    {
+      "path": "test/resources/repos/ada/test_repo/src/helper.adb",
+      "blob": "52e818f036d70e50315686fabc55c1154afeee5f"
+    },
+    {
+      "path": "test/resources/repos/ada/test_repo/src/helper.ads",
+      "blob": "63b9bf66c714b6f8b8fb73b19f53eff0d1daa758"
+    },
+    {
+      "path": "test/resources/repos/ada/test_repo/src/main.adb",
+      "blob": "2cd348746a41e17498b5007561ba78bb146f448b"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/app.json",
+      "blob": "d797c8dad964c4054cddcd6587fe62c5dfaadfdd"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Codeunits/CustomerMgt.Codeunit.al",
+      "blob": "d7c8f4604ab9d1c7815f8b9fb14d63cfbd114695"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Codeunits/PaymentProcessorImpl.Codeunit.al",
+      "blob": "16be0a04fea78be149cae90bbc041ca54e6611ed"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Enums/CustomerType.Enum.al",
+      "blob": "2eaee493522446c23b74077c65c9bed99bfd4523"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Interfaces/IPaymentProcessor.Interface.al",
+      "blob": "d518846d190d41ca176a334ade03648a5e1c2cff"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Pages/CustomerCard.Page.al",
+      "blob": "3f266efb822af20ac154e873ddfe75b4851671b4"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Pages/CustomerList.Page.al",
+      "blob": "15b5046a2564e76d6ac971af0200c4f1f4646071"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/TableExtensions/Item.TableExt.al",
+      "blob": "3d9eeefcdb692f6182f11faa9571bc26104bfad7"
+    },
+    {
+      "path": "test/resources/repos/al/test_repo/src/Tables/Customer.Table.al",
+      "blob": "a6c90430a51b2cbf1e153f28b1e17457603d0e39"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/.gitignore",
+      "blob": "11431c9b55dd78806c07150eec5d988a9c88bebf"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/angular.json",
+      "blob": "337e060f925fe78fc1dc97bce3ec0e414df0a488"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/package-lock.json",
+      "blob": "046eab747b73ff451f616f05b1ef5fc16c8887eb"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/package.json",
+      "blob": "09e227d850f582579830f9e656fbbee922f5f797"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/app.component.html",
+      "blob": "b8498db37a0757663c6fe33874b4b7db83cf32e6"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/app.component.ts",
+      "blob": "25f22123c49487bd05e8ca6d0b32d5e1fffb6058"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/diagnostics_sample.html",
+      "blob": "c38be8d1dcb1b05498299ca3f9779d06553b0df8"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/diagnostics_sample.ts",
+      "blob": "18583943102e5eb03e7045dd246490f3c68b96bd"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/exclaim.pipe.ts",
+      "blob": "38e09f673e214d95ebcb208f4df6d6d3913c2b86"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/greeter.interface.ts",
+      "blob": "5850224eb9405b36ef59eb039eb0c4618cc84640"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/greeting.service.ts",
+      "blob": "86cdbf7bdcdd57b47650a80a24a1041ade3bdbf0"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/app/item-card.component.ts",
+      "blob": "7af9f2afa49e75acaa5724631e71a2fdc043421a"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/index.html",
+      "blob": "e7cf87db99d2723c57401a838818488c40521653"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/src/main.ts",
+      "blob": "31c5da48299723d619fa9c09943f99a54d2c89f4"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/tsconfig.app.json",
+      "blob": "e228136a3dff31d09598d9f2478c3372b8fccfc6"
+    },
+    {
+      "path": "test/resources/repos/angular/test_repo/tsconfig.json",
+      "blob": "ca72349a5bf9fa749dc418a807b7c1010abc972e"
+    },
+    {
+      "path": "test/resources/repos/ansible/test_repo/inventory/hosts.yml",
+      "blob": "616cd91727ea3827c65152cb2fac9eff363906f8"
+    },
+    {
+      "path": "test/resources/repos/ansible/test_repo/playbook.yml",
+      "blob": "37a4e9784563ab223c75262c31fe8412af63cde0"
+    },
+    {
+      "path": "test/resources/repos/ansible/test_repo/roles/common/defaults/main.yml",
+      "blob": "83723e3650419e730bf09be2b7cc439632dffa76"
+    },
+    {
+      "path": "test/resources/repos/ansible/test_repo/roles/common/handlers/main.yml",
+      "blob": "aa567e7ce6969108454bbee22de17a2b1b6aad5b"
+    },
+    {
+      "path": "test/resources/repos/ansible/test_repo/roles/common/tasks/main.yml",
+      "blob": "5ce8ceae04ce5a98fb3227b06477f966f517556b"
+    },
+    {
+      "path": "test/resources/repos/bash/test_repo/config.sh",
+      "blob": "440867e5492cd17a326400b024bedf9e25f0c14c"
+    },
+    {
+      "path": "test/resources/repos/bash/test_repo/diagnostics_sample.sh",
+      "blob": "050a8a99ab795fe171dd62cf2f06758cfbe97e8a"
+    },
+    {
+      "path": "test/resources/repos/bash/test_repo/main.sh",
+      "blob": "56d2e72eff12720c5bc33754d627908a860cdc53"
+    },
+    {
+      "path": "test/resources/repos/bash/test_repo/utils.sh",
+      "blob": "77fc8fede90c6fd9a249f231c1d6b3b3fa92ac34"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/.bsl-language-server.json",
+      "blob": "45c1c84cc1258e80be382ccbb902a21668fc2321"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/.gitkeep",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/CommonModule.bsl",
+      "blob": "ce5b6b9e6aea1f698bb931f1754f608c491a57e7"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/ObjectModule.bsl",
+      "blob": "88cc693826a646d4cd545575d3b20ff8c47eb312"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/diagnostics_sample.bsl",
+      "blob": "3d0ba3122a3ee04ee1eedb9dd265224b5f591826"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/CommonModules/ОбщийМодуль1.xml",
+      "blob": "cc693c588bbaa2ca756d96c8aa0c21cfb8622bf7"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/CommonModules/ОбщийМодуль1/Ext/Module.bsl",
+      "blob": "c17ba3018d5d309801bccf81a73a3364d52e0a6d"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/CommonModules/ОбщийМодуль2.xml",
+      "blob": "6c5398430c05814a80986bbba4508e1dd5a5f28b"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/CommonModules/ОбщийМодуль2/Ext/Module.bsl",
+      "blob": "923fb56d0dadd6641c723432c4ba0a648f8e4d24"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/ConfigDumpInfo.xml",
+      "blob": "899c546cc300c047c5cc20c24d687d34bd5dee5b"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/Configuration.xml",
+      "blob": "0ce60408b3918f75b2a6fb5ed7b2f20d3e4074e5"
+    },
+    {
+      "path": "test/resources/repos/bsl/test_repo/src/Languages/Русский.xml",
+      "blob": "6665f2c9e46a05ed95b82d0ed93bb61be1d9bf50"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/deps.edn",
+      "blob": "d06803525ea04379ed61b9b3f0786be95c2d3176"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/src/test_app/core.clj",
+      "blob": "20f5e0006f5ee8a3fd290e357b427a72cada7699"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/src/test_app/diagnostics_sample.clj",
+      "blob": "ecc0c79cca141c8f47c3c3551ac0657c9ce96559"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/src/test_app/extra.clj",
+      "blob": "fb58bd5ead85fe3854c90cf5b9119c01cc27fc98"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/src/test_app/utils.clj",
+      "blob": "868bcb541121cd643105254583617e6c8034b1d7"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/sub_module/deps.edn",
+      "blob": "c1897049751e11129d6343d43c9fe04e55687ef6"
+    },
+    {
+      "path": "test/resources/repos/clojure/test_repo/sub_module/src/sub_module_app/consumer.clj",
+      "blob": "6c67bb51bb0bf94a7abf97b02f3dcda624253e27"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/C/a.c",
+      "blob": "fe5fbea73e36721b318b41c7a7731d95d6dee663"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/C/b.h",
+      "blob": "e404974dc8fd490cb0e2a62a97c34d334eb0da2c"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/CUDA/a.cu",
+      "blob": "e32d79f48ca88525a31362fc6f8cd58c627af565"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/CXX20/a.cpp",
+      "blob": "79d86039470612fbf1753000df3fc0d11cdab52b"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/CXX20/b.cpp",
+      "blob": "1b95a679801c248ef65e1bbb43da158c5a0e7465"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/CXX20/b.cppm",
+      "blob": "d1e7dcbe05fc1a3f0effc98000908daea950fc4b"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/HIP/a.hip",
+      "blob": "910b9876a62c4ae8d43271c7847fa60f6d8eb14f"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/Objective-C/a.m",
+      "blob": "6487dfb889e2c08df6533ef13602d5e9dd927c89"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/OpenCL/a.cl",
+      "blob": "78fe1a68d8b5cb06b9814027bc114d26ac2afbde"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/a.cpp",
+      "blob": "7e5aebb165e09e467bd5e0141e9628db7cc42008"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/b.cpp",
+      "blob": "27b93733105f749f5a74c8da41909b20889d81ac"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/b.hpp",
+      "blob": "e404974dc8fd490cb0e2a62a97c34d334eb0da2c"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/compile_commands.json",
+      "blob": "3ecc0e7daab33dcc677e45ee12133bd144962f34"
+    },
+    {
+      "path": "test/resources/repos/cpp/test_repo/diagnostics_sample.cpp",
+      "blob": "78075fc828dbd8028b23384b2f95e909d0b2eaea"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Intermediate/TestGame/UHT/AbilityActor.generated.h",
+      "blob": "dfe4e1123773326957fc14f8edb0d25f64eecf69"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Intermediate/TestGame/UHT/AbilityComponent.gen.cpp",
+      "blob": "f63150c20108f3017e683ac04b6ae766c5e711b9"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Intermediate/TestGame/UHT/AbilityComponent.generated.h",
+      "blob": "6b67bfcee0825d5ad09caab2da5486898304b2f3"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Intermediate/TestGame/UHT/AbilityTypes.generated.h",
+      "blob": "94f7304527e5e07ab3f970b58c6a951fb66c6f7a"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Intermediate/TestGame/UHT/Damageable.generated.h",
+      "blob": "d8925f26fc180ac3d5fab18a1fb68eb0bf0a3750"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Intermediate/TestGame/UHT/GameCharacter.generated.h",
+      "blob": "312e057c86ff988bf38d2b684fe42ba4636bffdb"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/MyGame.uproject",
+      "blob": "c0a6c1fc472792e7f81979e3740fa4c6e7d3f6f5"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/AbilityActor.cpp",
+      "blob": "8ca27d9c1f84116d9cef2c63633d1adfde2dc6a1"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/AbilityActor.h",
+      "blob": "a728131f2d5631f1cef494069acf2ef39a0e6554"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/AbilityComponent.cpp",
+      "blob": "81cab7c1ebc829f8a6e32df3c943a49f7a0f71f8"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/AbilityComponent.h",
+      "blob": "0216ac43152aefa223846eea51e1af5e493368e4"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/AbilityTypes.h",
+      "blob": "a694e25cd972b8ef376071a59e517cc9180dc446"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/Damageable.h",
+      "blob": "825c1d89fdeb08f23757e3be1845b0eaeff48404"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/GameCharacter.cpp",
+      "blob": "f50b129dba054bce4372b40830ae16cc8c062c82"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/GameCharacter.h",
+      "blob": "892a42eabb044df451e75535448493992ecc834c"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/TestGameLog.h",
+      "blob": "10caade9aa9a90acde6474aaa8c49e08d556eac3"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Source/TestGame/TestGameModule.cpp",
+      "blob": "4bd6a5dfad0b11997c1c02f1feaf5af09b8531ba"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Components/ActorComponent.h",
+      "blob": "b728d771d42cd928cae8cfc4e1acd532554839bf"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Containers/Array.h",
+      "blob": "408385f34e412eb89e47f5ca7926cfb9fcccfaea"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Containers/Map.h",
+      "blob": "10c835f54fd5d7b5e011821adb412ce305081418"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Containers/Set.h",
+      "blob": "a30afa3648b37ec173a135e007b150c826cccd7c"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/CoreMinimal.h",
+      "blob": "18211753c6dfcde00637690dba7f9b4ba69662e3"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/CoreTypes.h",
+      "blob": "275a29185492edb86303b91b176c5b17cfd4b3b9"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Delegates/DelegateCombinations.h",
+      "blob": "5b1fc2b2f7264f44d1fec239bee0c28ffe25a56b"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Engine/World.h",
+      "blob": "9da8b5ddf7c81b2c07b638b70d05c83b3faaac1f"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/GameFramework/Actor.h",
+      "blob": "80c4536fcc6330287e3fdc868f72b587e9877b30"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/GameFramework/Character.h",
+      "blob": "014799ce73d0e0ffa175372173aead1b53bd8220"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/GameFramework/Pawn.h",
+      "blob": "4007abc17ead024a5c67b1a112abf2ebe52fa0b2"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Logging/LogMacros.h",
+      "blob": "fd7746108552a19523a90258542060f846d1bf3e"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Math/MathFwd.h",
+      "blob": "5c6aede581b057b8298fac8a48103e0b38da657f"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Misc/Optional.h",
+      "blob": "a49794bde40a7a27ecbe2c8b43416b701a0c71e7"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Modules/ModuleManager.h",
+      "blob": "20aa630df78c141de95e60ce36aa934714d25786"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Templates/SharedPointer.h",
+      "blob": "3eaf59a79d955c8f1dad7e83d8a72a4aa1f4176c"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Templates/SubclassOf.h",
+      "blob": "f7b84e178590b1a469ba4ad352d020158b44d40e"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/Templates/UniquePtr.h",
+      "blob": "c86daf747246ba3c14196922df59cddebdc217a1"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/Interface.h",
+      "blob": "091afce6feafdefc5e41b824cfac468776b7a0d8"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/Object.h",
+      "blob": "ba30f34d144b7482dde7e239d12a3748b5f3abdd"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/ObjectMacros.h",
+      "blob": "56a46b168f4f6acb529bbd779e0300ecf4ffc075"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/ObjectPtr.h",
+      "blob": "e6b150322260119434909ffd6c785dcb6eb5414c"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/SoftObjectPtr.h",
+      "blob": "609443d105531f8322389d524e437790f1b4b476"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/UObjectGlobals.h",
+      "blob": "4a86f20bb3082b02676f96a09dab1bf237e5a0ba"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/Stubs/UObject/WeakObjectPtr.h",
+      "blob": "e45451aa616d198f2f91ad3468d794c6c663ef44"
+    },
+    {
+      "path": "test/resources/repos/cpp/ue_test_repo/compile_commands.json",
+      "blob": "3009849e2128493ac952ec6ae071d62b0a6cbfc8"
+    },
+    {
+      "path": "test/resources/repos/crystal/test_repo/shard.yml",
+      "blob": "3ac87e1effdc442e6027154fadda133c069d237b"
+    },
+    {
+      "path": "test/resources/repos/crystal/test_repo/src/diagnostics_sample.cr",
+      "blob": "b408a202ee0b20025fcb0213e3774f8990212af8"
+    },
+    {
+      "path": "test/resources/repos/crystal/test_repo/src/main.cr",
+      "blob": "d50955bd1be7abcd778f4b84b68a7b471413f510"
+    },
+    {
+      "path": "test/resources/repos/crystal/test_repo/src/utils.cr",
+      "blob": "68164250e321134b780ac15174f085feddf39895"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/.gitignore",
+      "blob": "c49439794074e5a6401cd722bc7c099eb70c29c5"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/DiagnosticsSample.cs",
+      "blob": "1356e26dc0110851614400349bd9515111501a14"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/Models/Person.cs",
+      "blob": "db101886be703a15faea914da33b24ee8cf105f2"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/Program.cs",
+      "blob": "4bcf0f6a9d04df0a3a1e047cb95e25ab5d852f47"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/Services/ConsoleGreeter.cs",
+      "blob": "d80d8ba885a2fd25501bfbf93604c3eb29f17c2b"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/Services/IGreeter.cs",
+      "blob": "2f64ca0e4c910cd916bc95560eeaafaeaa33bb2b"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/TestProject.csproj",
+      "blob": "c28018dbfdd4c6c824b9d8660a142bd1b9755d5d"
+    },
+    {
+      "path": "test/resources/repos/csharp/test_repo/serena.sln",
+      "blob": "ef7a131549f89c89f0658c0a25088f5005fbaba3"
+    },
+    {
+      "path": "test/resources/repos/cue/test_repo/.gitignore",
+      "blob": "a85a3ed6685f4b4b290391412aa117a7de1cbaba"
+    },
+    {
+      "path": "test/resources/repos/cue/test_repo/cue.mod/module.cue",
+      "blob": "6d828f8b5c0bf0f19e3f69606f15e3d98e6323a6"
+    },
+    {
+      "path": "test/resources/repos/cue/test_repo/lib.cue",
+      "blob": "a3ccc4c603d154e2b2a7a5d65f4eee1ddf83775a"
+    },
+    {
+      "path": "test/resources/repos/cue/test_repo/main.cue",
+      "blob": "79e47497d8e410f607598549654c4d06dfa64810"
+    },
+    {
+      "path": "test/resources/repos/cue/test_repo/schema.cue",
+      "blob": "91c041311266811e449e0d4ac10f28196346d805"
+    },
+    {
+      "path": "test/resources/repos/dart/test_repo/.gitignore",
+      "blob": "a594830537c509d980f45409f7c7f73f6ffda009"
+    },
+    {
+      "path": "test/resources/repos/dart/test_repo/lib/diagnostics_sample.dart",
+      "blob": "d309d9fc4d87ea629a8aef4ad7a97aac93bfb0b0"
+    },
+    {
+      "path": "test/resources/repos/dart/test_repo/lib/helper.dart",
+      "blob": "b5732b693e6e6b021d7de4c5b3939040bf0f0fe1"
+    },
+    {
+      "path": "test/resources/repos/dart/test_repo/lib/main.dart",
+      "blob": "1d84c2e6bebce9bf4b46090dac73e624d2037ce8"
+    },
+    {
+      "path": "test/resources/repos/dart/test_repo/lib/models.dart",
+      "blob": "135fd814ca1ae1444a1a6285fb4e78da194eb837"
+    },
+    {
+      "path": "test/resources/repos/dart/test_repo/pubspec.yaml",
+      "blob": "ea233621e719bfdc92162a0765c373f3da21dd80"
+    },
+    {
+      "path": "test/resources/repos/deno/test_repo/deno.json",
+      "blob": "2f35542b4db15fd0b5aab4e7760e2df50c9c8515"
+    },
+    {
+      "path": "test/resources/repos/deno/test_repo/main.ts",
+      "blob": "34493ed6ce229db59760fbcfc62a73386b591a6f"
+    },
+    {
+      "path": "test/resources/repos/deno/test_repo/util.ts",
+      "blob": "8559ea54a19b0456f1815faa80f43b51604154d1"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/.gitignore",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/diagnostics_sample.ex",
+      "blob": "af510437d9340469bfafa4d060ce0aa8ab270023"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/examples.ex",
+      "blob": "57c2728377778776d156b839517ca007577787e7"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/ignored_dir/ignored_module.ex",
+      "blob": "a311f1d540483452928240017435e1b21dfe2691"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/models.ex",
+      "blob": "4e8a42d329d5226743e75e9b551eb55658b9a109"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/services.ex",
+      "blob": "b6768a9aee46cae2673619d6b4a532485b8d7536"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/test_repo.ex",
+      "blob": "96a2fd8954c5e7b84f6ee680c490ea63727c0be5"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/lib/utils.ex",
+      "blob": "458823ed1df8d2ca9cc433140b681a8fad72af32"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/mix.exs",
+      "blob": "76bba38e2c02e6d89cfb7ffe344e216bafd73f0b"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/mix.lock",
+      "blob": "004414bef69a8066cf4c64e80c11c5b7a8ddab70"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/scripts/build_script.ex",
+      "blob": "cc89dfed10c3d64ced09f4c339f489a7a38b907b"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/test/models_test.exs",
+      "blob": "52260471121f45f8759ae05f90b792a419acc596"
+    },
+    {
+      "path": "test/resources/repos/elixir/test_repo/test/test_repo_test.exs",
+      "blob": "62f87c20e8d2fa605f8ec4d8fe9cbbcf81d6f098"
+    },
+    {
+      "path": "test/resources/repos/elm/test_repo/DiagnosticsSample.elm",
+      "blob": "2880fa7be6ab18aabecf033aa328d745e642d055"
+    },
+    {
+      "path": "test/resources/repos/elm/test_repo/Main.elm",
+      "blob": "76a3478148282857202ddd1690cf8ce513ff1099"
+    },
+    {
+      "path": "test/resources/repos/elm/test_repo/Utils.elm",
+      "blob": "c54b8a905235caa2c8f5c4491e1cde5468981192"
+    },
+    {
+      "path": "test/resources/repos/elm/test_repo/elm.json",
+      "blob": "0a668c0822b4939ad495db7a5b26a4d8bc072132"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/hello.erl",
+      "blob": "34f27af7815da7b56522d2d1227de7d1cca2ad45"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/ignored_dir/ignored_module.erl",
+      "blob": "4f60fbd05accf145923101e0c798abdccbd730ad"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/include/records.hrl",
+      "blob": "f0b69961421355ce38409a163225bf9bdb6cc8cd"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/include/types.hrl",
+      "blob": "dec0f9dfece5b60c9547a857ecfad9d40e1f85c2"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/math_utils.erl",
+      "blob": "3ff586120001a0df8e5b0b684fac6f5123fa7c8c"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/rebar.config",
+      "blob": "ef8802ae729ee43078ed17a12a6ffb2f0596c3e9"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/src/app.erl",
+      "blob": "96e40150b7a6267cc86a5ea67dfb29a32bc0f1c5"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/src/diagnostics_sample.erl",
+      "blob": "edb1877624e2bc8f6dd621770268c13014e26931"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/src/models.erl",
+      "blob": "255ab186f9bc45d68d1dd0f5f53ba7958c4d639b"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/src/services.erl",
+      "blob": "c066fd7bcb942a28feae16d65e7f89964d42373d"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/src/utils.erl",
+      "blob": "e97309f074e7ea0fd0b2ed224c807f8cbbc2c1a2"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/test/models_tests.erl",
+      "blob": "c4ce47caf52943f44dbdc2939c793594da991ad8"
+    },
+    {
+      "path": "test/resources/repos/erlang/test_repo/test/utils_tests.erl",
+      "blob": "042c3c9280b10c9bebc75255e752714ab465eca2"
+    },
+    {
+      "path": "test/resources/repos/fortran/test_repo/diagnostics_sample.f90",
+      "blob": "2c23e5dfa5101b3d34a4be0c5098f76df3969118"
+    },
+    {
+      "path": "test/resources/repos/fortran/test_repo/main.f90",
+      "blob": "6ca2095bec02baa2c34bf8b3943a3053c92cfdde"
+    },
+    {
+      "path": "test/resources/repos/fortran/test_repo/modules/geometry.f90",
+      "blob": "677f9e85b93e66fcb729092f05521cbd07e8e09e"
+    },
+    {
+      "path": "test/resources/repos/fortran/test_repo/modules/math_utils.f90",
+      "blob": "8b5707a86555f1540a295ff9ec3a7da324c7cd1a"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/.gitignore",
+      "blob": "975cf30fb683ea413a64de11d7e6483969f86201"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/Calculator.fs",
+      "blob": "e332945b1b705538376e9c7dd700e86d658c7fec"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/DiagnosticsSample.fs",
+      "blob": "815b844b3cd1836dd75770552a7fe6dce1d793cc"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/Formatter.fs",
+      "blob": "52085d3f383ac7acf7ed1bd274fd51d985f7587d"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/Models/Person.fs",
+      "blob": "a29669233aff9fb9676ac3533bdb5da5da00179b"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/Program.fs",
+      "blob": "3305598c89f708bc5fc52fd50775ec0818c58eb4"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/README.md",
+      "blob": "fdef17cb69ce38e9ff06973e2531df040626b916"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/Shapes.fs",
+      "blob": "d67a98aada7aa79a7d16f7b1258aa6af049ff306"
+    },
+    {
+      "path": "test/resources/repos/fsharp/test_repo/TestProject.fsproj",
+      "blob": "e44baee04fa0ad78840c5de055ebba834868a2c3"
+    },
+    {
+      "path": "test/resources/repos/gleam/test_repo/.gitignore",
+      "blob": "567609b1234a9b8806c5a05da6c866e480aa148d"
+    },
+    {
+      "path": "test/resources/repos/gleam/test_repo/gleam.toml",
+      "blob": "df8730ebb6efdb3ffc747d22b440dea4d8c638e4"
+    },
+    {
+      "path": "test/resources/repos/gleam/test_repo/manifest.toml",
+      "blob": "6e7520616ce33c24e6d5401298a80564391f01b4"
+    },
+    {
+      "path": "test/resources/repos/gleam/test_repo/src/calculator.gleam",
+      "blob": "2b60b8411697b63acb2cb08fdcc1413e1693192d"
+    },
+    {
+      "path": "test/resources/repos/gleam/test_repo/src/diagnostics_sample.gleam",
+      "blob": "bff8d72bd583955fda230665b58f5b85f98a0b76"
+    },
+    {
+      "path": "test/resources/repos/gleam/test_repo/src/utils.gleam",
+      "blob": "e967c6756ecc3afa2059a4d59d3bdc0d4831f27b"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/buildtags/foo.go",
+      "blob": "43df3dc6be9069b7c6b43956758724210e3131fa"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/buildtags/notfoo.go",
+      "blob": "831a63b5564c901de8770d21b99f5c74fc86ba66"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/containment_sample.go",
+      "blob": "c8ccc8616b062d5b98d550468ccca09f1e6a2c7b"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/diagnostics_sample.go",
+      "blob": "15f7d6a2d29b9ab756311b6e357148aafd47cfd1"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/go.mod",
+      "blob": "59623c28b66a779d18f4b5bf540dde3e97f16500"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/main.go",
+      "blob": "44412892066316ee8e9d714432b36d29b7e85ca2"
+    },
+    {
+      "path": "test/resources/repos/go/test_repo/symbol_body.go",
+      "blob": "604b98b955e9eb3de2a41f1b3032629331a0fc2e"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/.gitignore",
+      "blob": "3bb19ffd7868293298953b5152bee67b5b60a930"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/build.gradle",
+      "blob": "61a1de3a0ff5737a40c0e3f985ab0d7b03762f85"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/src/main/groovy/com/example/DiagnosticsSample.groovy",
+      "blob": "a176203effb8a6d5dcba0a562bcb13572929affa"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/src/main/groovy/com/example/Main.groovy",
+      "blob": "0e42fe718dc5acfc295ff5ea6dd5d817d241c756"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/src/main/groovy/com/example/Model.groovy",
+      "blob": "f6451ca42323bb404321bcf9bdc690f6b58420b2"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/src/main/groovy/com/example/ModelUser.groovy",
+      "blob": "bde77812c00fc746202c6d56193c7f0805662310"
+    },
+    {
+      "path": "test/resources/repos/groovy/test_repo/src/main/groovy/com/example/Utils.groovy",
+      "blob": "b2cf63a1f992bc77335d3730c5a34ac794c40890"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/app/Main.hs",
+      "blob": "3f8dddb1de20157f261e661ae3e56b71d1e67de1"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/haskell-test-repo.cabal",
+      "blob": "809b2a9ed5aade4cba373420107386bcc535b727"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/package.yaml",
+      "blob": "f489e49ba2e07a50b0a4cdd4e12e399e236a602a"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/src/Calculator.hs",
+      "blob": "40c1839b2628d9d307f718193bb95e5852d84f1a"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/src/DiagnosticsSample.hs",
+      "blob": "e5777b1f5721a839f056330e2a4e7c7feca7e7c3"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/src/Helper.hs",
+      "blob": "9fa04c3865cf1ae74d834aed9fcedad89e1ee0ca"
+    },
+    {
+      "path": "test/resources/repos/haskell/test_repo/stack.yaml",
+      "blob": "1ecc3671a3e32c74773ce05176b5e68f65063850"
+    },
+    {
+      "path": "test/resources/repos/haxe/test_repo/.gitignore",
+      "blob": "e714affd2e55005ed8c3515ba16665c27765d344"
+    },
+    {
+      "path": "test/resources/repos/haxe/test_repo/build.hxml",
+      "blob": "40cd557d9724cb8992184bd64cc06e4c9e521ab1"
+    },
+    {
+      "path": "test/resources/repos/haxe/test_repo/src/DiagnosticsSample.hx",
+      "blob": "3b2e2c296b3df81295b944880b1699f589eb212a"
+    },
+    {
+      "path": "test/resources/repos/haxe/test_repo/src/Main.hx",
+      "blob": "a0b3252e8d4b660cd77caf3e2ac78c93075b560b"
+    },
+    {
+      "path": "test/resources/repos/haxe/test_repo/src/utils/Helper.hx",
+      "blob": "0c89950402857af0024e4fdb25d341e9ca0ec51e"
+    },
+    {
+      "path": "test/resources/repos/hlsl/test_repo/common.hlsl",
+      "blob": "1da49f84d42a70668aa51972e1ea4bcf9c961256"
+    },
+    {
+      "path": "test/resources/repos/hlsl/test_repo/compute_test.hlsl",
+      "blob": "f10531ef98194fbd0b1d26f81e55cf83e36a23ac"
+    },
+    {
+      "path": "test/resources/repos/hlsl/test_repo/diagnostics_sample.hlsl",
+      "blob": "ffc8075c3721f318d6f3ad78d3df9117b64ced5b"
+    },
+    {
+      "path": "test/resources/repos/hlsl/test_repo/lighting.hlsl",
+      "blob": "2334b639ed672991764ca1772f24658e62c62ee6"
+    },
+    {
+      "path": "test/resources/repos/hlsl/test_repo/terrain/terrain_sdf.hlsl",
+      "blob": "a748a27000ddd3e01c6da67a86cf71a6d5fb7ae3"
+    },
+    {
+      "path": "test/resources/repos/html/test_repo/about.html",
+      "blob": "4adb182aada73ac3263b832c942f903c8912d256"
+    },
+    {
+      "path": "test/resources/repos/html/test_repo/diagnostics_sample.html",
+      "blob": "1b2164f71f9277702325bbd440a553c78e178a81"
+    },
+    {
+      "path": "test/resources/repos/html/test_repo/index.html",
+      "blob": "4691b2d7df2246cadb15280c4b52523fefa30202"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/pom.xml",
+      "blob": "facb5368ea4320a8721a9970680b263e8ab42cf6"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/ConsoleGreeter.java",
+      "blob": "e8b85c99ff80983f4090e88c44182a4c7a5798ba"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/DefaultGreeter.java",
+      "blob": "8ed25b1ab36c28b702f61f1a3e7d422a3eaffaa9"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/DiagnosticsSample.java",
+      "blob": "53f8406b4389172c342ae185a480c30673d4dee3"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/FluentLombokModel.java",
+      "blob": "8b448707a100040060e3aabd8617c0bcc408d055"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/Greeter.java",
+      "blob": "569d5006c6d8391a3d135e32018557cae6d3ff9e"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/LombokModel.java",
+      "blob": "f003d51a05876fa412193c0ca5f692b7e95f2b4b"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/Main.java",
+      "blob": "29c0688eddeab4485f150f3679eea2866fc17845"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/Model.java",
+      "blob": "8834f3ca428807ae043d6cfb7ae131920b88f088"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/ModelUser.java",
+      "blob": "9cffa9fdaa29d69be6a22ed33b9ab10d72eadd82"
+    },
+    {
+      "path": "test/resources/repos/java/test_repo/src/main/java/test_repo/Utils.java",
+      "blob": "107f4c80ef938b8d3ba111ef98cd1e97a5ada45f"
+    },
+    {
+      "path": "test/resources/repos/json/test_repo/config.json",
+      "blob": "78ec641a740ed5f6e28b961e2f7c53dda055a585"
+    },
+    {
+      "path": "test/resources/repos/json/test_repo/data.json",
+      "blob": "329491ba041351c567d358d36c537cf35c11f922"
+    },
+    {
+      "path": "test/resources/repos/json/test_repo/diagnostics_sample.json",
+      "blob": "0cc75efde38e132d91ae18a652d8aaff122a97ad"
+    },
+    {
+      "path": "test/resources/repos/julia/test_repo/diagnostics_sample.jl",
+      "blob": "ef7e4a515073eb5b7a90c5ce62fd6c8b1ec9d4dc"
+    },
+    {
+      "path": "test/resources/repos/julia/test_repo/lib/helper.jl",
+      "blob": "c6a7e120847b60b17ade7efc82e4b4c69237cfca"
+    },
+    {
+      "path": "test/resources/repos/julia/test_repo/main.jl",
+      "blob": "fa31797745e5fd3c47094d245f9dde0cc7dbf0d4"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/.gitignore",
+      "blob": "3bb19ffd7868293298953b5152bee67b5b60a930"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/build.gradle.kts",
+      "blob": "60c1d631d3b5e03e8d5b84217d492ef2a910f78f"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/gradle/wrapper/gradle-wrapper.properties",
+      "blob": "2a84e188b85a31f9b4c2aa930ce9288fb6dc6936"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/gradlew",
+      "blob": "ef07e0162b183eb9d19a2c9ba7035c283af9f8dd"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/gradlew.bat",
+      "blob": "db3a6ac207e507b0bc1635a9f2c18d3b174e682e"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/src/main/kotlin/test_repo/DiagnosticsSample.kt",
+      "blob": "93f0b939decc86d07da1a3a5d93fd7d9eb07cbad"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/src/main/kotlin/test_repo/Main.kt",
+      "blob": "ce2beccfbf57a1bac9a07c541f9e8850907a0a9d"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/src/main/kotlin/test_repo/Model.kt",
+      "blob": "a32d18cff983ca39c9e69a6aa024c6de158cb23b"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/src/main/kotlin/test_repo/ModelUser.kt",
+      "blob": "5100436e5ff61f6f4279b6548bcffbc985de67cb"
+    },
+    {
+      "path": "test/resources/repos/kotlin/test_repo/src/main/kotlin/test_repo/Utils.kt",
+      "blob": "cd2ba3ce9975c29c48a881fbbc9c7f52e9db0397"
+    },
+    {
+      "path": "test/resources/repos/latex/test_repo/.gitignore",
+      "blob": "531e44bf3882713fefe9da1651b698b9b7c55cde"
+    },
+    {
+      "path": "test/resources/repos/latex/test_repo/main.tex",
+      "blob": "6b0cb8cf26bd61211b8ff3c5395eca7cb7cd511e"
+    },
+    {
+      "path": "test/resources/repos/latex/test_repo/references.bib",
+      "blob": "25931bea8569f7a96d009f1fbf796a9b8f8904a0"
+    },
+    {
+      "path": "test/resources/repos/latex/test_repo/sections/background.tex",
+      "blob": "c9edfe828b4cb03f7f6474a44edd37811e9f0e14"
+    },
+    {
+      "path": "test/resources/repos/latex/test_repo/slides.tex",
+      "blob": "d19f996d1e9cd3c935df68616944529b1dc8fe3f"
+    },
+    {
+      "path": "test/resources/repos/lean4/test_repo/DiagnosticsSample.lean",
+      "blob": "169754f7edaa021bd853fde0eb664acab9687045"
+    },
+    {
+      "path": "test/resources/repos/lean4/test_repo/Helper.lean",
+      "blob": "6112bfcd648d6ed2f1af998bb41124722c43199c"
+    },
+    {
+      "path": "test/resources/repos/lean4/test_repo/Main.lean",
+      "blob": "261ef8ff140183deb202a97dccc3e364119fa1e0"
+    },
+    {
+      "path": "test/resources/repos/lean4/test_repo/lake-manifest.json",
+      "blob": "5a610bd851abe3163cf0b24bf4f68ae4523205b4"
+    },
+    {
+      "path": "test/resources/repos/lean4/test_repo/lakefile.lean",
+      "blob": "cb410f19b47964797baef46506cf1d184c8e8d15"
+    },
+    {
+      "path": "test/resources/repos/lean4/test_repo/lean-toolchain",
+      "blob": "7638861cfca3940d9c33bbe5127a5f5fc24bad3f"
+    },
+    {
+      "path": "test/resources/repos/lua/test_repo/.gitignore",
+      "blob": "30bdcf9ec16e7844eb43cede36de43b623dd122f"
+    },
+    {
+      "path": "test/resources/repos/lua/test_repo/main.lua",
+      "blob": "cd6ecc97fa36dbe5b2d6c3556617551aa711e73b"
+    },
+    {
+      "path": "test/resources/repos/lua/test_repo/src/animals.lua",
+      "blob": "92f08f26f7143a467abfd7de8f84e895b982ac4e"
+    },
+    {
+      "path": "test/resources/repos/lua/test_repo/src/calculator.lua",
+      "blob": "d23b2587cf497a24e35a60bf00a2e2c1aaed9eb2"
+    },
+    {
+      "path": "test/resources/repos/lua/test_repo/src/utils.lua",
+      "blob": "576b0cb20e8d2617fba07d33c3221a99c53cf47c"
+    },
+    {
+      "path": "test/resources/repos/lua/test_repo/tests/test_calculator.lua",
+      "blob": "9f2aaa8dd59ce2a9aa3ba8df6cd59a88a2e2b278"
+    },
+    {
+      "path": "test/resources/repos/luau/test_repo/.luaurc",
+      "blob": "70eed5e83f5e997c7d5da412d6beaad6dc371bed"
+    },
+    {
+      "path": "test/resources/repos/luau/test_repo/src/init.luau",
+      "blob": "e8085945f8bccab409cff0440123bff84bff61dd"
+    },
+    {
+      "path": "test/resources/repos/luau/test_repo/src/module.luau",
+      "blob": "09170f3dce10b49bb1a9ed01cadaa2bb23f89450"
+    },
+    {
+      "path": "test/resources/repos/markdown/test_repo/CONTRIBUTING.md",
+      "blob": "2b533556afdd4d070ac8e1e3d61532b25c8b11cf"
+    },
+    {
+      "path": "test/resources/repos/markdown/test_repo/README.md",
+      "blob": "fbf9a5dcfc956ddc05ba7b0499ad2df55a1ee8f7"
+    },
+    {
+      "path": "test/resources/repos/markdown/test_repo/api.md",
+      "blob": "81d0e8af2b793a1b3b1f33d399c615d51eba0139"
+    },
+    {
+      "path": "test/resources/repos/markdown/test_repo/guide.md",
+      "blob": "025f43025ae9e0e47c6ccbd4400a9e87944821ea"
+    },
+    {
+      "path": "test/resources/repos/matlab/test_repo/Calculator.m",
+      "blob": "d0c3aec4281994deb603432b8dbab52ae337b946"
+    },
+    {
+      "path": "test/resources/repos/matlab/test_repo/diagnostics_sample.m",
+      "blob": "b0f87a62e580446d7c94861f830edc1ecf7a5643"
+    },
+    {
+      "path": "test/resources/repos/matlab/test_repo/main.m",
+      "blob": "c95948cc4d3093ce7a06abc8db38c722124a8d19"
+    },
+    {
+      "path": "test/resources/repos/msl/test_repo/main.mrc",
+      "blob": "04385ee1aab43df59ac0fc8731bf49b694849d8b"
+    },
+    {
+      "path": "test/resources/repos/msl/test_repo/utils.mrc",
+      "blob": "c7a122662de33abe49fe45f8c238866d371d6731"
+    },
+    {
+      "path": "test/resources/repos/nextflow/test_repo/.gitignore",
+      "blob": "3a54819e3743ba052a3e12a4986b2232b10653ef"
+    },
+    {
+      "path": "test/resources/repos/nextflow/test_repo/main.nf",
+      "blob": "d391f2179409dedd2b98974229aa895bdcf309e8"
+    },
+    {
+      "path": "test/resources/repos/nextflow/test_repo/modules/greet/main.nf",
+      "blob": "0a6874360f9de52b91e194574176a063db10a66c"
+    },
+    {
+      "path": "test/resources/repos/nextflow/test_repo/modules/util/main.nf",
+      "blob": "f9a8eab6b126c82a2b769a1185a63ee313c7af0a"
+    },
+    {
+      "path": "test/resources/repos/nextflow/test_repo/nextflow.config",
+      "blob": "6c5f47b992eb259b6c5aa906058cac9afff244ff"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/.gitignore",
+      "blob": "1ce154de23b344f203ba5979cd6ccf8463430e9c"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/default.nix",
+      "blob": "1254db5ba5ec139ca80207993f0493fb6cea6762"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/diagnostics_sample.nix",
+      "blob": "320a6ab883eeb7441eb2fd0fe2cedc27815a36ea"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/flake.nix",
+      "blob": "415992ad189be1f5b48ea12065a8d57b0c3a468d"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/lib/utils.nix",
+      "blob": "0d0e3bdba3116c03c565be43f32654fbe1a937c8"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/modules/example.nix",
+      "blob": "744b673bba56a91dc537d6211a14a1f99704591d"
+    },
+    {
+      "path": "test/resources/repos/nix/test_repo/scripts/hello.sh",
+      "blob": "c57ba01bd070ec6f27e63c859931ad035d3ff86d"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/bin/dune",
+      "blob": "67e87ae87be9645567fd4d1af751774133357c6e"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/bin/main.ml",
+      "blob": "3efa44fe0679bcd54a67e7c048d399e8e10c94a4"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/dune-project",
+      "blob": "0bb5a43d5436c70f6af9b543372d603a38f14a51"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/lib/diagnostics_sample.ml",
+      "blob": "c23ccefe56040b6cb3fbe42326d0be0659d0b498"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/lib/dune",
+      "blob": "aba011b1b46d3a7ef43a9d00c016d7d66eaad7a4"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/lib/test_repo.ml",
+      "blob": "8befffa2a91eba8643374ae5be5ac58edbef335b"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/lib/test_repo.mli",
+      "blob": "b6b334184f43158439b8fd39cf4a8e146149ebae"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/test/dune",
+      "blob": "f4359ea4b72d7b34392c29a24aa5184935fdfa1d"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/test/test_test_repo.ml",
+      "blob": "3efbaae3e00303ddf7a694f5a3eba75091d8247b"
+    },
+    {
+      "path": "test/resources/repos/ocaml/test_repo/test_repo.opam",
+      "blob": "ab7cba255bf4cc383437f7b60aadc1cf0619377c"
+    },
+    {
+      "path": "test/resources/repos/pascal/test_repo/.gitignore",
+      "blob": "42e0384a474d18ea70ea30b38aa4286e37e924bf"
+    },
+    {
+      "path": "test/resources/repos/pascal/test_repo/diagnostics_sample.pas",
+      "blob": "7a3bf84b4f475facccd64ea4f0ce3dc430a335e8"
+    },
+    {
+      "path": "test/resources/repos/pascal/test_repo/lib/helper.pas",
+      "blob": "71c772bf58da527a3ac704562366ba1caa488fb1"
+    },
+    {
+      "path": "test/resources/repos/pascal/test_repo/main.pas",
+      "blob": "f240bee21b28d42943c4c7bcbb7a56b5746b796c"
+    },
+    {
+      "path": "test/resources/repos/perl/test_repo/diagnostics_sample.pl",
+      "blob": "4d78b686bd33680086ed93d6735fa96f08abafc9"
+    },
+    {
+      "path": "test/resources/repos/perl/test_repo/helper.pl",
+      "blob": "2ee934e6583c3baac0694b8a5c62960ee5975dba"
+    },
+    {
+      "path": "test/resources/repos/perl/test_repo/helper.t",
+      "blob": "0887b1826168b24249f3d7ba666d375e0ece15a3"
+    },
+    {
+      "path": "test/resources/repos/perl/test_repo/main.pl",
+      "blob": "e0e2be7fce5dcf8fcc2433006bc39860989af033"
+    },
+    {
+      "path": "test/resources/repos/php/test_repo/diagnostics_sample.php",
+      "blob": "b1a6be19f5096b56ccd63997391c8294c91dc4d8"
+    },
+    {
+      "path": "test/resources/repos/php/test_repo/drupal_module.module",
+      "blob": "02bc71896712cbe82a965180ee9f8194f89e69ea"
+    },
+    {
+      "path": "test/resources/repos/php/test_repo/helper.php",
+      "blob": "782d67d957e6c09fb5b0afe20d7c8d97e3a77531"
+    },
+    {
+      "path": "test/resources/repos/php/test_repo/index.php",
+      "blob": "f8c4cda85cd8cd966691de9a4e51216204316fcc"
+    },
+    {
+      "path": "test/resources/repos/php/test_repo/sample.php",
+      "blob": "08e60bc32b07381964624181859e49523b45bbd7"
+    },
+    {
+      "path": "test/resources/repos/php/test_repo/simple_var.php",
+      "blob": "4ffe86e22aba646b367aec931bd0cfb7e4fef2ff"
+    },
+    {
+      "path": "test/resources/repos/powershell/test_repo/PowerShellEditorServices.json",
+      "blob": "2014786724584c328a13f407846ca2f9ce23e2e6"
+    },
+    {
+      "path": "test/resources/repos/powershell/test_repo/diagnostics_sample.ps1",
+      "blob": "c5ce76004ee37dca4d3837c706158c19bb3853ed"
+    },
+    {
+      "path": "test/resources/repos/powershell/test_repo/main.ps1",
+      "blob": "f6d331f7fcd0dc8fa7810186a09a7d5a0b8432a9"
+    },
+    {
+      "path": "test/resources/repos/powershell/test_repo/utils.ps1",
+      "blob": "81db68e74b78770cef0c41d1492b983067446b33"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/.gitignore",
+      "blob": "811c627c26d77b4563407c5317e1d529c0c774a3"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/custom_test/__init__.py",
+      "blob": "137db74f63c367a31e6320784d91a6bacae96bbd"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/custom_test/advanced_features.py",
+      "blob": "b2fa7c9d7b26e54a19f93d27eeb44d0435aec941"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/examples/__init__.py",
+      "blob": "2a6757f66d2707a0b4fe39524aecc6d2561bfba4"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/examples/user_management.py",
+      "blob": "1e6da9363ab734bd6a5bdca2c97d0fc4b0d7b1df"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/ignore_this_dir_with_postfix/ignored_module.py",
+      "blob": "1e6da9363ab734bd6a5bdca2c97d0fc4b0d7b1df"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/pyrefly.toml",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/scripts/__init__.py",
+      "blob": "acd328eca669fbdf01b83b0921815e6e7cbe77c5"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/scripts/run_app.py",
+      "blob": "96254510fe6c132aa4e87e03f604aac8c2623284"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/complex_types.py",
+      "blob": "83e0e6684b6a11c4ffe789a04d65576d90bf7731"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/diagnostics_sample.py",
+      "blob": "616c2fa18709d6da706208d0f4718a8d460efa0b"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/models.py",
+      "blob": "3bccd2ea92e2fffe224a8c414d7cc260a0880a8b"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/name_collisions.py",
+      "blob": "21b2cc64d6b57b1b30f9880edd179bf066e9320f"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/nested.py",
+      "blob": "2dfac93367be286eac945840ed6dd11c2dd0d955"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/nested_base.py",
+      "blob": "d064686ca076428f0881ca9135859dab9edf2591"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/overloaded.py",
+      "blob": "1a0d83af74f4f580d2fc441b87f39a6aa37c679e"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/services.py",
+      "blob": "01654ba13ff36cf83cade3508a9230475e84a3bc"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/utils.py",
+      "blob": "19d4f1beac6991278cbcbef90e05ba6026782bcf"
+    },
+    {
+      "path": "test/resources/repos/python/test_repo/test_repo/variables.py",
+      "blob": "6224166046e966ff182306d82faaa93b6f80206a"
+    },
+    {
+      "path": "test/resources/repos/qml/test_repo/src/CustomComponent.qml",
+      "blob": "e44ce8146402c0885b5b3f8d6b623ecc64b91527"
+    },
+    {
+      "path": "test/resources/repos/qml/test_repo/src/UserComponent.qml",
+      "blob": "56b7a7b908e9f489fcf66896eccce619805041aa"
+    },
+    {
+      "path": "test/resources/repos/qml/test_repo/src/diagnostics_sample.qml",
+      "blob": "38bd34e57535e106f407ece80a2198090515d042"
+    },
+    {
+      "path": "test/resources/repos/qml/test_repo/src/main.qml",
+      "blob": "3dcfc21461b991e4176f750bdd7955c4ba1b0000"
+    },
+    {
+      "path": "test/resources/repos/qml/test_repo/src/shapes.qml",
+      "blob": "13a4fabbf6f7878c12d73d96e399b75ac7272626"
+    },
+    {
+      "path": "test/resources/repos/r/test_repo/.Rbuildignore",
+      "blob": "168b5139cc54bc97a3f6159f8544330999e51eac"
+    },
+    {
+      "path": "test/resources/repos/r/test_repo/DESCRIPTION",
+      "blob": "d42148cfff9ee1c4c3f80217e027a3f2edd230e3"
+    },
+    {
+      "path": "test/resources/repos/r/test_repo/NAMESPACE",
+      "blob": "857bf83ff7fb6c21f822a690b12a14be076c0278"
+    },
+    {
+      "path": "test/resources/repos/r/test_repo/R/models.R",
+      "blob": "b130e8fb4e7c72bc0e50a980cd24c943363da5de"
+    },
+    {
+      "path": "test/resources/repos/r/test_repo/R/utils.R",
+      "blob": "d516f150593b4a65ac7f3f424465f74ed4dcb864"
+    },
+    {
+      "path": "test/resources/repos/r/test_repo/examples/analysis.R",
+      "blob": "508c451efac1f73e908b1a3f8a3b81d09eabee13"
+    },
+    {
+      "path": "test/resources/repos/rego/test_repo/policies/authz.rego",
+      "blob": "fbac4babba7a25f021054049e368c0e044a787d6"
+    },
+    {
+      "path": "test/resources/repos/rego/test_repo/policies/validation.rego",
+      "blob": "49e64221de047d77d5802bbcd883bbaeaadfa2c8"
+    },
+    {
+      "path": "test/resources/repos/rego/test_repo/utils/helpers.rego",
+      "blob": "2fb60bd462b41745fb859753162a04ca5c8d661e"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/.solargraph.yml",
+      "blob": "b4678eecb44b9545f654dd29261331c9c5275a16"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/examples/user_management.rb",
+      "blob": "e14091a4c8bc5b30c6abc0cec1e2aa3c391147dd"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/lib.rb",
+      "blob": "65eba9debf2c42fad07a2bff4506f8442f7e566d"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/main.rb",
+      "blob": "b9a98c92a0e58b499a5527bf46d7aa1f608e1adf"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/models.rb",
+      "blob": "64476c359ef86c6192631b59230e53e9bbb81430"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/nested.rb",
+      "blob": "61c4edcf9101621ea7a5de6c71ac5a797e3a6f95"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/services.rb",
+      "blob": "7d2538198219646b1c44e30f7729a2a2d819645d"
+    },
+    {
+      "path": "test/resources/repos/ruby/test_repo/variables.rb",
+      "blob": "63e4190bf7a2ed6115131947e704d58ca0a7db48"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo/Cargo.lock",
+      "blob": "ebc459f13a0d72ab0dea7d33d6171dc1a424feb0"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo/Cargo.toml",
+      "blob": "43ffbf6e983e1aae14d0501256e4fc3e4cbd529e"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo/src/diagnostics_sample.rs",
+      "blob": "120e9e3673f5920f19f1dae81b573db65f34907a"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo/src/lib.rs",
+      "blob": "178d0165c8d9d67e13d89de5f9f4a10451a431ec"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo/src/main.rs",
+      "blob": "a5bb8063186df2e6275d17f38ebbc3f25597eef4"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo_2024/Cargo.lock",
+      "blob": "88beb720c124251f2c154be341be77fe7841ec55"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo_2024/Cargo.toml",
+      "blob": "2f20bf2e88f512ee5749b132070f15f1a18d292f"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo_2024/src/lib.rs",
+      "blob": "28fac4c7983d88e1e89993b3b7a88493c74198af"
+    },
+    {
+      "path": "test/resources/repos/rust/test_repo_2024/src/main.rs",
+      "blob": "ec20c47a716690a375d48ae55fe9da9f877804e4"
+    },
+    {
+      "path": "test/resources/repos/scala/build.sbt",
+      "blob": "d00e145ba8021d451df19f3effef03cba6a83326"
+    },
+    {
+      "path": "test/resources/repos/scala/project/build.properties",
+      "blob": "ee4c672cd0d79d58199c731ea043b4c54eac8744"
+    },
+    {
+      "path": "test/resources/repos/scala/project/metals.sbt",
+      "blob": "69465cb55028984b7bd56bf002187ae5e1ca2321"
+    },
+    {
+      "path": "test/resources/repos/scala/project/plugins.sbt",
+      "blob": "a739802cd0d7831f37b1762c89cdeb9006c1a98b"
+    },
+    {
+      "path": "test/resources/repos/scala/src/main/scala/com/example/Main.scala",
+      "blob": "2407efecfc265cd9233e6d3b123ae70df978edd9"
+    },
+    {
+      "path": "test/resources/repos/scala/src/main/scala/com/example/Utils.scala",
+      "blob": "0b6edf4b4c38a771a1ac0479491f3d03881f347f"
+    },
+    {
+      "path": "test/resources/repos/scala/test_repo/src/main/scala/com/example/DiagnosticsSample.scala",
+      "blob": "ca9d929b8accf79f1e1ee83a45b66c0f0cc9dc8b"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/_mixins.scss",
+      "blob": "88b9ff99fe47b92b45efbf1598efc0c3895274c5"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/_variables.scss",
+      "blob": "9ba4b6e4c2ca1da0b365f64922d215591fd8e1bd"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/buttons.scss",
+      "blob": "13a21dd1e083b2a7f4f1159b1dbdbb9efea94f56"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/css/diagnostics_sample.css",
+      "blob": "a0a21dd9c53933da3d8758bc42dfd7aeab1f40a0"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/css/main.css",
+      "blob": "d1b7fbea24bf96f3d20cb7cb05e45d20052d521d"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/css/reset.css",
+      "blob": "f81c6a93e740e6f64f3cb127543757ef822edb74"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/css/theme.css",
+      "blob": "3e82d36d6012c5c3c58f43c209ae8795277940d8"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/diagnostics_sample.scss",
+      "blob": "16609f1cf98da7edab7767ef5c040d5e228225d5"
+    },
+    {
+      "path": "test/resources/repos/scss/test_repo/main.scss",
+      "blob": "17836934fe284b53cb426ca0b9dd0306940b5f15"
+    },
+    {
+      "path": "test/resources/repos/solidity/test_repo/.gitignore",
+      "blob": "f9a2eef323abdb23edee1b1edb24ede8d595c237"
+    },
+    {
+      "path": "test/resources/repos/solidity/test_repo/contracts/DiagnosticsSample.sol",
+      "blob": "7b2a089211af95f1ff52a172c998dd5f302e87e5"
+    },
+    {
+      "path": "test/resources/repos/solidity/test_repo/contracts/Token.sol",
+      "blob": "92c698c69809c93592cfd885c801410af9c0c796"
+    },
+    {
+      "path": "test/resources/repos/solidity/test_repo/contracts/interfaces/IERC20.sol",
+      "blob": "48863b018caf307c995107a49995ec9b4e8ace8f"
+    },
+    {
+      "path": "test/resources/repos/solidity/test_repo/contracts/lib/SafeMath.sol",
+      "blob": "e8e9de1e9fb1419809a7cc3971f14b27a49c3d33"
+    },
+    {
+      "path": "test/resources/repos/solidity/test_repo/foundry.toml",
+      "blob": "dc26202417e8303c0f2383b3f1e568c4f401d378"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/.gitignore",
+      "blob": "1e7ac1f25a2edd99f9a29645c510f451711e256a"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/package-lock.json",
+      "blob": "e3bcb954059b5fd9513f26966d906008bb3389c0"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/package.json",
+      "blob": "b41ada0754bc209fcdffc076d8bba650068614dc"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/app.html",
+      "blob": "b6a30735d01696d32e8ab211e9d282f5e763e0ac"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/lib/components/Counter.svelte",
+      "blob": "3f872d97d2a934d5919d3da0ada670c415943c64"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/lib/components/Header.svelte",
+      "blob": "a9c6d1dfb8a523c5f7d5cfd593609ea2895dd85f"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/lib/components/Words.svelte",
+      "blob": "5229cbf95594c8b4a4fc1e9f777fd4a22ce1284f"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/lib/diagnostics_sample.svelte",
+      "blob": "1d4cb9d1640999da4441658a6843f4c81eb2e05a"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/lib/diagnostics_sample.ts",
+      "blob": "80c2656e13985e1299f33d04500a5414f75ece3f"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/lib/game.ts",
+      "blob": "6e17d54ce946531c1716e4f5dedff64e48946606"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/(sverdle)/+page.server.ts",
+      "blob": "70da2543a7e1acd41900dd871a29acc6fae8a6b6"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/(sverdle)/+page.svelte",
+      "blob": "4f58b11d52545b85c06a677b93ce849e4dee070e"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/(sverdle)/how-to-play/+page.svelte",
+      "blob": "e8e2cec3198e278138c17b23e7c39ccecde6c1fe"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/(sverdle)/how-to-play/+page.ts",
+      "blob": "6838d9f2073c7659e727fc2aa1835df14c6802f8"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/(sverdle)/words.server.ts",
+      "blob": "6e4996add2e3af1f4866cf3447d2787d2aec1870"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/+layout.svelte",
+      "blob": "1c303749c74774df5bb1fbaf61648049cde1d457"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/src/routes/layout.css",
+      "blob": "b56e6db3850e6bcd1023ff9fc19623abb4af8b11"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/svelte.config.js",
+      "blob": "10c4eeb2770364ab549fb43e0e070cfb04e050fc"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/tsconfig.json",
+      "blob": "2c2ed3c4d85da301c40654bdf3ac2872b1a87621"
+    },
+    {
+      "path": "test/resources/repos/svelte/test_repo/vite.config.ts",
+      "blob": "1180a910bfe55eb570c8285cbb2b493ff2168645"
+    },
+    {
+      "path": "test/resources/repos/swift/test_repo/Package.swift",
+      "blob": "5e9b7cff4253f35f26b7094b6aceae3f269ea9f9"
+    },
+    {
+      "path": "test/resources/repos/swift/test_repo/src/diagnostics_sample.swift",
+      "blob": "b70b2c68e12bffb7cc4e5a5f07da9a5722de83c8"
+    },
+    {
+      "path": "test/resources/repos/swift/test_repo/src/main.swift",
+      "blob": "84630774ffe25909f8db691c609fc263dc9a6d55"
+    },
+    {
+      "path": "test/resources/repos/swift/test_repo/src/utils.swift",
+      "blob": "cf1422c71642738c15d05f8aa66e26ddaae45ef1"
+    },
+    {
+      "path": "test/resources/repos/systemverilog/test_repo/alu.sv",
+      "blob": "1e416b3aa050405280b623169fb43dd85bc4133c"
+    },
+    {
+      "path": "test/resources/repos/systemverilog/test_repo/counter.sv",
+      "blob": "2af8d1c277ed8c500853c5524f5b79c9f7c3d667"
+    },
+    {
+      "path": "test/resources/repos/systemverilog/test_repo/diagnostics_sample.sv",
+      "blob": "b53642626dd4606bd1b8abc673cb7e9ce80044e4"
+    },
+    {
+      "path": "test/resources/repos/systemverilog/test_repo/top.sv",
+      "blob": "5684ca0c47e64af1199ade94f2a1c04005e7b9f2"
+    },
+    {
+      "path": "test/resources/repos/systemverilog/test_repo/types.svh",
+      "blob": "29482a70f464b07ed7299df801e8891408aef04f"
+    },
+    {
+      "path": "test/resources/repos/terraform/test_repo/data.tf",
+      "blob": "0dd2d93f9aaf6558a0fab4d14349fc3a32bace45"
+    },
+    {
+      "path": "test/resources/repos/terraform/test_repo/diagnostics_sample.tf",
+      "blob": "15de22c02eeb218df030e8fcfc69ade7a4d592dd"
+    },
+    {
+      "path": "test/resources/repos/terraform/test_repo/main.tf",
+      "blob": "d186c2069cff660179b03ecbfa835b89ce93c400"
+    },
+    {
+      "path": "test/resources/repos/terraform/test_repo/outputs.tf",
+      "blob": "856ed6dd0c11d3120fd5d5aa66de4b7a1acc610d"
+    },
+    {
+      "path": "test/resources/repos/terraform/test_repo/variables.tf",
+      "blob": "92437bd94a02792062c356817539112c3073affc"
+    },
+    {
+      "path": "test/resources/repos/toml/test_repo/Cargo.toml",
+      "blob": "a295cc0d32b9ff0f09ef22d90e2abc0a9c69fc04"
+    },
+    {
+      "path": "test/resources/repos/toml/test_repo/config.toml",
+      "blob": "912d2dc79c8db93af6bf4e5ee19ff460b6cd92b1"
+    },
+    {
+      "path": "test/resources/repos/toml/test_repo/diagnostics_sample.toml",
+      "blob": "ed4ae4c136c0f40ac2a5073d5df42677791762ec"
+    },
+    {
+      "path": "test/resources/repos/toml/test_repo/pyproject.toml",
+      "blob": "37887c269e847b414c1a0cd38352b7920f4bd3e2"
+    },
+    {
+      "path": "test/resources/repos/typescript/cross_package_a/shared_utils.ts",
+      "blob": "a775afbefeff3215d049e0fbde4752350cc2a7ec"
+    },
+    {
+      "path": "test/resources/repos/typescript/cross_package_a/tsconfig.json",
+      "blob": "7341858c79dca94d1aac0bc8e79a7675615065ae"
+    },
+    {
+      "path": "test/resources/repos/typescript/cross_package_b/consumer.ts",
+      "blob": "491bb274d7aa91726366101015df584b32dfb579"
+    },
+    {
+      "path": "test/resources/repos/typescript/cross_package_b/tsconfig.json",
+      "blob": "44c8ed24c8adbddde277fa4113673430be957de7"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/.serena/project.yml",
+      "blob": "090b7b461ebf881415b8549f5c4a8194cd207128"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/diagnostics_sample.ts",
+      "blob": "566643e115fbe1c48d5f71f09c85a3de4cb8d259"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/formatters.ts",
+      "blob": "fe233f9390d1c5b1906c463198a0d4da228a2fde"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/index.ts",
+      "blob": "417e58630baeb35a1b44cc9b2c0f613b975bd2df"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/jsx_component.tsx",
+      "blob": "c8dea77d81b9d70e01374591aba487694071fa01"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/tsconfig.json",
+      "blob": "7267a68628f5440b5d94be3326f7aa9e31cd2b7c"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/use_helper.ts",
+      "blob": "e9147d27c8f389b3fee324487c5e5a040a069ed8"
+    },
+    {
+      "path": "test/resources/repos/typescript/test_repo/ws_manager.js",
+      "blob": "601732146f75b8cf96172428e5507ca3246c6ed1"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/.gitignore",
+      "blob": "a547bf36d8d11a4f89c59c144f24795749086dd1"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/index.html",
+      "blob": "75e5223744e8c96ab579b06beb6d54a0c10766af"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/package.json",
+      "blob": "846a5b1b379839dfc9bf150582d6ddd22ef50007"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/App.vue",
+      "blob": "a5ece8a050a7410690a1b59a29fd0d4d9afdc25a"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/DiagnosticsSample.vue",
+      "blob": "17bd62e38b9a970c05edb7a5202a76143990b8ba"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/components/CalculatorButton.vue",
+      "blob": "68b176307a5163ad6f1c956ce14c0069a5fd8bbb"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/components/CalculatorDisplay.vue",
+      "blob": "622709b0e6175b375134b32590f873cc9fdd6bcc"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/components/CalculatorInput.vue",
+      "blob": "2d7bc86d79f871085be634e8be492dcef0d66792"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/composables/useFormatter.ts",
+      "blob": "9c64106f00e484cfac8d7a26b7821e089d15336c"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/composables/useTheme.ts",
+      "blob": "706f1fe7940634e40fea6d8181535cdbd66f5cd0"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/main.ts",
+      "blob": "764d9587d6c14507a68da17627d53dcfbbeea62b"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/stores/calculator.ts",
+      "blob": "4c8a441545c0f52f019ec3d5c6891ca0d37d199e"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/src/types/index.ts",
+      "blob": "2766ee2af1af8eff17e66f28d491cff7a78cb50b"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/tsconfig.json",
+      "blob": "8c9fa9fcc93a63d11180c62ac6844691940d2ca9"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/tsconfig.node.json",
+      "blob": "97ede7ee6f2d37bd2d76e60c0b6a447bee718b05"
+    },
+    {
+      "path": "test/resources/repos/vue/test_repo/vite.config.ts",
+      "blob": "4343664e691ee8157dcb38d55816ade1be10c626"
+    },
+    {
+      "path": "test/resources/repos/wolfram/test_repo/lib/helper.wl",
+      "blob": "8502c91e893f4dd4fe99c247ba7e402114fc1f3f"
+    },
+    {
+      "path": "test/resources/repos/wolfram/test_repo/main.wl",
+      "blob": "8b3f2826676ff930316dba0a1de8774f520af886"
+    },
+    {
+      "path": "test/resources/repos/yaml/test_repo/config.yaml",
+      "blob": "f6b6ebaca22c8831e8dad3e02490df2366bc6e1c"
+    },
+    {
+      "path": "test/resources/repos/yaml/test_repo/data.yaml",
+      "blob": "86eb283252fd92f71d358d1b280cffb3b4cbf720"
+    },
+    {
+      "path": "test/resources/repos/yaml/test_repo/diagnostics_sample.yaml",
+      "blob": "c07e469d685d4eef3fcd84f911dab63bf30a6e93"
+    },
+    {
+      "path": "test/resources/repos/yaml/test_repo/services.yml",
+      "blob": "ce92c8a8f5db936a3a29b46d54bc49f914d91584"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/.gitignore",
+      "blob": "0274a76d0f81767045b154b749712fc4ec45d16c"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/build.zig",
+      "blob": "c9c1ff5a42e36478ece8ddee3683c019ed7a98d3"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/src/calculator.zig",
+      "blob": "289ccf1ccf03e61027c4091d84f2e399518b6b17"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/src/diagnostics_sample.zig",
+      "blob": "844d6f1468d01649f328926db227fe98bd790260"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/src/main.zig",
+      "blob": "156adabded8373dffd460e2522e797565f74a2fa"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/src/math_utils.zig",
+      "blob": "f214d72ec5584684bcd4c160d128d3f6ab23769d"
+    },
+    {
+      "path": "test/resources/repos/zig/test_repo/zls.json",
+      "blob": "71054e7a99f2b48ec47ed98b788d26af96e1bc87"
+    },
+    {
+      "path": "test/serena/__init__.py",
+      "blob": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "test/serena/__snapshots__/test_symbol_editing.ambr",
+      "blob": "aa98a95203e0003823cf03b6a2b7ad1ef6ca072a"
+    },
+    {
+      "path": "test/serena/config/__init__.py",
+      "blob": "6b95e0de6c5898081d7a6a7299730f1f879772bc"
+    },
+    {
+      "path": "test/serena/config/test_client_setup.py",
+      "blob": "d9115a7ef471f5eef39409ef88339e6e515412b9"
+    },
+    {
+      "path": "test/serena/config/test_context_mode.py",
+      "blob": "2a88890f035aa2609937970e7ba77511adb1a7b5"
+    },
+    {
+      "path": "test/serena/config/test_global_ignored_paths.py",
+      "blob": "c9fdb6b5b15e92bfc48ca33f4d60cfef7f76b633"
+    },
+    {
+      "path": "test/serena/config/test_grok_docs.py",
+      "blob": "a3f212f4c544ac8330da8319ea60ae832e8c3d37"
+    },
+    {
+      "path": "test/serena/config/test_serena_config.py",
+      "blob": "c0b4cf2018bd51e51c825ef0a694848006b5e3c0"
+    },
+    {
+      "path": "test/serena/test_activation_command.py",
+      "blob": "541ce318a5bfe60e4eca81bfcc7a71ae28ca1d7b"
+    },
+    {
+      "path": "test/serena/test_cli_project_commands.py",
+      "blob": "b6a59277ba068a18cf6214ba5da5cc8c2f16da47"
+    },
+    {
+      "path": "test/serena/test_cli_setup.py",
+      "blob": "6f204f70ca05fb7da11dab84ee89f871e6f05a90"
+    },
+    {
+      "path": "test/serena/test_dashboard.py",
+      "blob": "7f003c5b4b6ca22edd953a85252c733b1553eb25"
+    },
+    {
+      "path": "test/serena/test_edit_marker.py",
+      "blob": "ce1c5585319393581a7d754135db54b4149828c4"
+    },
+    {
+      "path": "test/serena/test_file_tools.py",
+      "blob": "24c1649def44d768d34bb0dd4f71e64c97c2c76f"
+    },
+    {
+      "path": "test/serena/test_hooks.py",
+      "blob": "f0e015b61501115b3181600f512c427b25751757"
+    },
+    {
+      "path": "test/serena/test_jetbrains_plugin_client.py",
+      "blob": "d6590eafb477caae4985483cb084295ad736bb0c"
+    },
+    {
+      "path": "test/serena/test_ls_file_sync.py",
+      "blob": "618559b3c250505a00774ba54f8303e13fa73973"
+    },
+    {
+      "path": "test/serena/test_mcp.py",
+      "blob": "731a1cc6b96eafa1152edc53b42a4d1a040bc36a"
+    },
+    {
+      "path": "test/serena/test_memories_manager.py",
+      "blob": "158ab379a922d70b95366a53c02648cec9363ec9"
+    },
+    {
+      "path": "test/serena/test_project_server.py",
+      "blob": "1288e177b7387fecbf5865820fe55135a813c6df"
+    },
+    {
+      "path": "test/serena/test_search_for_pattern.py",
+      "blob": "c00107d3059519955f0cb570387bab701ca7f9ff"
+    },
+    {
+      "path": "test/serena/test_serena_agent.py",
+      "blob": "cd7cbb6d7a472f9948a51bb5f753ccd64ff64b17"
+    },
+    {
+      "path": "test/serena/test_symbol.py",
+      "blob": "db3152701d75c41aec3fcd2b1169e7de5b6180fb"
+    },
+    {
+      "path": "test/serena/test_symbol_editing.py",
+      "blob": "bef06e77faf14d3f33bc98859183479e65c9aed6"
+    },
+    {
+      "path": "test/serena/test_task_executor.py",
+      "blob": "baf78bb1a33d7f48c0f42e1a7102a11f5af1a119"
+    },
+    {
+      "path": "test/serena/test_text_utils.py",
+      "blob": "865b71b4f90f2b854c6a6867b3a5edae51c7ddf8"
+    },
+    {
+      "path": "test/serena/test_tool_parameter_types.py",
+      "blob": "42b8948aadafb00a88433a0155e9740e3f5d8ab1"
+    },
+    {
+      "path": "test/serena/util/test_exception.py",
+      "blob": "e13e57f7a93915418bca2e8b691b898b105df0bf"
+    },
+    {
+      "path": "test/serena/util/test_file_system.py",
+      "blob": "1e1272b976e235258d299ac0f5c6bb4b2dd111cd"
+    },
+    {
+      "path": "test/serena/util/test_inspection.py",
+      "blob": "f508d5c42ac844781a6785921d1ba3ec6423ffb2"
+    },
+    {
+      "path": "test/serena/util/test_yaml.py",
+      "blob": "724438c51c464dc41072fa05d6458e49934df750"
+    },
+    {
+      "path": "test/solidlsp/ada/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/ada/test_ada_basic.py",
+      "blob": "32b31de8d8b0de7e37d5ed40e78157cc4570dbad"
+    },
+    {
+      "path": "test/solidlsp/ada/test_ada_diagnostics.py",
+      "blob": "6d317af4f527a1c0c55e08ad3c366c1b3744a239"
+    },
+    {
+      "path": "test/solidlsp/al/test_al_basic.py",
+      "blob": "62e129e533382345785c4d21a0fcd46d03ba39f2"
+    },
+    {
+      "path": "test/solidlsp/angular/conftest.py",
+      "blob": "d25950845332302eccd35e9b4e0fa254a0071e28"
+    },
+    {
+      "path": "test/solidlsp/angular/test_angular_basic.py",
+      "blob": "8b377d5c42bca74df419c8dc68bca699fb64c0d6"
+    },
+    {
+      "path": "test/solidlsp/angular/test_angular_diagnostics.py",
+      "blob": "7df9757f0f0889b133f0781770f5b76404389001"
+    },
+    {
+      "path": "test/solidlsp/angular/test_angular_error_cases.py",
+      "blob": "6ce05e8c52b9c2b5c21acc6734fbf92edfe9da6e"
+    },
+    {
+      "path": "test/solidlsp/ansible/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/ansible/test_ansible_basic.py",
+      "blob": "c6326a5741cd1e73f4f6c7b05f7d0bed16206a6d"
+    },
+    {
+      "path": "test/solidlsp/bash/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/bash/test_bash_basic.py",
+      "blob": "bef9770936ff4f41f2b9c5f4a5719c66f96e93fc"
+    },
+    {
+      "path": "test/solidlsp/bash/test_bash_diagnostics.py",
+      "blob": "66e30fe27e28d8ff09342965d0b2122cbd9c9fca"
+    },
+    {
+      "path": "test/solidlsp/bsl/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/bsl/test_bsl_basic.py",
+      "blob": "314b7d5a311bbbb6f4378f70cdced66fa2a285a5"
+    },
+    {
+      "path": "test/solidlsp/bsl/test_bsl_diagnostics.py",
+      "blob": "3c63642a4fb12628ce3968a5921f82a19728b2f4"
+    },
+    {
+      "path": "test/solidlsp/clojure/__init__.py",
+      "blob": "f7d9dad63c3ff2b54cec3568c768ab78e3a32b94"
+    },
+    {
+      "path": "test/solidlsp/clojure/test_clojure_basic.py",
+      "blob": "7c4f442b29b55eae3abe3ecbd24debed94c3a683"
+    },
+    {
+      "path": "test/solidlsp/clojure/test_clojure_diagnostics.py",
+      "blob": "15d6249715e89b3eb1995f89c98c5da96e3c7214"
+    },
+    {
+      "path": "test/solidlsp/clojure/test_clojure_indexing.py",
+      "blob": "da5121b0738e1b759d5dc3987aa6f91d11538bf5"
+    },
+    {
+      "path": "test/solidlsp/conftest.py",
+      "blob": "1777668dd7f4bbbaef5c21731b1fe2a180979795"
+    },
+    {
+      "path": "test/solidlsp/cpp/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_ccls_languages.py",
+      "blob": "c4839c9fbf8d5928ae4560717c435ef9e875962e"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_clangd_languages.py",
+      "blob": "69a52297d5756a340b1b6f88a7e2e9e8e1492a43"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_clangd_logging.py",
+      "blob": "8cef777ef57071d435192a8e814ae226d19ffb79"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_cpp_basic.py",
+      "blob": "6e73e8dc4a1b4040e1a6f5bc02d28929a1952b1f"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_cpp_diagnostics.py",
+      "blob": "0f09f2affcf0428fefbc1bbdff10a58bc0b48a22"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_cpp_unreal.py",
+      "blob": "888f25cde6e2ef26b90f3515dcf74ce632e439aa"
+    },
+    {
+      "path": "test/solidlsp/cpp/test_cpp_unreal_unit.py",
+      "blob": "cde68c49c71658f15aa019fc8cb117bbeff5b33d"
+    },
+    {
+      "path": "test/solidlsp/crystal/test_crystal_basic.py",
+      "blob": "ae5d618de063753ecade8f1665df621eb02e4693"
+    },
+    {
+      "path": "test/solidlsp/crystal/test_crystal_diagnostics.py",
+      "blob": "53313bca50a85f3543bae6660cd827d1a54ba5d3"
+    },
+    {
+      "path": "test/solidlsp/csharp/test_csharp_basic.py",
+      "blob": "5f0a010754c46cd9d566451918f094d0cbb83fd3"
+    },
+    {
+      "path": "test/solidlsp/csharp/test_csharp_diagnostics.py",
+      "blob": "7e9b95436690dd0cc3aff318935ca706ebe948c5"
+    },
+    {
+      "path": "test/solidlsp/csharp/test_csharp_nuget_download.py",
+      "blob": "548dfeb7a9416619b2d448d90bc984ad660bf67e"
+    },
+    {
+      "path": "test/solidlsp/cue/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/cue/test_cue_basic.py",
+      "blob": "7f2c1f781fdfedc62c77fed8f347a69df594e7c9"
+    },
+    {
+      "path": "test/solidlsp/dart/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/dart/test_dart_basic.py",
+      "blob": "96f93b7e18133a22c8e6b53341915ed775ff3eaf"
+    },
+    {
+      "path": "test/solidlsp/dart/test_dart_diagnostics.py",
+      "blob": "8626ecaf19acd6122b967729b25358329823bbb2"
+    },
+    {
+      "path": "test/solidlsp/deno/test_deno_basic.py",
+      "blob": "3efcb0f85dbf4f542210fc4e7d5cec2449957b06"
+    },
+    {
+      "path": "test/solidlsp/elixir/__init__.py",
+      "blob": "f8532a0b4eb77b2c43745b9a2ce0e3f22e59f101"
+    },
+    {
+      "path": "test/solidlsp/elixir/conftest.py",
+      "blob": "34523765fb7b48dfcccc241d9f05393c40fd0d4e"
+    },
+    {
+      "path": "test/solidlsp/elixir/test_elixir_basic.py",
+      "blob": "8d51dc63cf5b14eb60bb602d6e79fcd891b30f60"
+    },
+    {
+      "path": "test/solidlsp/elixir/test_elixir_ignored_dirs.py",
+      "blob": "dd2305a828e92e9528613f1525ea4679c6c7952c"
+    },
+    {
+      "path": "test/solidlsp/elixir/test_elixir_integration.py",
+      "blob": "8637b7d6393d2476194e9a12a9bb30707876cc17"
+    },
+    {
+      "path": "test/solidlsp/elixir/test_elixir_symbol_retrieval.py",
+      "blob": "45ce5aa472b8fa267e50e04d31faba70dca3021c"
+    },
+    {
+      "path": "test/solidlsp/elm/test_elm_basic.py",
+      "blob": "7144091c5aa194a6bba644b5ec979644fecb111b"
+    },
+    {
+      "path": "test/solidlsp/elm/test_elm_diagnostics.py",
+      "blob": "64475880648862708bdc2355ec03bf95f23335ef"
+    },
+    {
+      "path": "test/solidlsp/erlang/__init__.py",
+      "blob": "6c9c2f0641a668dff22346ad8628fdb262ff005b"
+    },
+    {
+      "path": "test/solidlsp/erlang/conftest.py",
+      "blob": "5ac77795cfd66d96f8dd08c2f6e635723b858710"
+    },
+    {
+      "path": "test/solidlsp/erlang/test_erlang_basic.py",
+      "blob": "66e284e0fa1a29673613b7251f3158fdcf0b2ef5"
+    },
+    {
+      "path": "test/solidlsp/erlang/test_erlang_ignored_dirs.py",
+      "blob": "38013a6def1188be267d865a80f14bdcceabe21f"
+    },
+    {
+      "path": "test/solidlsp/erlang/test_erlang_symbol_names.py",
+      "blob": "e940fb604d7617f9a25d695d394094603986bb5a"
+    },
+    {
+      "path": "test/solidlsp/erlang/test_erlang_symbol_retrieval.py",
+      "blob": "b833971be22d60d9ff2ccafec94d15918f0a0c86"
+    },
+    {
+      "path": "test/solidlsp/fortran/__init__.py",
+      "blob": "2ce51422d2e551c3b6226e1e5be1ba1d8a01b90e"
+    },
+    {
+      "path": "test/solidlsp/fortran/test_fortran_basic.py",
+      "blob": "7f43eb4d1d81267f96c6fa985703dcfaa45e11ec"
+    },
+    {
+      "path": "test/solidlsp/fortran/test_fortran_diagnostics.py",
+      "blob": "0fb34d4b2a462926fc868fe700ddb3a9b0de39e2"
+    },
+    {
+      "path": "test/solidlsp/fsharp/test_fsharp_basic.py",
+      "blob": "524bbe2f1392651cca36ba6f338878a2ebb66d01"
+    },
+    {
+      "path": "test/solidlsp/fsharp/test_fsharp_module_selection_range.py",
+      "blob": "a3b22e85b853ab377fb594124cbf1deb38bc3302"
+    },
+    {
+      "path": "test/solidlsp/gleam/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/gleam/test_gleam_basic.py",
+      "blob": "107430d6d86a1b8df3ff972689259229bf288dab"
+    },
+    {
+      "path": "test/solidlsp/go/test_go_basic.py",
+      "blob": "3f8f9b04778497dddbb0730378db133828f59dd1"
+    },
+    {
+      "path": "test/solidlsp/go/test_go_diagnostics.py",
+      "blob": "0a5b50ec9954cf0ecefe299be8f20939b4a53aaa"
+    },
+    {
+      "path": "test/solidlsp/groovy/test_groovy_basic.py",
+      "blob": "7568d80d941c538b559027b465f9f42d36ff1ff3"
+    },
+    {
+      "path": "test/solidlsp/haskell/__init__.py",
+      "blob": "760bf8f879f171a5bb5146d3b83d24f9c6d7e4d7"
+    },
+    {
+      "path": "test/solidlsp/haskell/test_haskell_basic.py",
+      "blob": "cfd104c779ec5daa4622d8f4b8adc7ace6f8c8a5"
+    },
+    {
+      "path": "test/solidlsp/haxe/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/haxe/test_haxe_basic.py",
+      "blob": "eefe2c6dc7977fe95120bc91c28056194b807fea"
+    },
+    {
+      "path": "test/solidlsp/haxe/test_haxe_diagnostics.py",
+      "blob": "0da34728c6239a66d1f3b34a9cf6b7583040a829"
+    },
+    {
+      "path": "test/solidlsp/hlsl/__init__.py",
+      "blob": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "test/solidlsp/hlsl/test_hlsl_basic.py",
+      "blob": "9280a1a27d5c8c5e06e0edb2330789dd3a76090f"
+    },
+    {
+      "path": "test/solidlsp/hlsl/test_hlsl_diagnostics.py",
+      "blob": "bb25b349de93220f8e3783e028de402f29cf4dd9"
+    },
+    {
+      "path": "test/solidlsp/hlsl/test_hlsl_full_index.py",
+      "blob": "391d1fbba5d74b7fbdc4e5b637b3942e586a92ed"
+    },
+    {
+      "path": "test/solidlsp/html_ls/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/html_ls/test_html_basic.py",
+      "blob": "d83a2d268a3ebe7c4fdb3ef0c6d60685bbe56357"
+    },
+    {
+      "path": "test/solidlsp/html_ls/test_html_diagnostics.py",
+      "blob": "5affa597895ba33a568e41cb6573e77ca71e2ae7"
+    },
+    {
+      "path": "test/solidlsp/java/test_java_basic.py",
+      "blob": "6517a47ef307fc9db5d3ab74ee4e082eae7ac50a"
+    },
+    {
+      "path": "test/solidlsp/java/test_java_diagnostics.py",
+      "blob": "c79de2dc76bfa6e417d7136ab23283a6f50e46bf"
+    },
+    {
+      "path": "test/solidlsp/java/test_jdtls_path_resolution.py",
+      "blob": "6ffd2ea4f0ac2b231f404cee348d8b6a7c2ef851"
+    },
+    {
+      "path": "test/solidlsp/json_ls/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/json_ls/test_json_basic.py",
+      "blob": "b2753f9bf9a7c9932bc2b7b4cf18cf7c4c8e6be9"
+    },
+    {
+      "path": "test/solidlsp/json_ls/test_json_diagnostics.py",
+      "blob": "d3e3c40e517c2cef6f3edaa37081659f861243c9"
+    },
+    {
+      "path": "test/solidlsp/julia/test_julia_basic.py",
+      "blob": "acd5375b7e891da30e7fb48ad8b8bd5baec8d6d5"
+    },
+    {
+      "path": "test/solidlsp/kotlin/test_kotlin_basic.py",
+      "blob": "7530a5451c6887791240970b89f92fa354ad09ec"
+    },
+    {
+      "path": "test/solidlsp/kotlin/test_kotlin_dependency_provider.py",
+      "blob": "707a0633b754ecc6a2a2bfda04bf0cadb8ed8aed"
+    },
+    {
+      "path": "test/solidlsp/kotlin/test_kotlin_diagnostics.py",
+      "blob": "0d0d824c6e74956bf45c9c4fe5238ece5f740f3a"
+    },
+    {
+      "path": "test/solidlsp/kotlin/test_kotlin_startup.py",
+      "blob": "0f6a03457bed1d924809e8bbace43e3e7f6ccb7a"
+    },
+    {
+      "path": "test/solidlsp/latex/test_latex_basic.py",
+      "blob": "d8734e736217a4841c778441917dd00633aa3cf4"
+    },
+    {
+      "path": "test/solidlsp/latex/test_latex_beamer.py",
+      "blob": "54819e781d399f00aa5ac0bbfa4a941a48f45e9f"
+    },
+    {
+      "path": "test/solidlsp/latex/test_latex_references.py",
+      "blob": "83012af524abf0e6dd63c7f6d492e2b0a5e0d650"
+    },
+    {
+      "path": "test/solidlsp/lean4/test_lean4_basic.py",
+      "blob": "aff011a64d8eb94f2b86211e6ed51392ca12e717"
+    },
+    {
+      "path": "test/solidlsp/lean4/test_lean4_diagnostics.py",
+      "blob": "dcc19ac394d5d2d4ee9d342d487912df7769bb70"
+    },
+    {
+      "path": "test/solidlsp/lua/test_lua_basic.py",
+      "blob": "c70431afb4adc727c9c6f479b2353c7d36ea4060"
+    },
+    {
+      "path": "test/solidlsp/luau/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/luau/test_luau_basic.py",
+      "blob": "2710c002e8fd6314edf33839ff97823ac4cea864"
+    },
+    {
+      "path": "test/solidlsp/luau/test_luau_dependency_provider.py",
+      "blob": "d274364b858ae169a45bb41064fd86a0f42596a5"
+    },
+    {
+      "path": "test/solidlsp/markdown/__init__.py",
+      "blob": "9f2adc19c035935c89e32e8e25de55707691d3d8"
+    },
+    {
+      "path": "test/solidlsp/markdown/test_markdown_basic.py",
+      "blob": "337cf0c57e26cee4d635a222435fcafcf2098b79"
+    },
+    {
+      "path": "test/solidlsp/matlab/__init__.py",
+      "blob": "cf1fe4a632db03229da7122a9a985199c9c5b986"
+    },
+    {
+      "path": "test/solidlsp/matlab/test_matlab_basic.py",
+      "blob": "a019c6caf5fcf09723cb78e44868de4234398211"
+    },
+    {
+      "path": "test/solidlsp/msl/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/msl/test_msl_basic.py",
+      "blob": "be27ba9ef9f4c69a411a86fa1f2f046aa516ca5e"
+    },
+    {
+      "path": "test/solidlsp/nextflow/test_nextflow_basic.py",
+      "blob": "d60bd2cd990258c38f7d639d5d3504db341a4d40"
+    },
+    {
+      "path": "test/solidlsp/nix/test_nix_basic.py",
+      "blob": "281aee5339af1575c496f1606b0356c9440e822b"
+    },
+    {
+      "path": "test/solidlsp/nix/test_nix_server.py",
+      "blob": "06a216e4a099313bfa6fa462e755f4ab1d8c8111"
+    },
+    {
+      "path": "test/solidlsp/ocaml/test_cross_file_refs.py",
+      "blob": "056790db6898261abf411c0b95b1790f7d3e341a"
+    },
+    {
+      "path": "test/solidlsp/ocaml/test_ocaml_basic.py",
+      "blob": "c1a1298eec4d40b8f5d3fa0b066cfe8872f4ab23"
+    },
+    {
+      "path": "test/solidlsp/ocaml/test_ocaml_diagnostics.py",
+      "blob": "dd8197b3dfad7c7803b602ccb155ea9304625c53"
+    },
+    {
+      "path": "test/solidlsp/pascal/__init__.py",
+      "blob": "b9d1f3df0cdc188bc6b479ce9f8d20c4cebe285c"
+    },
+    {
+      "path": "test/solidlsp/pascal/test_pascal_auto_update.py",
+      "blob": "2b6e22352e3e4c36fae514858a2e199b2d026020"
+    },
+    {
+      "path": "test/solidlsp/pascal/test_pascal_basic.py",
+      "blob": "74576459f1e5423c3cc9675f3771c317b98411a0"
+    },
+    {
+      "path": "test/solidlsp/pascal/test_pascal_diagnostics.py",
+      "blob": "ac4b431c8e213f76dd0231493a73fd080e6cba6e"
+    },
+    {
+      "path": "test/solidlsp/perl/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/perl/test_perl_basic.py",
+      "blob": "6558d2627f962423bf0300bf188ee6742b0e33a0"
+    },
+    {
+      "path": "test/solidlsp/perl/test_perl_config.py",
+      "blob": "c4ab9f446229a7b31d4eddda20cc7f3e766e3863"
+    },
+    {
+      "path": "test/solidlsp/php/test_php_basic.py",
+      "blob": "f934e68fe107c23f2a68d27f537834c335a75d9c"
+    },
+    {
+      "path": "test/solidlsp/php/test_php_config.py",
+      "blob": "44d19c8831d0cfbeb9c7d105c5eba7fb154aeb66"
+    },
+    {
+      "path": "test/solidlsp/php/test_php_diagnostics.py",
+      "blob": "8f80c1120843c9df71f01dbbe40121287284bdbe"
+    },
+    {
+      "path": "test/solidlsp/php/test_phpantom.py",
+      "blob": "337d4e2d8dace743ef1e66007c51686c7a6dd10c"
+    },
+    {
+      "path": "test/solidlsp/powershell/__init__.py",
+      "blob": "3fb5513007db21916e02eed4c5521204af847f49"
+    },
+    {
+      "path": "test/solidlsp/powershell/test_powershell_basic.py",
+      "blob": "a2d761eede260af48f4828f4cb852e3f3de1b3fb"
+    },
+    {
+      "path": "test/solidlsp/powershell/test_powershell_diagnostics.py",
+      "blob": "c202f75e29dd7e37cae8e5b5e7c4130a95fce252"
+    },
+    {
+      "path": "test/solidlsp/python/test_basedpyright.py",
+      "blob": "90d97642a8a120a852041fc4fec4fa3e2895fc9b"
+    },
+    {
+      "path": "test/solidlsp/python/test_basedpyright_server.py",
+      "blob": "f0de6505dbf1be9c821bff4b6706f42cc59dd06a"
+    },
+    {
+      "path": "test/solidlsp/python/test_python_basic.py",
+      "blob": "283e3e56e79480f57c70de4427e67657b4b70890"
+    },
+    {
+      "path": "test/solidlsp/python/test_python_diagnostics.py",
+      "blob": "386d2830cd2d54076bf1c329459f08ab1a689318"
+    },
+    {
+      "path": "test/solidlsp/python/test_retrieval_with_ignored_dirs.py",
+      "blob": "400ef18322bfd4a2e6edbf579f1bbcdd56fb206e"
+    },
+    {
+      "path": "test/solidlsp/python/test_symbol_retrieval.py",
+      "blob": "38185f31405353af1a4d05411ea9fb602ff26215"
+    },
+    {
+      "path": "test/solidlsp/qml/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/qml/test_qml_basic.py",
+      "blob": "5462422271c9048158138b847d0c665264d27d09"
+    },
+    {
+      "path": "test/solidlsp/r/__init__.py",
+      "blob": "3348d2e341990449e4ce5b1d2ffc89dbb32beb78"
+    },
+    {
+      "path": "test/solidlsp/r/test_r_basic.py",
+      "blob": "f9d4e82a91026d64a2d416adbf3e49ac034514b5"
+    },
+    {
+      "path": "test/solidlsp/rego/test_rego_basic.py",
+      "blob": "1e846c1c1f641f21f00f891f63498eb684bc9e09"
+    },
+    {
+      "path": "test/solidlsp/ruby/test_ruby_basic.py",
+      "blob": "4932b9b2ce6e29c05ef5054c78868b0951ccdabe"
+    },
+    {
+      "path": "test/solidlsp/ruby/test_ruby_symbol_retrieval.py",
+      "blob": "67a29eb22a9efa6bfa9453008209fbb53e2977db"
+    },
+    {
+      "path": "test/solidlsp/rust/test_rust_2024_edition.py",
+      "blob": "74cba6ec58706c5cafc33d99bc390fbdb3604065"
+    },
+    {
+      "path": "test/solidlsp/rust/test_rust_analyzer_detection.py",
+      "blob": "3196c323b8c03bf898479a989aca7cb9296a9bdd"
+    },
+    {
+      "path": "test/solidlsp/rust/test_rust_analyzer_settings.py",
+      "blob": "3d9b46e9b5d748ffddcd7fb895abf3580534d6a2"
+    },
+    {
+      "path": "test/solidlsp/rust/test_rust_basic.py",
+      "blob": "446cdfbe44c24c4a7c8faacb101181f17b9a8b9f"
+    },
+    {
+      "path": "test/solidlsp/rust/test_rust_diagnostics.py",
+      "blob": "f847bd13695a9463aa0ffc11072098c5125c2642"
+    },
+    {
+      "path": "test/solidlsp/scala/test_metals_db_utils.py",
+      "blob": "5a31af240b46afdbc46673c7791f1a9cabc41220"
+    },
+    {
+      "path": "test/solidlsp/scala/test_scala_build_roots.py",
+      "blob": "2977bdb3a14278e87cf2224b4efaf4ba289e1a8f"
+    },
+    {
+      "path": "test/solidlsp/scala/test_scala_language_server.py",
+      "blob": "7ac36710003258cd6c9634fe4cd93ddd9692d79c"
+    },
+    {
+      "path": "test/solidlsp/scala/test_scala_show_message_request.py",
+      "blob": "beb336b977c99031166f956e8e007e3053714f4e"
+    },
+    {
+      "path": "test/solidlsp/scala/test_scala_stale_lock_handling.py",
+      "blob": "1a8fe984b0b8b0bbf5d8ec42e1075ba789ec9a7d"
+    },
+    {
+      "path": "test/solidlsp/scss/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/scss/test_scss_basic.py",
+      "blob": "7266f85d5174b00f63eb0e026f55593a80621033"
+    },
+    {
+      "path": "test/solidlsp/scss/test_scss_diagnostics.py",
+      "blob": "436c06119703a713470f09d6a2dc89646912679e"
+    },
+    {
+      "path": "test/solidlsp/solidity/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/solidity/test_solidity_basic.py",
+      "blob": "9c1512aeb48973afba445f9342204be989c29799"
+    },
+    {
+      "path": "test/solidlsp/solidity/test_solidity_diagnostics.py",
+      "blob": "84f7e0d71223c89e5493335452bac1ea3cd33c5b"
+    },
+    {
+      "path": "test/solidlsp/svelte/__init__.py",
+      "blob": "3b8849f6f82254c7b1f70a23a96d7ebd97b1006e"
+    },
+    {
+      "path": "test/solidlsp/svelte/conftest.py",
+      "blob": "1b6183b14f086b6447249184355a646866fc6615"
+    },
+    {
+      "path": "test/solidlsp/svelte/test_svelte_basic.py",
+      "blob": "3757ff83c667aad36d9023c4be8c4a356e6a4362"
+    },
+    {
+      "path": "test/solidlsp/svelte/test_svelte_references.py",
+      "blob": "2fc7bdbfbcf6c222bfa7f03b9604d1d8716c08ae"
+    },
+    {
+      "path": "test/solidlsp/svelte/test_svelte_rename.py",
+      "blob": "ec550b82a2e2f52b77b86e0a4092862df09d88c8"
+    },
+    {
+      "path": "test/solidlsp/svelte/test_svelte_symbols.py",
+      "blob": "49d2b26b79db93b1b0ff59df9b3da3269d524047"
+    },
+    {
+      "path": "test/solidlsp/swift/test_swift_basic.py",
+      "blob": "22934fe96df6a98c54c9ef8b07cb3607b166a36f"
+    },
+    {
+      "path": "test/solidlsp/systemverilog/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/systemverilog/test_systemverilog_basic.py",
+      "blob": "a24f6468384d567c365dbc5d8886c2b24e4d9185"
+    },
+    {
+      "path": "test/solidlsp/systemverilog/test_systemverilog_detection.py",
+      "blob": "34a96a3b01aa73f520533838f4a3d694e333b4f5"
+    },
+    {
+      "path": "test/solidlsp/systemverilog/test_systemverilog_diagnostics.py",
+      "blob": "feb6bdde657b0a4dfdf459e0234137a244ef7db3"
+    },
+    {
+      "path": "test/solidlsp/terraform/test_terraform_basic.py",
+      "blob": "0d9ddcd84fa439f3b12bd50d5853fee9ec8b63a7"
+    },
+    {
+      "path": "test/solidlsp/terraform/test_terraform_diagnostics.py",
+      "blob": "fa4e0bd71d7b3496a3b0850d2fbb49f69d6f0d8d"
+    },
+    {
+      "path": "test/solidlsp/test_content_modified_retry.py",
+      "blob": "4ea4db05623906eb66c49ddf8ce2b09acbd34bae"
+    },
+    {
+      "path": "test/solidlsp/test_is_ignored_path_missing.py",
+      "blob": "6847894b467b0c370b4161d462283832e6c9286c"
+    },
+    {
+      "path": "test/solidlsp/test_ls_common.py",
+      "blob": "50315cf3bb88c24745d26ee90722c6ff0997ac07"
+    },
+    {
+      "path": "test/solidlsp/test_ls_config.py",
+      "blob": "680bb39906f53089a40a4ca5207421f2f6e01f2d"
+    },
+    {
+      "path": "test/solidlsp/test_lsp_protocol_handler_server.py",
+      "blob": "f8ce02cfcc6dcbaa4d06190e7bfe97118dbe14eb"
+    },
+    {
+      "path": "test/solidlsp/test_pdeathsig.py",
+      "blob": "662143c9a3c97a464692fec60aed534cdd399d63"
+    },
+    {
+      "path": "test/solidlsp/test_process_group_cleanup.py",
+      "blob": "0a37ccc0e5efd844428dbbc9df311e0f5d0b97a6"
+    },
+    {
+      "path": "test/solidlsp/test_rename_didopen.py",
+      "blob": "f2902d893127a3e85817af033129984fba8e52fd"
+    },
+    {
+      "path": "test/solidlsp/test_symbol_body.py",
+      "blob": "87660bf682df67daf16b0949061e5c63466f8522"
+    },
+    {
+      "path": "test/solidlsp/test_text_utils.py",
+      "blob": "f61221482922d19bcd001cb00b4108893ed49b7f"
+    },
+    {
+      "path": "test/solidlsp/test_typescript_timeout_policy.py",
+      "blob": "ad2274b0855da8628783084e2fb4cf7bd2c2e41f"
+    },
+    {
+      "path": "test/solidlsp/toml/__init__.py",
+      "blob": "00ae6163a7c7836d780a0c3dd1bd75c2c2f4cc45"
+    },
+    {
+      "path": "test/solidlsp/toml/test_toml_basic.py",
+      "blob": "dc4db65e3188cef6ea8be9fe09d2d855ff28e1b7"
+    },
+    {
+      "path": "test/solidlsp/toml/test_toml_diagnostics.py",
+      "blob": "85b94446076eab93ce53341b293458bdb3f0426c"
+    },
+    {
+      "path": "test/solidlsp/toml/test_toml_edge_cases.py",
+      "blob": "729c0d2e125c6f035884afc29408ff63d3341d3b"
+    },
+    {
+      "path": "test/solidlsp/toml/test_toml_ignored_dirs.py",
+      "blob": "95611b4e456cb3ba537373acee8b63031826ea49"
+    },
+    {
+      "path": "test/solidlsp/toml/test_toml_symbol_retrieval.py",
+      "blob": "c2497c0bca696ff464a9cf830b4f68ec90fa3115"
+    },
+    {
+      "path": "test/solidlsp/typescript/test_typescript_basic.py",
+      "blob": "006bcc0e3f5bb9b1d66147a86e05ab3562e4ca3b"
+    },
+    {
+      "path": "test/solidlsp/typescript/test_typescript_cross_package.py",
+      "blob": "5dcf10caa4c7dc510bba8cdf6cd59d9da990f1a7"
+    },
+    {
+      "path": "test/solidlsp/typescript/test_typescript_diagnostics.py",
+      "blob": "76e8c5fac5d829220c90936d47d56e1bec335b68"
+    },
+    {
+      "path": "test/solidlsp/typescript/test_typescript_ignored_dirs.py",
+      "blob": "5194475d331c60155051e96172f26d671bf3b141"
+    },
+    {
+      "path": "test/solidlsp/util/diagnostics.py",
+      "blob": "dee66086b9f2890bd598348998773645a6a8468f"
+    },
+    {
+      "path": "test/solidlsp/util/test_ls_utils.py",
+      "blob": "a4876645cecab2d345119831c9287eacc7c8642b"
+    },
+    {
+      "path": "test/solidlsp/util/test_zip.py",
+      "blob": "5fa545bab5f1400b9791b173b8e9f697c1c53d02"
+    },
+    {
+      "path": "test/solidlsp/vue/__init__.py",
+      "blob": "a587a13aa1a4ffac144d35304b285b7f2897f395"
+    },
+    {
+      "path": "test/solidlsp/vue/test_vue_basic.py",
+      "blob": "08ab9a9b18c413298fab2029b1a838f308dd7d41"
+    },
+    {
+      "path": "test/solidlsp/vue/test_vue_diagnostics.py",
+      "blob": "fc8a58dfd99cef1fcda5343878205fae8b292101"
+    },
+    {
+      "path": "test/solidlsp/vue/test_vue_error_cases.py",
+      "blob": "a7431e80345dcfce670414d683ec184682e591eb"
+    },
+    {
+      "path": "test/solidlsp/vue/test_vue_rename.py",
+      "blob": "efd0743e7af0edd9fb0758340a82fe267e88c892"
+    },
+    {
+      "path": "test/solidlsp/vue/test_vue_symbol_retrieval.py",
+      "blob": "2da121e224ff52b1c55ef19d191d095958b26bce"
+    },
+    {
+      "path": "test/solidlsp/wolfram/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/wolfram/test_wolfram_basic.py",
+      "blob": "44b2038585ca3c196fd47c8407632a920a418669"
+    },
+    {
+      "path": "test/solidlsp/yaml_ls/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "test/solidlsp/yaml_ls/test_yaml_basic.py",
+      "blob": "d02440605c4cee693a10fefc8e72df01ab341b6a"
+    },
+    {
+      "path": "test/solidlsp/yaml_ls/test_yaml_diagnostics.py",
+      "blob": "270f603d5a3caa4696437f3dbe0b78cf6d314804"
+    },
+    {
+      "path": "test/solidlsp/zig/test_zig_basic.py",
+      "blob": "c9d9b6fe249fb5f78a8c02c2ddbde9c9ef014d2d"
+    },
+    {
+      "path": "uv.lock",
+      "blob": "c5d1ab52d59ff37687f824017be234e878abe1f0"
+    }
+  ]
+}

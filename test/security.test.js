@@ -45,7 +45,8 @@ test("repo cwd and PATH cannot select Serena; explicit absolute overrides are ca
     process.chdir(root); process.env.HOME = home; process.env.PATH = `${bin}${path.delimiter}${previous.PATH}`;
     delete process.env.LAZY_INTEL_SERENA_BIN;
     const executable = await resolveBin("serena");
-    assert.equal((await run(executable)).stdout, "trusted 1 symbols ready");
+    // run() preserves raw bytes now: the transport no longer trims source-significant whitespace.
+    assert.equal((await run(executable)).stdout, "trusted 1 symbols ready\n");
     process.env.LAZY_INTEL_SERENA_BIN = "node_modules/.bin/serena";
     await assert.rejects(resolveBin("serena"), /absolute executable/);
     const alias = path.join(base, "installed-serena");
@@ -127,7 +128,18 @@ test("installer refuses malformed or unreadable configuration without replacing 
   assert.equal((await stat(configPath)).isDirectory(), true);
 });
 
-test("installer atomically preserves other servers and settings with mode 0600", async () => {
+// The installer deliberately refuses to write an unsupported runtime into OMP configuration,
+// so the atomic-write property can only be observed on a runtime inside the declared engine
+// range. On any other runtime the refusal itself is the behaviour under test.
+const [nodeMajor, nodeMinor] = process.versions.node.split(".").map(Number);
+const supportedRuntime = (nodeMajor > 22 || (nodeMajor === 22 && nodeMinor >= 5)) && nodeMajor < 25;
+
+test("installer refuses to record an unsupported runtime", { skip: supportedRuntime && "runtime is inside the supported range" }, async () => {
+  const root = await directory("unsupported-runtime");
+  await assert.rejects(installOmp(root), /requires >=22\.5 <25/);
+});
+
+test("installer atomically preserves other servers and settings with mode 0600", { skip: !supportedRuntime && `Node ${process.version} is outside the supported engine range` }, async () => {
   const root = await directory("atomic-config");
   const configDir = path.join(root, ".omp"); await mkdir(configDir);
   const configPath = path.join(configDir, "mcp.json");
