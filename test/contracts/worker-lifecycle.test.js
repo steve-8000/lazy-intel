@@ -193,3 +193,86 @@ test("a call with no budget left never reaches the worker", { skip: SKIP, timeou
     await rm(worker.dir, { recursive: true, force: true });
   }
 });
+
+test("completed abandoned jobs do not accumulate toward recycling", { skip: SKIP, timeout: 60_000 }, async () => {
+  const worker = await scratchWorker(`
+    const handlers = {
+      slow: async () => { await new Promise((r) => setTimeout(r, 250)); return { outcome: "ok", payload: "slow-done" }; },
+      quick: async () => ({ outcome: "ok", payload: "quick-done" }),
+    };
+  `);
+  const supervisor = new WorkerSupervisor({ kind: "retrieval", modulePath: worker.file, workspaceId: "test", abandonedJobLimit: 3 });
+  try {
+    const warm = await supervisor.call("quick", null, callContext());
+    assert.equal(warm.ok, true);
+    const initialEpoch = supervisor.epoch;
+    assert.ok(initialEpoch);
+    for (let index = 0; index < 3; index += 1) {
+      const controller = new AbortController();
+      const abandoned = supervisor.call("slow", null, callContext({ signal: controller.signal }));
+      setTimeout(() => controller.abort(), 25).unref?.();
+      const result = await abandoned;
+      assert.equal(result.code, "cancelled");
+      // This response proves the abandoned slow job finished before the next iteration.
+      const drained = await supervisor.call("quick", null, callContext());
+      assert.equal(drained.payload, "quick-done");
+    }
+    assert.equal(supervisor.epoch, initialEpoch, "sequentially completed jobs recycled the worker");
+  } finally {
+    await supervisor.close();
+    await rm(worker.dir, { recursive: true, force: true });
+  }
+});
+
+test("simultaneous abandoned jobs recycle the worker at the threshold", { skip: SKIP, timeout: 60_000 }, async () => {
+  const worker = await scratchWorker(`
+    const handlers = {
+      slow: async () => { await new Promise((r) => setTimeout(r, 500)); return { outcome: "ok", payload: "slow-done" }; },
+      quick: async () => ({ outcome: "ok", payload: "quick-done" }),
+    };
+  `);
+  const supervisor = new WorkerSupervisor({ kind: "retrieval", modulePath: worker.file, workspaceId: "test", abandonedJobLimit: 3 });
+  try {
+    const warm = await supervisor.call("quick", null, callContext());
+    assert.equal(warm.ok, true);
+    const initialEpoch = supervisor.epoch;
+    assert.ok(initialEpoch);
+    const controllers = [new AbortController(), new AbortController(), new AbortController()];
+    const calls = controllers.map((controller) => supervisor.call("slow", null, callContext({ signal: controller.signal })));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    for (const controller of controllers) controller.abort();
+    const results = await Promise.all(calls);
+    assert.deepEqual(results.map((result) => result.code), ["cancelled", "cancelled", "cancelled"]);
+    const recovered = await supervisor.call("quick", null, callContext());
+    assert.equal(recovered.ok, true);
+    assert.notEqual(recovered.workerEpoch, initialEpoch, "three in-flight abandoned jobs did not recycle the worker");
+  } finally {
+    await supervisor.close();
+    await rm(worker.dir, { recursive: true, force: true });
+  }
+});
+
+test("deadline abandonment counts toward the recycle threshold while work is busy", { skip: SKIP, timeout: 60_000 }, async () => {
+  const worker = await scratchWorker(`
+    const handlers = {
+      slow: async () => { await new Promise((r) => setTimeout(r, 300)); return { outcome: "ok", payload: "slow-done" }; },
+      quick: async () => ({ outcome: "ok", payload: "quick-done" }),
+    };
+  `);
+  const supervisor = new WorkerSupervisor({ kind: "retrieval", modulePath: worker.file, workspaceId: "test", abandonedJobLimit: 3 });
+  try {
+    const warm = await supervisor.call("quick", null, callContext());
+    assert.equal(warm.ok, true);
+    const initialEpoch = supervisor.epoch;
+    assert.ok(initialEpoch);
+    const calls = [0, 1, 2].map(() => supervisor.call("slow", null, callContext({ deadlineMonotonicMs: performance.now() + 100 })));
+    const results = await Promise.all(calls);
+    assert.deepEqual(results.map((result) => result.code), ["deadline", "deadline", "deadline"]);
+    const recovered = await supervisor.call("quick", null, callContext());
+    assert.equal(recovered.ok, true);
+    assert.notEqual(recovered.workerEpoch, initialEpoch, "deadline-expired jobs did not recycle a busy worker");
+  } finally {
+    await supervisor.close();
+    await rm(worker.dir, { recursive: true, force: true });
+  }
+});

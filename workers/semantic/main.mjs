@@ -64,10 +64,14 @@ class PythonBridge {
       if (!line.trim()) continue;
       let response;
       try { response = JSON.parse(line); } catch (error) { this.#die(error); return; }
-      const waiter = this.#waiters.entries().next().value;
-      if (!waiter) continue;
-      this.#waiters.delete(waiter[0]);
-      waiter[1](response);
+      const requestId = response?.requestId;
+      const resolveResponse = this.#waiters.get(requestId);
+      if (!resolveResponse) {
+        process.stderr.write(`semantic-python: discarded response for unknown requestId ${JSON.stringify(requestId)}\n`);
+        continue;
+      }
+      this.#waiters.delete(requestId);
+      resolveResponse(response);
     }
   }
 
@@ -84,13 +88,17 @@ class PythonBridge {
     if (this.#dead !== null) throw new WorkerError("backend_failed", `Python bridge is dead: ${this.#dead.message}`, true);
     const requestId = randomUUID();
     const responsePromise = new Promise((resolveResponse) => this.#waiters.set(requestId, resolveResponse));
-    this.#child.stdin.write(`${JSON.stringify({ operation, payload })}\n`);
-    const timer = setTimeout(() => {
-      this.#waiters.delete(requestId);
-      resolveTimeout();
-    }, Math.max(1, budgetMs));
     let resolveTimeout;
     const timeoutPromise = new Promise((_, reject) => { resolveTimeout = () => reject(new WorkerError("deadline", "semantic Python budget expired", true)); });
+    const timer = setTimeout(() => {
+      this.#waiters.delete(requestId);
+      // Serena/LSP work cannot be cancelled; recycle the process rather than leave queued callers behind it.
+      const child = this.#child;
+      this.#die(new Error("semantic Python budget expired"));
+      child?.kill();
+      resolveTimeout();
+    }, Math.max(1, budgetMs));
+    this.#child.stdin.write(`${JSON.stringify({ requestId, operation, payload })}\n`);
     try {
       const response = await Promise.race([responsePromise, timeoutPromise]);
       if (!response.ok) {

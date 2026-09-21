@@ -77,13 +77,12 @@ const graphCoverage = (returned: number): Coverage => ({
 });
 
 export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
-  const fileBytes = new Map<string, Promise<Buffer>>();
-  const getFileBytes = (root: string, relativePath: string): Promise<Buffer> => {
+  const getFileBytes = (cache: Map<string, Promise<Buffer>>, root: string, relativePath: string): Promise<Buffer> => {
     const key = root + "\0" + relativePath;
-    let bytes = fileBytes.get(key);
+    let bytes = cache.get(key);
     if (!bytes) {
       bytes = readFile(resolve(root, relativePath));
-      fileBytes.set(key, bytes);
+      cache.set(key, bytes);
     }
     return bytes;
   };
@@ -95,13 +94,14 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
   });
 
   async function anchorFor(
+    cache: Map<string, Promise<Buffer>>,
     root: string,
     workspaceId: string,
     node: { readonly id: string; readonly filePath: string; readonly startLine: number; readonly endLine: number; readonly kind: string },
   ): Promise<CanonicalAnchor | null> {
     if (!node.filePath || !Number.isInteger(node.startLine) || !Number.isInteger(node.endLine) || node.startLine < 1 || node.endLine < node.startLine) return null;
     try {
-      const bytes = await getFileBytes(root, node.filePath);
+      const bytes = await getFileBytes(cache, root, node.filePath);
       const lineStart = (line: number): number => {
         if (line <= 1) return 0;
         let current = 1;
@@ -127,6 +127,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
   }
 
   async function makeEvidence(
+    cache: Map<string, Promise<Buffer>>,
     root: string,
     workspaceId: string,
     revision: string,
@@ -139,7 +140,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
     return {
       id: "codegraph:" + kind + ":" + node.id,
       kind,
-      anchor: await anchorFor(root, workspaceId, node),
+      anchor: await anchorFor(cache, root, workspaceId, node),
       aliases: [alias(node.id, revision)],
       method: "resolved_graph",
       sourceCheck: "unchecked",
@@ -152,6 +153,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
   }
 
   async function read(input: GraphRequest, context: RequestContext): Promise<ReadResult> {
+    const fileBytes = new Map<string, Promise<Buffer>>();
     const result = await options.supervisor.call<{ root: string; request: GraphRequest }, WireResponse>(
       input.operation,
       { root: options.sourceRoot, request: input },
@@ -177,7 +179,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
 
     for (const node of subgraph.nodes) {
       if (evidence.length >= context.maxEvidence) break;
-      evidence.push(await makeEvidence(root, workspaceId, revision, node, input.operation === "impact" ? "impact" : "definition", node.name, null, input.view));
+      evidence.push(await makeEvidence(fileBytes, root, workspaceId, revision, node, input.operation === "impact" ? "impact" : "definition", node.name, null, input.view));
     }
 
     if (payload.result === "context") {
@@ -185,7 +187,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
       for (const block of data.context.codeBlocks) {
         if (evidence.length >= context.maxEvidence) break;
         const node = block.node ?? { id: "block:" + block.filePath + ":" + block.startLine, kind: "code", name: block.filePath, filePath: block.filePath, startLine: block.startLine, endLine: block.endLine };
-        evidence.push(await makeEvidence(root, workspaceId, revision, node, "retrieval", block.content, null, input.view));
+        evidence.push(await makeEvidence(fileBytes, root, workspaceId, revision, node, "retrieval", block.content, null, input.view));
       }
       for (const callPath of data.callPaths) {
         if (evidence.length >= context.maxEvidence) break;
@@ -193,7 +195,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
         const last = subgraph.nodes.find((node) => node.id === callPath.nodeIds.at(-1));
         if (!first || !last) continue;
         const callNode = { ...first, id: "call:" + callPath.nodeIds.join(">"), kind: "call", name: callPath.nodeIds.map((id) => subgraph.nodes.find((node) => node.id === id)?.name ?? id).join(" -> "), endLine: last.endLine };
-        const callEvidence = await makeEvidence(root, workspaceId, revision, callNode, "call", callPath.synthesizedHops.map((hop) => hop.label).join("; ") || null, null, input.view);
+        const callEvidence = await makeEvidence(fileBytes, root, workspaceId, revision, callNode, "call", callPath.synthesizedHops.map((hop) => hop.label).join("; " ) || null, null, input.view);
         evidence.push(callEvidence);
       }
       if (data.confidence === "low") issues.push({ code: "ambiguous_subject", component: "graph", message: "CodeGraph context confidence is low; the returned entry points are not comprehensive.", retryable: false });

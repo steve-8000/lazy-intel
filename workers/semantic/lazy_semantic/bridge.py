@@ -60,16 +60,21 @@ def main() -> int:
         for line in sys.stdin:
             if not line.strip():
                 continue
+            request_id = None
             try:
                 request = json.loads(line)
+                if isinstance(request, dict):
+                    candidate_id = request.get("requestId")
+                    if isinstance(candidate_id, str) and candidate_id.strip():
+                        request_id = candidate_id
                 result = bridge.dispatch(str(request["operation"]), dict(request.get("payload", {})))
-                response = {"ok": True, "payload": result}
+                response = {"requestId": request_id, "ok": True, "payload": result}
             except LazyUnavailable as exc:
-                response = {"ok": False, "code": "unavailable", "retryable": False, "message": str(exc)}
+                response = {"requestId": request_id, "ok": False, "code": "unavailable", "retryable": False, "message": str(exc)}
             except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
-                response = {"ok": False, "code": "invalid_request", "retryable": False, "message": str(exc)}
+                response = {"requestId": request_id, "ok": False, "code": "invalid_request", "retryable": False, "message": str(exc)}
             except Exception as exc:  # Serena/LSP failures are backend failures, not bridge crashes.
-                response = {"ok": False, "code": "backend_failed", "retryable": True, "message": str(exc)}
+                response = {"requestId": request_id, "ok": False, "code": "backend_failed", "retryable": True, "message": str(exc)}
             sys.stdout.write(json.dumps(response, separators=(",", ":")) + "\n")
             sys.stdout.flush()
     finally:

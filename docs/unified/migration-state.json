@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "unit": "U09",
-  "generated_at": "2026-09-21T08:21:03.969Z",
+  "generated_at": "2026-09-21T14:05:50.390Z",
   "summary": "The unified engine is built, tested and selectable. It is not yet the default: LAZY_INTEL_ENGINE must be set to `unified`. Rollback is unsetting that variable, which needs no state migration because the two readers share one derived-state owner.",
   "engine_modes": {
     "legacy": {
@@ -9,14 +9,16 @@
       "reader": "src/backends/{zvec,codegraph,serena}.js",
       "transport": "zg and codegraph CLI subprocesses plus an externally provisioned Serena MCP server over stdio",
       "evidence_quality": "retrieval and graph results arrive as formatted text and are preserved as opaque blocks; no locator may be derived from them",
-      "status": "default"
+      "status": "default",
+      "index_lifecycle": "src/lifecycle.js CLI driver: zg index / codegraph sync / status prose, unchanged."
     },
     "unified": {
       "selector": "LAZY_INTEL_ENGINE=unified",
       "reader": "src/unified.js over packages/core adapters",
       "transport": "long-lived private worker processes loading the vendored fork libraries over a Node IPC channel",
       "evidence_quality": "retrieval, graph and semantic results carry canonical anchors with UTF-8 byte spans and the backend's own native id",
-      "status": "selectable, verified by scripts/verify-release.mjs"
+      "status": "selectable, verified by scripts/verify-release.mjs",
+      "index_lifecycle": "src/lifecycle.js embedded driver: service.index()/graph.sync() inside the same private workers. No zg or codegraph executable is reached; proven by test/contracts/embedded-lifecycle.test.js with PATH reduced to the Node binary directory and a legacy control run in the same environment."
     }
   },
   "state_compatibility": {
@@ -37,5 +39,37 @@
     "The workspace publication layer is implemented and tested but is not yet the gate in front of the derived indexes; the index-manager still owns readiness.",
     "Single-parse convergence is enabled only for the languages in docs/unified/parser-convergence.json with `converged: true`. Every other language keeps its existing extractor.",
     "Semantic reads cover `symbol` and `references`. `implementations` and `diagnostics` return unsupported_capability rather than a substituted answer."
+  ],
+  "review_fixes": [
+    {
+      "id": "P0-semantic-correlation",
+      "defect": "workers/semantic/main.mjs generated a requestId but never sent it, and #onData resolved the first waiter in the map. After one budget expiry the Python bridge responses were permanently off by one, attaching one request evidence to another.",
+      "fix": "requestId travels both ways; unmatched ids are discarded; a budget expiry recycles the bridge because Serena/LSP work cannot be cancelled and the loop is single-threaded.",
+      "regression": "test/faults/semantic-correlation.test.js"
+    },
+    {
+      "id": "P0-supervisor-accounting",
+      "defect": "abort and deadline marked a job abandoned and incremented the counter, then cleanup deleted the pending entry, so the decrement in #onResponse was unreachable. #abandoned counted lifetime abandonments and recycled healthy workers; the deadline path never checked the threshold at all.",
+      "fix": "physical in-flight jobs are tracked separately from logical pending calls; abort and deadline share one abandon path.",
+      "regression": "test/contracts/worker-lifecycle.test.js"
+    },
+    {
+      "id": "P1-stale-source-cache",
+      "defect": "src/unified.js and packages/core/src/adapters/graph.ts cached file bytes for the process lifetime, so evidence text and contentHash could be computed from a pre-edit copy of a file.",
+      "fix": "both caches are scoped to one read request.",
+      "regression": "test/faults/stale-source.test.js"
+    },
+    {
+      "id": "P1-language-fallback",
+      "defect": "a symbol read with no recognizable extension silently defaulted to TypeScript, starting the wrong language server against the wrong source.",
+      "fix": "typed UNSUPPORTED_CAPABILITY refusal naming what is missing.",
+      "regression": "test/faults/stale-source.test.js"
+    },
+    {
+      "id": "P1-embedded-lifecycle",
+      "defect": "unified reads were embedded but ensureIndexes still spawned zg and codegraph, contradicting the documented no-external-install claim.",
+      "fix": "src/lifecycle.js driver indirection; index-manager keeps all policy.",
+      "regression": "test/contracts/embedded-lifecycle.test.js"
+    }
   ]
 }

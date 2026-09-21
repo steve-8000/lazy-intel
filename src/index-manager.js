@@ -1,11 +1,9 @@
 import { watch } from "node:fs";
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { canonicalDirectory, containsPath } from "./lib/roots.js";
 import { homedir } from "node:os";
 import path from "node:path";
-import { resolveBin, run } from "./lib/process.js";
 import { log } from "./lib/log.js";
 
 const roots = new Map();
@@ -18,11 +16,21 @@ const MAX_STALE_MS = intEnv("LAZY_INTEL_MAX_STALE_MS", 60_000, 5_000, 3_600_000)
 const DEFAULT_TIMEOUT_MS = intEnv("LAZY_INTEL_INDEX_TIMEOUT_MS", 120_000, 5_000, 1_800_000);
 const PROBE_TIMEOUT_MS = intEnv("LAZY_INTEL_PROBE_TIMEOUT_MS", 20_000, 1_000, 120_000);
 const AUTO_REPAIR = process.env.LAZY_INTEL_AUTO_REPAIR !== "false";
-// Unset by default on purpose: a new zvec index then inherits the shared zvec-grep
-// configuration (global default model + model cache) instead of creating a second vector space.
 const EXPLICIT_EMBEDDING = process.env.LAZY_INTEL_EMBEDDING || undefined;
-const ZVEC_MODE = process.env.LAZY_INTEL_ZVEC_MODE ?? "auto";
 export const INDEX_BACKENDS = ["zvec", "codegraph"];
+
+let driverPromise;
+
+async function lifecycleDriver(backend) {
+  // This import is dynamic to break the intentional manager -> driver -> unified -> manager cycle.
+  driverPromise ??= new Map();
+  let driver = driverPromise.get(backend);
+  if (!driver) {
+    driver = import("./lifecycle.js").then(({ getDriver }) => getDriver(backend));
+    driverPromise.set(backend, driver);
+  }
+  return driver;
+}
 
 const IGNORED_SEGMENTS = new Set([
   ".git", ".hg", ".svn", ".zvec-grep", ".codegraph", ".serena", "node_modules", ".venv", "venv",
@@ -139,8 +147,7 @@ export async function indexStatus(root, options = {}) {
     root: state.root,
     generation: state.generation,
     watcher: state.watcherActive,
-    embedding: EXPLICIT_EMBEDDING ?? `inherited from zvec-grep configuration (${await configuredEmbedding() ?? "unset"})`,
-    zvecTransport: ZVEC_MODE,
+    embedding: EXPLICIT_EMBEDDING ?? `inherited from zvec-grep configuration (${await (await import("./lifecycle.js")).configuredEmbedding() ?? "unset"})`,
     freshnessSource: state.watcherActive ? "filesystem watcher" : `periodic fallback (${MAX_STALE_MS}ms)`,
     backends: {},
   };
@@ -298,93 +305,32 @@ async function ensureCreated(state, backend, options = {}) {
     return null;
   }
   const startedGeneration = state.generation;
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-  if (backend === "zvec") {
-    const args = ["index", state.root, "--mode", ZVEC_MODE];
-    const embedding = options.embedding ?? EXPLICIT_EMBEDDING ?? await configuredEmbedding();
-    if (!embedding) {
-      throw new Error("no zvec embedding available: set LAZY_INTEL_EMBEDDING or ZVEC_GREP_EMBEDDING, "
-        + "or configure a default with `zg config model set <model>` (a new index cannot pick a model on its own)");
-    }
-    // Inherited values are not re-passed: zg then keeps using its own configured default.
-    if (options.embedding ?? EXPLICIT_EMBEDDING) args.push("--embedding", embedding);
-    await runBackend("zg", args, state, options, timeoutMs);
-  } else {
-    await runBackend("codegraph", ["init", state.root], state, options, timeoutMs);
-  }
+  const driver = await lifecycleDriver(backend);
+  await driver.create(state.root, { signal: options.signal, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, embedding: options.embedding });
   markApplied(b, startedGeneration);
   log("info", "index initialized", { root: state.root, backend });
   return null;
 }
 
-// The shared zvec-grep configuration is the single source of truth for the vector space.
-async function configuredEmbedding() {
-  if (process.env.ZVEC_GREP_EMBEDDING) return process.env.ZVEC_GREP_EMBEDDING;
-  const home = process.env.ZVEC_GREP_HOME || path.join(homedir(), ".zvec-grep");
-  try {
-    const config = JSON.parse(await readFile(path.join(home, "config.json"), "utf8"));
-    return config?.defaults?.embedding ?? null;
-  } catch {
-    return null;
-  }
-}
-
 async function refreshBackend(state, backend, options = {}) {
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const startedGeneration = state.generation;
-  if (backend === "zvec") {
-    // Incremental pass; the stored embedding schema is reused, so no model is ever re-selected here.
-    await runBackend("zg", ["index", state.root, "--mode", ZVEC_MODE], state, options, timeoutMs);
-  } else {
-    await runBackend("codegraph", ["sync", state.root], state, options, timeoutMs);
-  }
+  const driver = await lifecycleDriver(backend);
+  await driver.refresh(state.root, { signal: options.signal, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS });
   markApplied(state.backends[backend], startedGeneration);
   return row(backend, true, "synced", { generation: startedGeneration });
 }
 
 async function rebuildBackend(state, backend, options = {}) {
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const startedGeneration = state.generation;
-  if (backend === "zvec") {
-    const args = ["index", state.root, "--mode", ZVEC_MODE, "--rebuild"];
-    // Only an explicit request changes the vector space; otherwise the existing schema is kept.
-    const embedding = options.embedding ?? (options.allowConfiguredEmbedding ? EXPLICIT_EMBEDDING : undefined);
-    if (embedding) args.push("--embedding", embedding);
-    await runBackend("zg", args, state, options, timeoutMs);
-  } else {
-    await runBackend("codegraph", ["index", state.root], state, options, timeoutMs);
-  }
+  const driver = await lifecycleDriver(backend);
+  await driver.rebuild(state.root, { signal: options.signal, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, embedding: options.embedding });
   markApplied(state.backends[backend], startedGeneration);
   return row(backend, true, "rebuilt", { generation: startedGeneration });
 }
 
 async function probeBackend(state, backend, options = {}) {
-  const timeoutMs = options.probeTimeoutMs ?? PROBE_TIMEOUT_MS;
-  if (backend === "zvec") {
-    const result = await runBackend("zg", ["status", state.root, "--mode", ZVEC_MODE, "--check-ready"], state, options, timeoutMs, true);
-    const text = `${result.stdout}\n${result.stderr}`;
-    const building = /state:\s*(indexing|updating)|index is (updating|indexing)/i.test(text);
-    const absent = /not configured|no workspace index/i.test(text);
-    return { present: !absent, ready: result.code === 0, building: building && !absent, detail: firstLine(text) };
-  }
-  const result = await runBackend("codegraph", ["status", state.root], state, options, timeoutMs, true);
-  const text = `${result.stdout}\n${result.stderr}`;
-  const absent = /not initialized|not configured/i.test(text);
-  const detail = pickLine(text, /not initialized|not configured|symbols?|files?|up to date|stale|last index/i);
-  return { present: !absent, ready: result.code === 0 && !absent, building: false, detail };
-}
-
-async function runBackend(bin, args, state, options, timeoutMs, tolerateFailure = false) {
-  const command = await resolveBin(bin);
-  const env = bin === "codegraph" ? { DO_NOT_TRACK: "1" } : {};
-  try {
-    return await run(command, args, {
-      cwd: state.root, timeoutMs, signal: options.signal, maxOutputBytes: 8 * 1024 * 1024, env,
-    });
-  } catch (error) {
-    if (tolerateFailure && error.result) return error.result;
-    throw error;
-  }
+  const driver = await lifecycleDriver(backend);
+  return driver.probe(state.root, { signal: options.signal, timeoutMs: options.probeTimeoutMs ?? PROBE_TIMEOUT_MS });
 }
 
 function markApplied(b, generation) {
@@ -444,15 +390,6 @@ function indexBackends(backends) {
 }
 
 function ignore() {}
-
-function firstLine(text) {
-  return text.split("\n").map((l) => l.trim()).filter(Boolean)[0] ?? null;
-}
-
-function pickLine(text, pattern) {
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
-  return lines.find((line) => pattern.test(line)) ?? lines[0] ?? null;
-}
 
 function row(backend, ok, action, detail = {}) {
   const building = detail.building ?? action === "building";

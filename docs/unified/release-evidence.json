@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "unit": "U09",
-  "generated_at": "2026-09-21T09:02:00.900Z",
+  "generated_at": "2026-09-21T14:06:32.352Z",
   "host": {
     "platform": "darwin",
     "arch": "arm64",
@@ -126,10 +126,10 @@
       "title": "The full test suite passes",
       "required": true,
       "status": "PASS",
-      "detail": "{\"tests\":104,\"pass\":103,\"fail\":0,\"skipped\":1}",
+      "detail": "{\"tests\":113,\"pass\":112,\"fail\":0,\"skipped\":1}",
       "counts": {
-        "tests": 104,
-        "pass": 103,
+        "tests": 113,
+        "pass": 112,
         "fail": 0,
         "skipped": 1
       }
@@ -139,7 +139,7 @@
       "title": "The unified engine answers a real query end to end",
       "required": true,
       "status": "PASS",
-      "detail": "status=ok anchored=3 opaque=0 coldMs=5849",
+      "detail": "status=ok anchored=3 opaque=0 coldMs=4426",
       "measurement": {
         "status": "ok",
         "isError": false,
@@ -148,12 +148,12 @@
             "backend": "zvec",
             "ok": true,
             "outcome": "ok",
-            "latencyMs": 5825
+            "latencyMs": 4366
           }
         ],
         "anchored": 3,
         "opaque": 0,
-        "coldMs": 5849
+        "coldMs": 4426
       }
     },
     {
@@ -275,5 +275,5 @@
       "detail": "semantic adapter contract test passed"
     }
   ],
-  "digest": "ea08b41be89abd3079f9e9ed6c34fa729176cb9e8496a3f7efa816a3aff0f452"
+  "digest": "5d3ec77f1c93d81ad387e81c97c69a9becd3825e0acc8618cee2056e9b2b18e5"
 }

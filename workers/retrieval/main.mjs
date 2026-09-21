@@ -14,30 +14,33 @@ function requestObject(payload, operation) {
   return { root, options: payload.options && typeof payload.options === "object" ? payload.options : {} };
 }
 
-async function serviceFor(root) {
+async function serviceFor(root, options = {}) {
   const existing = services.get(root);
   if (existing) return existing;
-  const service = await createZvecGrep({ root });
+  const { root: _root, rebuild: _rebuild, signal: _signal, includeStatus: _includeStatus, ...createOptions } = options;
+  const service = await createZvecGrep({ root, ...createOptions });
   services.set(root, service);
   return service;
 }
 
 async function context(payload) {
   const request = requestObject(payload, "context");
-  const service = await serviceFor(request.root);
+  const service = await serviceFor(request.root, request.options);
   return { outcome: "ok", payload: await service.context({ ...request.options, root: request.root }) };
 }
 
 async function info(payload) {
   const request = requestObject(payload, "info");
-  const service = await serviceFor(request.root);
-  return { outcome: "ok", payload: await service.info({ ...request.options, root: request.root }) };
+  const service = await serviceFor(request.root, request.options);
+  return { outcome: "ok", payload: await service.info({ root: request.root, includeStatus: true }) };
 }
 
-async function index(payload) {
+async function index(payload, context) {
   const request = requestObject(payload, "index");
-  const service = await serviceFor(request.root);
-  return { outcome: "ok", payload: await service.index({ ...request.options, root: request.root }) };
+  const service = await serviceFor(request.root, request.options);
+  const { embedding: _embedding, ...indexOptions } = request.options;
+  const signal = AbortSignal.timeout(Math.max(1, context.remainingBudgetMs));
+  return { outcome: "ok", payload: await service.index({ ...indexOptions, root: request.root, signal }) };
 }
 
 async function dispose() {

@@ -16,7 +16,7 @@ async function graphFor(workspaceId, root) {
     if (existing.root !== root) throw new WorkerError("invalid_request", "workspace root changed while graph worker was alive");
     return existing.graph;
   }
-  const opening = CodeGraph.open(root, { sync: true });
+  const opening = CodeGraph.open(root, { sync: false });
   handles.set(workspaceId, { root, graph: opening });
   try {
     const graph = await opening;
@@ -51,6 +51,43 @@ function subjectId(graph, request) {
   if (!match) throw new WorkerError("invalid_request", "CodeGraph could not resolve the graph subject");
   return match.node.id;
 }
+async function lifecycle(payload, context) {
+  if (!payload || typeof payload !== "object" || typeof payload.root !== "string" || !payload.operation) {
+    throw new WorkerError("invalid_request", "graph lifecycle payload requires root and operation");
+  }
+  const workspaceId = context.workspaceId;
+  let graph;
+  if (payload.operation === "create") {
+    const existing = handles.get(workspaceId);
+    if (existing) {
+      if (existing.root !== payload.root) throw new WorkerError("invalid_request", "workspace root changed while graph worker was alive");
+      graph = await existing.graph;
+    } else {
+      graph = await CodeGraph.init(payload.root, { index: false });
+      handles.set(workspaceId, { root: payload.root, graph });
+    }
+    return { present: true, ready: false, building: false, detail: "CodeGraph initialized" };
+  }
+  try {
+    graph = await graphFor(workspaceId, payload.root);
+  } catch (error) {
+    if (payload.operation !== "rebuild" || !/not initialized|does not exist/i.test(error.message)) throw error;
+    handles.delete(workspaceId);
+    graph = await CodeGraph.init(payload.root, { index: false });
+    handles.set(workspaceId, { root: payload.root, graph: Promise.resolve(graph) });
+  }
+  if (payload.operation === "probe") {
+    const stats = graph.getStats();
+    return { stats };
+  }
+  if (payload.operation === "refresh" || payload.operation === "rebuild") {
+    const signal = AbortSignal.timeout(Math.max(1, context.remainingBudgetMs));
+    const result = await graph.sync({ signal });
+    return { result };
+  }
+  throw new WorkerError("invalid_request", "unsupported graph lifecycle operation: " + String(payload.operation));
+}
+
 async function handle(payload) {
   if (!payload || typeof payload !== "object" || typeof payload.root !== "string" || !payload.request) {
     throw new WorkerError("invalid_request", "graph payload requires root and request");
@@ -76,6 +113,10 @@ await serveWorker({
     context: async (payload, context) => ({ outcome: "ok", payload: await handle({ ...payload, workspaceId: context.workspaceId }) }),
     impact: async (payload, context) => ({ outcome: "ok", payload: await handle({ ...payload, workspaceId: context.workspaceId }) }),
     architecture: async (payload, context) => ({ outcome: "ok", payload: await handle({ ...payload, workspaceId: context.workspaceId }) }),
+    probe: async (payload, context) => ({ outcome: "ok", payload: await lifecycle({ ...payload, operation: "probe" }, context) }),
+    create: async (payload, context) => ({ outcome: "ok", payload: await lifecycle({ ...payload, operation: "create" }, context) }),
+    refresh: async (payload, context) => ({ outcome: "ok", payload: await lifecycle({ ...payload, operation: "refresh" }, context) }),
+    rebuild: async (payload, context) => ({ outcome: "ok", payload: await lifecycle({ ...payload, operation: "rebuild" }, context) }),
   },
   dispose: async () => {
     for (const { graph } of handles.values()) (await graph).close();

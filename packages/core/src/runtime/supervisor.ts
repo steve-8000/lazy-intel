@@ -19,9 +19,10 @@
  *    startup detaches that caller; the worker keeps starting for everyone else.
  *
  * Abandoned jobs are the pressure valve: a worker serves one job at a time, so
- * enough abandoned jobs means the worker is wedged behind work nobody wants. Past
- * `abandonedJobLimit` the supervisor recycles the process, which is the only way
- * to reclaim it when the library offers no cancellation.
+ * enough physical jobs still in flight after their callers leave means the worker
+ * is wedged behind work nobody wants. Past `abandonedJobLimit` the supervisor
+ * recycles the process, which is the only way to reclaim it when the library offers
+ * no cancellation.
  */
 
 import { fork, type ChildProcess } from "node:child_process";
@@ -73,6 +74,10 @@ interface PendingCall {
   readonly workerEpoch: string;
   settle(message: WorkerMessage & { type: "response" }): void;
   fail(result: CallResult<never>): void;
+}
+
+interface PhysicalJob {
+  readonly workerEpoch: string;
   abandoned: boolean;
 }
 
@@ -90,6 +95,7 @@ export class WorkerSupervisor {
   #upstreamCommit: string | null = null;
   #starting: Promise<{ child: ChildProcess; epoch: string }> | null = null;
   #pending = new Map<string, PendingCall>();
+  #physicalJobs = new Map<string, PhysicalJob>();
   #abandoned = 0;
   #restartTimes: number[] = [];
   #closed = false;
@@ -165,26 +171,25 @@ export class WorkerSupervisor {
         resolve(result);
       };
 
-      const onAbort = (): void => {
-        const entry = this.#pending.get(context.requestId);
-        if (entry && !entry.abandoned) {
-          // The job keeps running: the library gave us no way to stop it. Mark it
-          // so its eventual answer is discarded and the pressure is counted.
-          entry.abandoned = true;
-          this.#abandoned += 1;
-          if (this.#abandoned >= (this.#options.abandonedJobLimit ?? DEFAULTS.abandonedJobLimit)) {
-            void this.#recycle(`${this.#abandoned} abandoned jobs`);
-          }
+      const abandon = (): void => {
+        const job = this.#physicalJobs.get(context.requestId);
+        if (!job || job.abandoned) return;
+        // The job keeps running: the library gave us no way to stop it. Mark it
+        // so its eventual answer is discarded and the pressure is counted.
+        job.abandoned = true;
+        this.#abandoned += 1;
+        if (this.#abandoned >= (this.#options.abandonedJobLimit ?? DEFAULTS.abandonedJobLimit)) {
+          void this.#recycle(`${this.#abandoned} abandoned jobs`);
         }
+      };
+
+      const onAbort = (): void => {
+        abandon();
         finish({ ok: false, code: "cancelled", message: "caller aborted while the read was in flight", retryable: false, workerEpoch: started.epoch });
       };
 
       const budgetTimer = setTimeout(() => {
-        const entry = this.#pending.get(context.requestId);
-        if (entry && !entry.abandoned) {
-          entry.abandoned = true;
-          this.#abandoned += 1;
-        }
+        abandon();
         finish({ ok: false, code: "deadline", message: `read exceeded its ${remainingBudgetMs}ms share of the request budget`, retryable: false, workerEpoch: started.epoch });
       }, remainingBudgetMs);
       budgetTimer.unref?.();
@@ -198,7 +203,6 @@ export class WorkerSupervisor {
       this.#pending.set(context.requestId, {
         requestId: context.requestId,
         workerEpoch: started.epoch,
-        abandoned: false,
         settle: (message) => {
           if (message.ok) {
             finish({ ok: true, outcome: message.outcome, payload: message.payload as Res, workerEpoch: message.workerEpoch, workMs: message.workMs });
@@ -208,10 +212,14 @@ export class WorkerSupervisor {
         },
         fail: (result) => finish(result as CallResult<Res>),
       });
+      this.#physicalJobs.set(context.requestId, { workerEpoch: started.epoch, abandoned: false });
 
       context.signal.addEventListener("abort", onAbort, { once: true });
       started.child.send(request, (error) => {
-        if (error) finish({ ok: false, code: "worker_failed", message: `send failed: ${error.message}`, retryable: true, workerEpoch: started.epoch });
+        if (error) {
+          this.#dropPhysicalJob(context.requestId, started.epoch);
+          finish({ ok: false, code: "worker_failed", message: `send failed: ${error.message}`, retryable: true, workerEpoch: started.epoch });
+        }
       });
     });
   }
@@ -221,6 +229,8 @@ export class WorkerSupervisor {
     const child = this.#child;
     this.#child = null;
     this.#epoch = null;
+    this.#physicalJobs.clear();
+    this.#abandoned = 0;
     for (const entry of this.#pending.values()) {
       entry.fail({ ok: false, code: "worker_failed", message: "supervisor closed", retryable: false, workerEpoch: entry.workerEpoch });
     }
@@ -310,17 +320,17 @@ export class WorkerSupervisor {
   }
 
   #onResponse(message: WorkerMessage & { type: "response" }): void {
+    const job = this.#physicalJobs.get(message.requestId);
+    if (!job) return;
+    this.#physicalJobs.delete(message.requestId);
+    if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
+
     const entry = this.#pending.get(message.requestId);
     if (!entry) return;
     if (entry.workerEpoch !== message.workerEpoch) {
       // A reply from a process we already replaced. Its view of the workspace is
       // gone; serving it would mix two projections.
       this.#pending.delete(message.requestId);
-      return;
-    }
-    if (entry.abandoned) {
-      this.#pending.delete(message.requestId);
-      this.#abandoned = Math.max(0, this.#abandoned - 1);
       return;
     }
     entry.settle(message);
@@ -331,6 +341,9 @@ export class WorkerSupervisor {
     this.#child = null;
     const epoch = this.#epoch;
     this.#epoch = null;
+    for (const [requestId, job] of this.#physicalJobs) {
+      if (job.workerEpoch === epoch) this.#physicalJobs.delete(requestId);
+    }
     this.#abandoned = 0;
 
     for (const entry of this.#pending.values()) {
@@ -362,11 +375,22 @@ export class WorkerSupervisor {
   async #recycle(reason: string): Promise<void> {
     const child = this.#child;
     if (!child) return;
+    const epoch = this.#epoch;
     this.#child = null;
     this.#epoch = null;
+    for (const [requestId, job] of this.#physicalJobs) {
+      if (job.workerEpoch === epoch) this.#physicalJobs.delete(requestId);
+    }
     this.#abandoned = 0;
     this.#options.onLog?.(`recycling ${this.#options.kind} worker: ${reason}`, "stderr");
     await this.#terminate(child);
+  }
+
+  #dropPhysicalJob(requestId: string, workerEpoch: string): void {
+    const job = this.#physicalJobs.get(requestId);
+    if (!job || job.workerEpoch !== workerEpoch) return;
+    this.#physicalJobs.delete(requestId);
+    if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
   }
 
   /** SIGTERM, then SIGKILL. The promise resolves on exit, not on signal delivery. */

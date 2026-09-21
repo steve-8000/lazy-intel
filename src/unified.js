@@ -185,15 +185,13 @@ async function semanticPort(runtime, language) {
   }
 }
 
-const fileCache = new Map();
-
-/** File bytes for byte-to-line conversion, cached for the lifetime of a request batch. */
-async function fileBytes(root, relativePath) {
+/** File bytes for byte-to-line conversion, cached only for one read request. */
+async function fileBytes(cache, root, relativePath) {
   const key = `${root}\u0000${relativePath}`;
-  let bytes = fileCache.get(key);
+  let bytes = cache.get(key);
   if (bytes === undefined) {
     bytes = readFile(path.join(root, relativePath)).catch(() => null);
-    fileCache.set(key, bytes);
+    cache.set(key, bytes);
   }
   return bytes;
 }
@@ -227,7 +225,7 @@ function provenanceFor(component, operation, upstreamCommit, method) {
   };
 }
 
-async function toProductEvidence(item, { component, operation, root, upstreamCommit, index }) {
+async function toProductEvidence(item, { component, operation, root, upstreamCommit, index, fileCache }) {
   const provenance = provenanceFor(component, operation, upstreamCommit, item.method);
   const text = item.text ?? "";
   if (text.length === 0) return null;
@@ -247,7 +245,7 @@ async function toProductEvidence(item, { component, operation, root, upstreamCom
     };
   }
 
-  const bytes = await fileBytes(root, item.anchor.relativePath);
+  const bytes = await fileBytes(fileCache, root, item.anchor.relativePath);
   if (bytes === null) {
     return {
       typed: false,
@@ -304,7 +302,7 @@ const ISSUE_TO_ERROR_CODE = {
   output_truncated: "OUTPUT_LIMIT",
 };
 
-async function toEnvelope(result, { component, operation, root, upstreamCommit, timing }) {
+async function toEnvelope(result, { component, operation, root, upstreamCommit, timing, fileCache }) {
   const backend = BACKEND_BY_COMPONENT[component];
   const blocking = result.issues.find((issue) => issue.code !== "output_truncated");
   if (result.outcome === "error" || result.outcome === "unavailable") {
@@ -319,7 +317,7 @@ async function toEnvelope(result, { component, operation, root, upstreamCommit, 
   const opaque = [];
   let index = 0;
   for (const item of result.evidence) {
-    const converted = await toProductEvidence(item, { component, operation, root, upstreamCommit, index: index += 1 });
+    const converted = await toProductEvidence(item, { component, operation, root, upstreamCommit, index: index += 1, fileCache });
     if (!converted) continue;
     if (converted.typed) items.push(converted.value);
     else opaque.push(converted.value);
@@ -348,6 +346,7 @@ const SEARCH_MODES = { search: "hybrid", auto: "hybrid", context: "hybrid" };
  */
 export async function unifiedRead(read, input, deadline) {
   const started = performance.now();
+  const fileCache = new Map();
   const timing = () => {
     const totalMs = Math.max(0, Math.round(performance.now() - started));
     return { prepareMs: 0, queueMs: 0, executeMs: totalMs, totalMs };
@@ -399,7 +398,7 @@ export async function unifiedRead(read, input, deadline) {
         view: null,
         limit: input.limit,
       }, context);
-      return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: runtime.retrieval.supervisor.upstreamCommit, timing: timing() });
+      return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: runtime.retrieval.supervisor.upstreamCommit, timing: timing(), fileCache });
     }
 
     if (component === "graph") {
@@ -410,14 +409,23 @@ export async function unifiedRead(read, input, deadline) {
         depth: input.depth,
         view: { projection: "graph", viewId: input.root, appliedManifestId: input.root, profileDigest: "live", state: "clean" },
       }, context);
-      return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: runtime.graphSupervisor.upstreamCommit, timing: timing() });
+      return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: runtime.graphSupervisor.upstreamCommit, timing: timing(), fileCache });
     }
 
     // The language decides which server answers, so it comes from the file under
     // question rather than from a global default that would silently ask the
     // wrong server about the wrong file.
     const extension = path.extname(input.relativePath ?? "").toLowerCase();
-    const language = LANGUAGE_BY_EXTENSION[extension] ?? input.language ?? "typescript";
+    const language = LANGUAGE_BY_EXTENSION[extension];
+    if (!language) {
+      return failureEnvelope(
+        backend,
+        read.operation,
+        "UNSUPPORTED_CAPABILITY",
+        "Cannot determine the language for this semantic request; supply relativePath with a recognized source-file extension.",
+        { timing: timing() },
+      );
+    }
     const port = await semanticPort(runtime, language);
     const result = await port.read({
       operation: read.operation === "references" ? "references" : read.operation === "implementations" ? "implementations" : read.operation === "diagnostics" ? "diagnostics" : "symbol",
@@ -425,7 +433,7 @@ export async function unifiedRead(read, input, deadline) {
       relativePath: input.relativePath ?? null,
       includeBody: input.includeBody,
     }, context);
-    return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: null, timing: timing() });
+    return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: null, timing: timing(), fileCache });
   } catch (error) {
     // A throw here is a bug in the bridge or a dead worker, never a backend
     // answer. It degrades this one read; the engine keeps the others.
@@ -433,11 +441,50 @@ export async function unifiedRead(read, input, deadline) {
   }
 }
 
+export async function embeddedLifecycle(root, backend, operation, options = {}, details = {}) {
+  const runtime = await runtimeFor(root);
+  const { newRequestId } = await core();
+  const signal = options.signal ?? new AbortController().signal;
+  const timeoutMs = Math.max(1, options.timeoutMs ?? 120_000);
+  const context = {
+    requestId: newRequestId(backend === "zvec" ? "retrieval" : "graph"),
+    signal,
+    deadlineMonotonicMs: performance.now() + timeoutMs,
+    workspaceId: root,
+  };
+  const supervisor = backend === "zvec" ? runtime.retrieval.supervisor : runtime.graphSupervisor;
+  const callOperation = backend === "zvec" ? (operation === "probe" ? "info" : "index") : operation;
+  const payload = backend === "zvec"
+    ? { root, options: { ...((options.embedding ?? details.embedding) ? { embedding: await (options.embedding ?? details.embedding) } : {}), ...(operation === "rebuild" ? { rebuild: true } : {}) } }
+    : { root };
+  const result = await supervisor.call(callOperation, payload, context);
+  if (!result.ok) {
+    if (operation === "probe") return { present: false, ready: false, building: false, detail: result.message };
+    throw new Error(result.message);
+  }
+  if (operation === "probe") {
+    if (backend === "zvec") {
+      const info = result.payload;
+      const status = info.status;
+      const building = Boolean(status && status.filesPending > 0);
+      return {
+        present: Boolean(info.indexed),
+        ready: Boolean(info.indexed) && !building,
+        building,
+        detail: status ? JSON.stringify({ filesPending: status.filesPending, filesFailed: status.filesFailed }) : info.suggestion ?? null,
+      };
+    }
+    const stats = result.payload?.stats ?? result.payload;
+    return { present: true, ready: true, building: false, detail: JSON.stringify(stats) };
+  }
+  return result.payload;
+}
+
 /** Release every worker process. Safe to call when nothing was ever started. */
 export async function closeUnified() {
   const pending = [...runtimes.values()];
   runtimes.clear();
-  fileCache.clear();
+
   for (const entry of pending) {
     try {
       const runtime = await entry;

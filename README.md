@@ -42,9 +42,14 @@ lazy-intel now **vendors** the source of its three backends under `vendor/`, at 
 | selector | `LAZY_INTEL_ENGINE` unset | `LAZY_INTEL_ENGINE=unified` |
 | transport | CLI subprocess per query; Serena over MCP stdio | long-lived private workers over a Node IPC channel |
 | evidence | formatted text, preserved as opaque blocks | canonical anchors with UTF-8 byte spans plus the backend's own native id |
+| index lifecycle | `zg index`, `codegraph sync` and their `status` prose, parsed by regex | `service.index()` and `graph.sync()` in the same private workers, with structured readiness |
 | external installs on the query path | `zg`, `codegraph`, `serena` must be installed | none |
 
-Rolling back is unsetting one environment variable. It migrates nothing: both engines call the same index-manager, so the derived indexes under `.zvec-grep/` and `.codegraph/` keep the same layout and the same owner. `node src/cli.js doctor` reports the active mode and the vendored pins.
+The last row is measured, not asserted: `test/contracts/embedded-lifecycle.test.js` builds both indexes and answers a query with `PATH` cut down to the Node binary's own directory, and runs `legacy` in that same environment as a control to prove the executables really were out of reach.
+
+Both engines still share one index-manager, which keeps all lifecycle *policy* — root denial, generations, the filesystem watcher, staleness, failure backoff, per-backend serialization. What changed is who performs the work: `src/lifecycle.js` selects a CLI driver or an embedded-worker driver from the same `LAZY_INTEL_ENGINE` switch.
+
+Rolling back is unsetting one environment variable. It migrates nothing: the derived indexes under `.zvec-grep/` and `.codegraph/` keep the same layout and the same owner. `node src/cli.js doctor` reports the active mode and the vendored pins.
 
 ```bash
 PATH="$(brew --prefix node@22)/bin:$PATH" npm run build          # build the vendored forks and the control plane
@@ -72,7 +77,7 @@ Every vendored file is hashed in `vendor/<name>/UPSTREAM.json`. A file may diffe
 With the default configuration:
 
 1. MCP startup registers the project (`LAZY_INTEL_ROOT` or process cwd) and starts a background bootstrap.
-2. Readiness comes from the backends themselves — `zg status --check-ready` and `codegraph status`, never from a directory guess — so a half-built or aborted index is detected instead of trusted.
+2. Readiness comes from the backends themselves, never from a directory guess, so a half-built or aborted index is detected instead of trusted. In `legacy` that means `zg status --check-ready` and `codegraph status`; in `unified` it is `service.info({ includeStatus: true })` and the graph's own statistics, which report readiness as data instead of prose to be regex-matched.
 3. A missing index is created on first use; an index that is currently building is reported as `building` rather than rebuilt underneath itself.
 4. A recursive filesystem watcher bumps a generation counter on real source changes. Every path segment is filtered, so nested `node_modules`, `dist`, `.build`, `.venv`, `__pycache__`, and the derived index directories cannot create feedback loops.
 5. Freshness is **change-driven**: each backend reconciles once when the process has no baseline for it (changes made while lazy-intel was down are unknowable), then syncs only when its applied generation falls behind the watcher generation. A quiet workspace costs zero subprocesses; there is no wall-clock re-index timer. `status` reports `dirty: null` with `baseline: "unverified"` instead of guessing.
