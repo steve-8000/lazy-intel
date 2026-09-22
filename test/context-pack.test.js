@@ -117,6 +117,20 @@ test("bounded output keeps headers, warnings, and metadata while reporting hones
   assert.deepEqual(metadata.issues, [issue]);
   assert.ok(Buffer.byteLength(pack.text + pack.metaText, "utf8") <= 1_048_576);
 });
+test("evidence too large for the budget is returned as a location, and no readable body means partial", () => {
+  const large = evidence("/workspace", "large", "x".repeat(20_000));
+  const small = evidence("/workspace", "small", "function small() {}");
+  const only = buildContextPack({ envelopes: [{ outcome: "ok", returned: 1, total: 1 }], items: [large], status: "ok", maxChars: 6_000 });
+  assert.equal(only.status, "partial");
+  assert.equal(JSON.parse(only.metaText).evidence[0].bodyOmitted, true);
+  assert.match(only.text, /Location: a\.js:1-2[\s\S]*Body omitted: 20000 characters/);
+  assert.ok(!only.text.includes("x".repeat(100)));
+  assert.ok(only.text.length + only.metaText.length <= 6_000);
+
+  const mixed = buildContextPack({ envelopes: [{ outcome: "ok", returned: 2, total: 2 }], items: [large, small], status: "ok", maxChars: 6_000 });
+  assert.equal(mixed.status, "ok");
+  assert.deepEqual(JSON.parse(mixed.metaText).evidence.map(({ id, bodyOmitted }) => [id, Boolean(bodyOmitted)]).sort(), [["large", true], ["small", false]]);
+});
 test("canonical span verifies exact UTF-8 bytes and detects a later source revision", async (t) => {
   const root = await mkdtemp(path.join(tmpdir(), "lazy-intel-span-check-"));
   t.after(() => rm(root, { recursive: true, force: true }));

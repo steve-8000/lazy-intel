@@ -70,6 +70,12 @@ function candidateBlock(item) {
   return `${heading}\n\n${item.text}`;
 }
 
+/** Location-only form of an item whose body alone would exceed the response budget. */
+function compactBlock(item, maxChars) {
+  const heading = "### " + item.kind + " [" + item.id + "]\nLocation: " + locatorLabel(item.locator) + "\nSource check: " + (item.sourceCheck?.status ?? "unchecked");
+  return `${heading}\nBody omitted: ${String(item.text ?? "").length} characters do not fit maxChars=${maxChars}; read this range directly.`;
+}
+
 function opaqueBlock(item) {
   const backend = item.provenance?.backend ?? "unknown backend";
   return `### OPAQUE BACKEND BLOCK [${item.id}] (${backend})\nReason: ${item.reason}\n\n${item.text}`;
@@ -100,18 +106,20 @@ export function buildContextPack({
   const facts = envelopeFacts(envelopes);
   const truncated = facts.truncated;
   const isError = status === "error" || fulfillment.requiredMet === false;
+  // Downgraded to partial when evidence exists but some of it does not fit the budget.
+  let packStatus = status;
   const totalAvailable = typed.length + raw.length;
   const totalKnown = facts.total !== null;
   const effectiveMax = Number.isFinite(maxChars) ? Math.max(0, Math.floor(maxChars)) : Number.POSITIVE_INFINITY;
   const allCandidates = [
-    ...typed.map((item) => ({ item, block: candidateBlock(item), descriptor: sourceDescriptor(item), typed: true })),
-    ...raw.map((item) => ({ item, block: opaqueBlock(item), descriptor: opaqueDescriptor(item), typed: false })),
+    ...typed.map((item) => ({ item, block: candidateBlock(item), compact: compactBlock(item, effectiveMax), descriptor: sourceDescriptor(item), typed: true })),
+    ...raw.map((item) => ({ item, block: opaqueBlock(item), compact: null, descriptor: opaqueDescriptor(item), typed: false })),
   ];
 
   const mandatory = (selectedCount, omitted) => {
     const omittedLabel = omitted === null ? "unknown" : String(omitted);
     const lines = [
-      `Status: ${status}`,
+      `Status: ${packStatus}`,
       `Limits: maxChars=${Number.isFinite(maxChars) ? effectiveMax : "unbounded"}; wireCapBytes=${WIRE_CAP_BYTES}`,
       `Stop reason: ${stopReason}`,
     ];
@@ -120,6 +128,7 @@ export function buildContextPack({
     if (truncated) lines.push("Backend output was truncated; coverage is incomplete.");
     lines.push(`Omitted items: ${omittedLabel}`);
     if (selectedCount === 0 && totalAvailable === 0) lines.push("No evidence items were returned.");
+    if (selectedCount < totalAvailable) lines.push(`${totalAvailable - selectedCount} of ${totalAvailable} evidence items did not fit maxChars=${effectiveMax}; raise maxChars to see them.`);
     return lines.join("\n");
   };
 
@@ -142,7 +151,7 @@ export function buildContextPack({
       }
     }
     const metadata = {
-      status,
+      status: packStatus,
       fulfillment: { requiredMet: Boolean(fulfillment.requiredMet), unmet: [...(fulfillment.unmet ?? [])] },
       stopReason,
       coverage: facts.truncated || omitted !== 0 || envelopes.some((env) => env.coverage === "bounded")
@@ -163,9 +172,19 @@ export function buildContextPack({
 
   const selected = [];
   // Mandatory status/error material is accounted for before optional evidence selection.
+  // An item whose body does not fit is still worth its location: without it an agent
+  // reads "ok, no evidence" as "nothing relevant exists".
   for (const candidate of allCandidates) {
-    const trial = [...selected, candidate];
-    if (fits(render(trial))) selected.push(candidate);
+    if (fits(render([...selected, candidate]))) { selected.push(candidate); continue; }
+    if (!candidate.compact) continue;
+    const located = { ...candidate, block: candidate.compact, descriptor: { ...candidate.descriptor, bodyOmitted: true } };
+    if (fits(render([...selected, located]))) selected.push(located);
+  }
+  // A bounded answer that shows at least one whole item is still ok — later hits appear as
+  // locations and truncated/omittedItems say the rest. One that shows no body at all is not.
+  if (packStatus === "ok" && totalAvailable > 0 && selected.every(({ descriptor }) => descriptor.bodyOmitted)) {
+    packStatus = "partial";
+    while (selected.length && !fits(render(selected))) selected.pop();
   }
 
   let rendered = render(selected);
@@ -173,10 +192,10 @@ export function buildContextPack({
     // No source item is split. If even mandatory prose is too large, use a compact mandatory
     // representation and retain valid JSON metadata rather than slicing either output.
     const omitted = omissionCount([]);
-    let metadata = safeMetadata({ status, stopReason, omittedItems: omitted, truncated: true, evidence: [], metadataOmitted: true });
+    let metadata = safeMetadata({ status: packStatus, stopReason, omittedItems: omitted, truncated: true, evidence: [], metadataOmitted: true });
     let text = mandatory(0, omitted);
     if (text.length + metadata.length > effectiveMax || byteLength(text) + byteLength(metadata) > WIRE_CAP_BYTES) {
-      text = compactFallback(status, stopReason, isError);
+      text = compactFallback(packStatus, stopReason, isError);
     }
     if (text.length + metadata.length > effectiveMax || byteLength(text) + byteLength(metadata) > WIRE_CAP_BYTES) {
       metadata = "0";
@@ -195,7 +214,7 @@ export function buildContextPack({
   return {
     text: rendered.text,
     metaText: rendered.metaText,
-    status,
+    status: packStatus,
     isError,
     fulfillment: { requiredMet: Boolean(fulfillment.requiredMet), unmet: [...(fulfillment.unmet ?? [])] },
     stopReason,
