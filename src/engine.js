@@ -268,8 +268,15 @@ async function control(input, signal) {
 
   if (input.operation === "status") {
     const payload = {};
+    let health = "ready";
     if (input.backend !== "serena") {
       const indexes = await indexStatus(input.root);
+      const targets = input.backend === "all" ? ["zvec", "codegraph"] : [input.backend];
+      // Agents read the first lines of a status answer: lead with one verdict per
+      // index and what to do about it, then the full detail.
+      payload.summary = Object.fromEntries(targets.map((backend) => [backend, indexHealth(indexes.backends[backend])]));
+      const states = Object.values(payload.summary).map((row) => row.state);
+      health = states.every((state) => state === "ready") ? "ready" : states.some((state) => state === "ready") ? "degraded" : "unavailable";
       payload.indexes = input.backend === "all" ? indexes : {
         root: indexes.root,
         generation: indexes.generation,
@@ -278,7 +285,8 @@ async function control(input, signal) {
       };
     }
     if (input.backend === "all" || input.backend === "serena") payload.serena = await unifiedSemanticStatus(input.root);
-    return controlResult(input, payload, true);
+    // The status query itself succeeded; readiness is reported, not raised.
+    return controlResult(input, payload, true, health);
   }
 
   const payload = [];
@@ -309,11 +317,21 @@ function serenaControlRow(result) {
   return result;
 }
 
+/** One verdict an agent can act on, derived from the published view and the manager. */
+function indexHealth(row) {
+  if (!row) return { state: "absent", next: "no index state for this backend" };
+  if (row.ready) return { state: "ready", next: row.dirty ? "serving the last published view; a background sync is catching up" : "none" };
+  if (row.needsRecovery) return { state: "needs_recovery", next: "an interrupted publication is pending; the next sync abandons or replays it. Use native exact search meanwhile" };
+  if (row.building || row.busy) return { state: "building", next: "the index is being built in the background; use native exact search meanwhile and retry later" };
+  if (!row.present) return { state: "absent", next: "no published index yet; the first read schedules a background build. Use native exact search meanwhile" };
+  return { state: "failing", next: `last error: ${row.lastError ?? "unknown"}; run operation=repair for this backend` };
+}
+
 /**
  * Control output is JSON. The response cap applies, but the JSON is never cut mid-document:
  * an oversized payload is replaced by a valid summarizing document that says so.
  */
-function controlResult(input, payload, ok) {
+function controlResult(input, payload, ok, health) {
   const full = JSON.stringify(payload, null, 2);
   const text = full.length <= input.maxChars ? full : JSON.stringify({
     summarized: true,
@@ -322,6 +340,7 @@ function controlResult(input, payload, ok) {
     backends: Array.isArray(payload)
       ? payload.map(({ backend, ok: entryOk, action, building }) => ({ backend, ok: entryOk, action, building }))
       : Object.keys(payload),
+    ...(payload.summary ? { summary: payload.summary } : {}),
   }, null, 2);
   return {
     text,
@@ -331,11 +350,12 @@ function controlResult(input, payload, ok) {
       operation: input.operation,
       backend: input.backend,
       ok,
-      status: ok ? "ok" : "error",
+      status: !ok ? "error" : health && health !== "ready" ? "partial" : "ok",
+      ...(health ? { health } : {}),
       truncated: text !== full,
       backends: Array.isArray(payload)
         ? payload.map(({ backend, ok: entryOk, error, building }) => ({ backend, ok: entryOk, warning: error, building }))
-        : [],
+        : Object.entries(payload.summary ?? {}).map(([backend, row]) => ({ backend, ok: row.state === "ready", state: row.state })),
     },
     isError: !ok,
   };

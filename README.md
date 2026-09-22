@@ -90,9 +90,15 @@ The file's contents are hashed into the scope digest, so editing it re-indexes o
 
 ### Readiness
 
-A read never blocks on building a view that was never published. Indexing a real repository takes minutes — far past any request budget — so a caller that waited would only ever learn that it timed out. A request against a workspace with no published view returns `index_building` at once and schedules one background build; `LAZY_INTEL_BOOTSTRAP_TIMEOUT_MS` bounds that build (default `1800000`, clamped `5000..3600000`) and nothing waits on it. Ask again once it lands.
+A read never waits for publication work. Indexing a real repository takes minutes — far past any request budget — so a caller that waited would only ever learn that it timed out. The readiness check runs outside the publication queue: a workspace with no published view answers `INDEX_BUILDING` at once and schedules one background build, and a published view that is dirty is served as it stands while a background sync catches up. `LAZY_INTEL_BOOTSTRAP_TIMEOUT_MS` bounds that build (default `1800000`, clamped `5000..3600000`) and nothing waits on it.
 
 `freshness: "strict"` is the exception and still blocks: it is how you publish deliberately rather than by side effect.
+
+`status` leads with one verdict per index — `ready`, `building`, `absent`, `needs_recovery` or `failing` — and the next step, and reports `partial` rather than `ok` while any index is not ready.
+
+### Interrupted publications
+
+A publication interrupted mid-apply stays journaled. The next sync compares it with what the current capture would produce: a batch captured under a different scope, parser, resolver or embedding profile can never be produced again, so it is abandoned — its previous views are restored, the decision is journaled, and its orphaned store is removed — instead of being replayed. A batch that still matches is rolled forward; if the replay fails it is abandoned too. After any abandonment the publication rebuilds into a fresh store rather than building on a store the abandoned batch may have half-written. Before this, one batch captured under an older ignore policy (2,344 files including a 36 MB generated parser) blocked every later publication in that workspace indefinitely.
 
 ### Workers
 
@@ -102,7 +108,9 @@ An idle worker gives its memory back. After `LAZY_INTEL_WORKER_IDLE_MS` without 
 
 ### Concurrent sessions
 
-Owning a workspace and reading one are different rights. Publishing — capture, apply, recovery — takes the exclusive workspace lock, and a second writer is refused. Reading takes no lock: a reader opens the published catalog, re-reads it before every read so it can never serve a view the owner has already replaced, and is refused any mutating call. Without that split, the first editor session to touch a repository made `code_intel` unusable in every other one.
+Owning a workspace and reading one are different rights. Publishing — capture, apply, recovery — takes the exclusive workspace lock, and a second writer is refused with `WORKSPACE_OWNED` and the holder's pid; its reads answer `INDEX_BUILDING` naming that pid and retry publication every five seconds rather than backing off. Reading takes no lock: a reader opens the published catalog, re-reads it whenever the file's identity, size or mtime changes so it can never serve a view the owner has already replaced, and is refused any mutating call.
+
+The lock is not held for a process lifetime. A writer with no sync in flight for `LAZY_INTEL_WRITER_IDLE_MS` (default `30000`) releases it, and its next sync takes it again, so ownership moves to whichever session needs to publish. Before this, the first session to publish owned the workspace until it exited, and when that owner stalled every other session was left permanently unable to read.
 
 ### Embeddings
 

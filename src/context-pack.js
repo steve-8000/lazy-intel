@@ -52,7 +52,8 @@ function envelopeFacts(envelopes) {
   const issues = unique(envelopes.flatMap((env) => env.issues ?? []));
   let knownTotal = (envelopes ?? []).length > 0;
   for (const env of envelopes ?? []) {
-    if (env?.error?.message) errors.push(`${env.backend ?? "backend"}: ${env.error.message}`);
+    // The code is what an agent branches on (INDEX_BUILDING -> fall back now), so it leads.
+    if (env?.error?.message) errors.push(`${env.backend ?? "backend"}${env.error.code ? ` ${env.error.code}` : ""}: ${env.error.message}`);
     if (env?.outcome === "error" || env?.outcome === "unavailable") {
       if (!env?.error?.message) errors.push(`${env.backend ?? "backend"}: ${env.outcome}`);
     }

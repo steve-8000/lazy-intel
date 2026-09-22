@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-22T11:07:24.486Z",
+  "generated_at": "2026-09-22T22:53:10.253Z",
   "command": "npm test --silent",
   "node": "v22.22.3",
   "exit_code": 0,
   "status": "PASS",
   "counts": {
-    "tests": 158,
-    "pass": 157,
+    "tests": 168,
+    "pass": 167,
     "fail": 0,
     "skipped": 1
   },
@@ -340,6 +340,18 @@
       "status": "pass"
     },
     {
+      "name": "a profile-mismatched pending publication is abandoned before a fresh capture",
+      "status": "pass"
+    },
+    {
+      "name": "a failed roll-forward is abandoned so unified publication can proceed",
+      "status": "pass"
+    },
+    {
+      "name": "an idle unified writer releases ownership for another process",
+      "status": "pass"
+    },
+    {
       "name": "recovers callback-owned stores at before-component-write",
       "status": "pass"
     },
@@ -396,7 +408,19 @@
       "status": "pass"
     },
     {
+      "name": "live other-process ownership errors carry the holder pid",
+      "status": "pass"
+    },
+    {
       "name": "auto ensure returns a building row while bootstrapping a missing baseline",
+      "status": "pass"
+    },
+    {
+      "name": "fast readiness does not wait behind a running publication",
+      "status": "pass"
+    },
+    {
+      "name": "a workspace-owned publication reports a building row without increasing failures",
       "status": "pass"
     },
     {
@@ -584,6 +608,22 @@
       "status": "pass"
     },
     {
+      "name": "abandon restores old views and its journal decision survives reopening",
+      "status": "pass"
+    },
+    {
+      "name": "an abandonment whose catalog save was lost to a crash is not replayed",
+      "status": "pass"
+    },
+    {
+      "name": "abandoning a batch that wrote into the live store leaves that view unreadable",
+      "status": "pass"
+    },
+    {
+      "name": "write-mode open retains roll-forward recovery when an apply callback is registered",
+      "status": "pass"
+    },
+    {
       "name": "semantic discovery routes only to zvec",
       "status": "pass"
     },
@@ -644,5 +684,5 @@
       "status": "pass"
     }
   ],
-  "output_sha256": "6280a24dfb36877ac69116fdb78244f4cc5a7a69e1208d97f09e868da664cc7e"
+  "output_sha256": "419c9ae04a62926c12d2ff11a8b16b5bc23cb4bca4a3ad8f4c50a6dec1163ec4"
 }
