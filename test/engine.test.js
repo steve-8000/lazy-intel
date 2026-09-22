@@ -52,6 +52,11 @@ const request = (operation, args = {}, signal) => codeIntel({
   ...args,
 }, signal);
 
+// A read no longer builds a view that was never published: a cold workspace
+// answers "building" at once rather than blocking past its request budget.
+// Publish once with strict freshness so these tests exercise serving.
+await request("search", { query: "warm the published view", freshness: "strict", limit: 1 });
+
 const inspect = (label, result) => {
   assert.equal(typeof result.metaText, "string", `${label}: metaText must be a string`);
   const parsed = JSON.parse(result.metaText);

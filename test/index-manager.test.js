@@ -35,6 +35,38 @@ async function waitFor(read, predicate, timeoutMs = 15_000) {
   } while (Date.now() < deadline);
   return value;
 }
+test("auto ensure returns a building row while bootstrapping a missing baseline", async (t) => {
+  const root = await fixture(t);
+  const started = performance.now();
+  const [row] = await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  assert.ok(performance.now() - started < 2_000);
+  assert.deepEqual(row, { backend: "codegraph", ok: true, ready: false, building: true, action: "building" });
+  const scheduled = await waitFor(() => indexStatus(root), (status) => status.backends.codegraph.busy || status.backends.codegraph.ready);
+  assert.ok(scheduled.backends.codegraph.busy || scheduled.backends.codegraph.ready);
+});
+
+test("strict ensure blocks until a missing baseline is published", async (t) => {
+  const root = await fixture(t);
+  const [row] = await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
+  assert.equal(row.ok, true, JSON.stringify(row));
+  assert.equal(row.ready, true);
+  assert.equal(row.building, false);
+  assert.equal(row.action, "rebuilt");
+});
+
+test("repeated auto ensures share one background bootstrap", async (t) => {
+  const root = await fixture(t);
+  const rows = await Promise.all([
+    ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 }),
+    ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 }),
+    ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 }),
+  ]);
+  for (const [row] of rows) assert.deepEqual(row, { backend: "codegraph", ok: true, ready: false, building: true, action: "building" });
+  const ready = await waitFor(() => indexStatus(root), (status) => status.backends.codegraph.ready && !status.backends.codegraph.busy);
+  const viewId = ready.backends.codegraph.view.viewId;
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  assert.equal((await indexStatus(root)).backends.codegraph.view.viewId, viewId);
+});
 
 test("publication catalog is the readiness oracle for an embedded graph worker", async (t) => {
   const root = await fixture(t);
@@ -42,7 +74,7 @@ test("publication catalog is the readiness oracle for an embedded graph worker",
   assert.equal(before.backends.codegraph.ready, false);
   assert.equal(before.backends.codegraph.baseline, "unverified");
 
-  const [row] = await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  const [row] = await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   assert.equal(row.ok, true, JSON.stringify(row));
   assert.equal(row.ready, true);
 
@@ -60,7 +92,7 @@ test("publication catalog is the readiness oracle for an embedded graph worker",
 
 test("an unchanged workspace reuses the published graph view", async (t) => {
   const root = await fixture(t);
-  const [first] = await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  const [first] = await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   const initial = await indexStatus(root);
   const [second] = await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
   const settled = await indexStatus(root);
@@ -74,8 +106,8 @@ test("an unchanged workspace reuses the published graph view", async (t) => {
 test("cancelling one ensure waiter does not cancel the shared publication", async (t) => {
   const root = await fixture(t);
   const controller = new AbortController();
-  const first = ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
-  const second = ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000, signal: controller.signal });
+  const first = ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
+  const second = ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000, signal: controller.signal });
   await new Promise((resolve) => setImmediate(resolve));
   controller.abort();
   await assert.rejects(second, { name: "AbortError" });
@@ -86,7 +118,7 @@ test("cancelling one ensure waiter does not cancel the shared publication", asyn
 
 test("a queued explicit reindex publishes after sync into a distinct store", async (t) => {
   const root = await fixture(t);
-  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   const before = await indexStatus(root);
   await writeFile(path.join(root, "main.js"), "export function hello() { return 2; }\n");
 
@@ -109,7 +141,7 @@ test("dirtiness is unknown until publication establishes a baseline", async (t) 
   assert.equal(before.backends.codegraph.dirty, null);
   assert.equal(before.backends.codegraph.baseline, "unverified");
 
-  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   const synced = await indexStatus(root);
   assert.equal(synced.backends.codegraph.baseline, "applied");
 
@@ -126,7 +158,7 @@ test("compiler and build configuration changes invalidate the published graph pr
     "build.config.js": "export default { mode: \"development\" };\n",
   };
   for (const [relativePath, content] of Object.entries(config)) await writeFile(path.join(root, relativePath), content);
-  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   for (const [relativePath, content] of Object.entries(config)) {
     const before = await indexStatus(root);
     const beforeGeneration = observeIndexState(root).generation;
@@ -135,7 +167,7 @@ test("compiler and build configuration changes invalidate the published graph pr
     assert.ok(changed.generation > beforeGeneration, relativePath + " did not reach the watcher");
     const dirty = await indexStatus(root);
     assert.equal(dirty.backends.codegraph.dirty, true, relativePath + " must invalidate the published projection");
-    await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+    await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
     const rebuilt = await indexStatus(root);
     assert.equal(rebuilt.backends.codegraph.dirty, false);
     assert.equal(rebuilt.backends.codegraph.view.state, "clean");
@@ -147,7 +179,7 @@ test("new directories and deletions advance freshness while derived writes stay 
   const root = await fixture(t);
   await mkdir(path.join(root, "node_modules/dep"), { recursive: true });
   await mkdir(path.join(root, "dist"), { recursive: true });
-  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   assert.equal((await indexStatus(root)).backends.codegraph.dirty, false);
 
   const initial = observeIndexState(root);
@@ -198,7 +230,7 @@ test("the agent home and every repository nested inside it are refused as roots"
   await assert.rejects(() => ensureIndexes(nested, ["codegraph"]), /agent private state/);
   await assert.rejects(() => indexStatus(path.join(nested, "extensions")), /agent private state/);
 
-  const [row] = await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  const [row] = await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   assert.equal(row.ok, true, JSON.stringify(row));
 });
 
@@ -226,7 +258,7 @@ test("a null-filename watcher event marks the generation dirty", async (t) => {
   const fresh = await import(`../src/index-manager.js?null-filename=${Date.now()}`);
   try {
     const root = await fixture(t);
-    await fresh.ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+    await fresh.ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
     const before = fresh.observeIndexState(root);
     event("change", null);
     const after = fresh.observeIndexState(root);
@@ -251,7 +283,7 @@ test("recursive watcher attach noise does not dirty the initial publication", as
   const fresh = await import("../src/index-manager.js?initial-watcher-noise=" + Date.now());
   try {
     const root = await fixture(t);
-    await fresh.ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+    await fresh.ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
     const baseline = fresh.observeIndexState(root);
     assert.equal((await fresh.indexStatus(root)).backends.codegraph.dirty, false);
     event("change", "main.js");
@@ -265,7 +297,7 @@ test("recursive watcher attach noise does not dirty the initial publication", as
 });
 test("scope-derived directories stay unwatched while scope policy changes are dirty", async (t) => {
   const root = await fixture(t);
-  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   const before = observeIndexState(root).generation;
   await mkdir(path.join(root, ".next"), { recursive: true });
   await writeFile(path.join(root, ".next", "generated.js"), "generated\n");

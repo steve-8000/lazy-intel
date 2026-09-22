@@ -94,6 +94,13 @@ test("MCP tool output preserves the engine response budget as valid JSON text", 
   t.after(() => stopServer(server));
   await server.send({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test", version: "0" } } });
 
+  // A cold workspace now reports "building" instead of blocking a read past its
+  // budget, so publish once explicitly before measuring the response envelope.
+  await server.send({
+    jsonrpc: "2.0", id: 99, method: "tools/call",
+    params: { name: "code_intel", arguments: { operation: "search", root, query: "needle", freshness: "strict", maxChars: 4_000, timeoutMs: 120_000, indexTimeoutMs: 600_000 } },
+  }, 900_000);
+
   const response = await server.send({
     jsonrpc: "2.0", id: 2, method: "tools/call",
     params: { name: "code_intel", arguments: { operation: "search", root, query: "needle", maxChars: 4_000, timeoutMs: 120_000, indexTimeoutMs: 600_000 } },

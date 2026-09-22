@@ -12,6 +12,7 @@ const processEpoch = randomUUID();
 const MAX_ROOTS = intEnv("LAZY_INTEL_MAX_ROOTS", 8, 1, 64);
 const MAINTENANCE_MS = intEnv("LAZY_INTEL_MAINTENANCE_MS", 5_000, 0, 300_000);
 const MAX_STALE_MS = intEnv("LAZY_INTEL_MAX_STALE_MS", 60_000, 5_000, 3_600_000);
+const BOOTSTRAP_TIMEOUT_MS = intEnv("LAZY_INTEL_BOOTSTRAP_TIMEOUT_MS", 1_800_000, 5_000, 3_600_000);
 const DEFAULT_TIMEOUT_MS = intEnv("LAZY_INTEL_INDEX_TIMEOUT_MS", 120_000, 5_000, 1_800_000);
 const EXPLICIT_EMBEDDING = process.env.LAZY_INTEL_EMBEDDING || undefined;
 const AUTO_REPAIR = process.env.LAZY_INTEL_AUTO_REPAIR !== "false";
@@ -93,7 +94,8 @@ async function ensureState(root) {
   if (roots.size >= MAX_ROOTS) throw new Error(`workspace limit reached (${MAX_ROOTS}); restart lazy-intel to release watchers`);
   const scopeIgnore = await loadScopeIgnore(absolute);
   const state = { root: absolute, scopeIgnore, generation: 1, watcher: null, watcherActive: false, watcherState: "unknown", closed: false,
-    publicationQueue: Promise.resolve(), queueDepth: 0, ensures: new Map(), backends: { zvec: backendState(), codegraph: backendState() } };
+    publicationQueue: Promise.resolve(), queueDepth: 0, ensures: new Map(), backgroundBuild: null,
+    backends: { zvec: backendState(), codegraph: backendState() } };
   roots.set(absolute, state);
   attachWatcher(state);
   return state;
@@ -141,6 +143,22 @@ function join(job, signal) {
     job.then((value) => { cleanup(); resolve(value); }, (error) => { cleanup(); reject(error); });
   });
 }
+function scheduleBackgroundBuild(state, backends) {
+  if (state.backgroundBuild) return;
+  const now = Date.now();
+  if (backends.some((backend) => now < state.backends[backend].nextAttemptAt)) return;
+  const job = runPublication(state, backends, { freshness: "auto", timeoutMs: BOOTSTRAP_TIMEOUT_MS }, "bootstrap");
+  state.backgroundBuild = job;
+  void job.then((rows) => {
+    if (rows.some((row) => !row.ok)) {
+      log("warn", "background index bootstrap failed", { root: state.root, error: rows.find((row) => !row.ok)?.error ?? "unknown error" });
+    }
+  }, (error) => {
+    log("warn", "background index bootstrap failed", { root: state.root, error: error.message });
+  }).finally(() => {
+    if (state.backgroundBuild === job) state.backgroundBuild = null;
+  });
+}
 /** The watcher schedules work; only a published durable view grants readiness. */
 function runPublication(state, backends, options, action) {
   options.signal?.throwIfAborted();
@@ -157,6 +175,13 @@ function runPublication(state, backends, options, action) {
     const canRead = !readFailed && !status.needsRecovery && backends.every((backend) => status.backends[backend].ready);
     const coherent = new Set(backends.map((backend) => status.backends[backend].view?.appliedManifestId)).size <= 1;
     const fresh = backends.every((backend) => hasBaseline(state.backends[backend]) && state.backends[backend].applied === state.generation && !isStale(state, state.backends[backend], options));
+    // A read cannot wait for a view that was never published. Indexing a real
+    // repository takes minutes, far past any request budget, so a caller that
+    // blocks on it only learns that it timed out. Answer now, build behind.
+    if (action === "ensure" && freshness !== "strict" && !canRead) {
+      scheduleBackgroundBuild(state, backends);
+      return backends.map((backend) => ({ backend, ok: true, ready: false, building: true, action: "building" }));
+    }
     if (action === "ensure" && canRead && coherent && (freshness === "fast" || (freshness === "auto" && fresh))) {
       return backends.map((backend) => ({ backend, ok: true, ready: true, building: false, action: "ready", view: status.backends[backend].view, dirty: !fresh }));
     }

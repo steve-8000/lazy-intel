@@ -64,6 +64,10 @@ test("the unified engine serves a real search through the vendored library", { s
     const probe = `
       const { codeIntel } = await import(${JSON.stringify(path.join(ROOT, "src/engine.js"))});
       const { closeUnified } = await import(${JSON.stringify(path.join(ROOT, "src/unified.js"))});
+      // A read no longer builds a view that was never published; a cold workspace
+      // answers "building" at once instead of blocking past its budget. Publish
+      // once with strict freshness so this probe measures serving, not indexing.
+      await codeIntel({ operation: "search", root: ${JSON.stringify(workspace)}, query: "warm the published view", freshness: "strict", limit: 1, maxChars: 4000, timeoutMs: 120000, indexTimeoutMs: 300000 });
       const result = await codeIntel({ operation: "search", root: ${JSON.stringify(workspace)}, query: "percentage discount invoice cents", limit: 10, maxChars: 8000, timeoutMs: 120000, indexTimeoutMs: 300000 });
       await closeUnified();
       process.stdout.write("RESULT:" + JSON.stringify({ status: result.meta.status, backends: result.meta.backends, evidence: result.meta.evidence, isError: result.isError }) + "\\n");
