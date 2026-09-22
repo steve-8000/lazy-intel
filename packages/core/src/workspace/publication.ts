@@ -122,6 +122,11 @@ export class PublicationCoordinator {
     const views = { ...this.catalog.views }; for (const projection of transaction.batch.projections) { const old = views[projection]; views[projection] = old ? { ...old, state } : { projection, viewId: "", appliedManifestId: "", profileDigest: transaction.batch.profileDigest, state }; }
     this.catalog = { ...this.catalog, views, transactions: { ...this.catalog.transactions, [transaction.batch.batchId]: transaction } };
   }
+  private async compactJournal(): Promise<void> {
+    const operationIds = new Set(Object.values(this.catalog.transactions).map((transaction) => transaction?.operationId).filter((id): id is string => !!id));
+    await this.journal.compact((record) => operationIds.has(record.operationId));
+  }
+
   private async finish(transaction: StoredTransaction, acks: readonly ApplyAck[]): Promise<void> {
     const views = { ...this.catalog.views }; const activeBatches = { ...this.catalog.activeBatches };
     for (const projection of transaction.batch.projections) {
@@ -130,6 +135,7 @@ export class PublicationCoordinator {
     }
     const transactions = { ...this.catalog.transactions }; delete transactions[transaction.batch.batchId];
     this.catalog = { ...this.catalog, views, activeBatches, transactions, completed: { ...this.catalog.completed, [transaction.batch.batchId]: true } }; await this.save();
+    await this.compactJournal();
   }
   registerRecovery(apply: ApplyProjection): void { this.recoveryApply = apply; }
   currentBatch(projection?: Projection): PublicationBatch | null {
@@ -146,6 +152,7 @@ export class PublicationCoordinator {
       if (this.reconcileAbandoned()) await this.save();
       const remaining = { ...this.catalog.transactions };
       for (const transaction of Object.values(remaining)) { if (!transaction) continue; this.markPending(transaction, apply ? "applying" : "needs_recovery"); await this.save(); if (!apply) continue; try { await this.applyTransaction(transaction, apply); } catch (error) { this.markPending(transaction, "needs_recovery"); await this.save(); throw error; } }
+      if (Object.keys(this.catalog.transactions).length === 0) await this.compactJournal();
     } finally { release(); }
   }
   async abandon(batchId: string): Promise<PublicationBatch | null> {

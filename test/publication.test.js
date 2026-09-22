@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, realpath, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -110,6 +110,38 @@ test("write-mode open retains roll-forward recovery when an apply callback is re
     assert.equal(coordinator.status().pendingBatches.length, 0);
     assert.equal(coordinator.view("graph").state, "clean");
     assert.equal(coordinator.view("graph").appliedManifestId, "manifest-recoverable");
+  } finally {
+    await coordinator?.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("publication journal stays bounded and compacted journals still recover or abandon new pending work", async () => {
+  const root = await workspace();
+  let coordinator;
+  try {
+    coordinator = await PublicationCoordinator.open(root);
+    const journalPath = path.join(root, "runtime", "publication.journal");
+    for (let index = 0; index < 12; index += 1) {
+      await coordinator.publishBatch(batch("published-" + index, "manifest-" + index), apply);
+    }
+    assert.ok((await stat(journalPath)).size < 1024, "completed publication payloads accumulated in the journal");
+
+    const pending = batch("after-compaction", "manifest-pending");
+    await assert.rejects(
+      () => coordinator.publishBatch(pending, apply, { failureAt: "before-component-write" }),
+      (error) => error instanceof PublicationCrash,
+    );
+    await coordinator.close();
+
+    coordinator = await PublicationCoordinator.open(root, { deferRecovery: true });
+    const abandoned = await coordinator.abandon(pending.batchId);
+    assert.equal(abandoned.batchId, pending.batchId);
+    await coordinator.close();
+    coordinator = await PublicationCoordinator.open(root);
+    assert.equal(coordinator.status().pendingBatches.length, 0);
+    assert.equal(coordinator.view("graph").appliedManifestId, "manifest-11");
+    assert.ok((await stat(journalPath)).size < 1024);
   } finally {
     await coordinator?.close();
     await rm(root, { recursive: true, force: true });

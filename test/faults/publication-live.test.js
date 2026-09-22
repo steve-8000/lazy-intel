@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
-import { access, cp, mkdtemp, readdir, realpath, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { access, cp, mkdtemp, readdir, realpath, readFile, rm, stat, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -97,8 +97,10 @@ for (const failureAt of failurePoints) {
   });
 }
 
-test("a staged rebuild publishes into a distinct store and leaves the old store intact", { timeout: 600_000 }, async () => {
+test("a staged rebuild publishes into a distinct store and retires old stores after the grace window", { timeout: 600_000 }, async () => {
   const root = await workspace();
+  const previousGrace = process.env.LAZY_INTEL_STORE_GRACE_MS;
+  process.env.LAZY_INTEL_STORE_GRACE_MS = "60000";
   try {
     await unified.synchronizeWorkspace(root, ["codegraph"]);
     const before = await status(root);
@@ -108,15 +110,26 @@ test("a staged rebuild publishes into a distinct store and leaves the old store 
     const newStoreRoot = after.backends.codegraph.view.storeRoot;
     assert.notEqual(newStoreRoot, oldStoreRoot);
     assert.equal(after.backends.codegraph.ready, true);
-    await access(oldStoreRoot);
-    const oldStore = await stat(oldStoreRoot);
-    assert.equal(oldStore.isDirectory(), true);
+    assert.equal((await stat(oldStoreRoot)).isDirectory(), true);
+
+    const recent = new Date(Date.now() - 1000);
+    await utimes(oldStoreRoot, recent, recent);
+    await unified.synchronizeWorkspace(root, ["codegraph"]);
+    assert.equal((await stat(oldStoreRoot)).isDirectory(), true, "store inside its grace window was removed");
+
+    const expired = new Date(Date.now() - 120_000);
+    await utimes(oldStoreRoot, expired, expired);
+    await unified.synchronizeWorkspace(root, ["codegraph"]);
+    await assert.rejects(() => access(oldStoreRoot), { code: "ENOENT" });
+
     await unified.closeUnified();
     await unified.synchronizeWorkspace(root, ["codegraph"]);
     const reopened = await status(root);
     assert.equal(reopened.backends.codegraph.ready, true);
     assert.equal(reopened.backends.codegraph.view.storeRoot, newStoreRoot);
   } finally {
+    if (previousGrace === undefined) delete process.env.LAZY_INTEL_STORE_GRACE_MS;
+    else process.env.LAZY_INTEL_STORE_GRACE_MS = previousGrace;
     await clean(root);
   }
 });
@@ -254,11 +267,11 @@ test("a profile-mismatched pending publication is abandoned before a fresh captu
     await assert.rejects(() => unified.synchronizeWorkspace(root, ["codegraph"]), /injected publication crash/);
     runtime.publication.publishBatch = publish;
     await writeFile(path.join(root, ".lazy-intel-ignore"), "a.js\n", "utf8");
-
+    const abandonedStoreRoot = runtime.publication.status().pendingBatches[0].storeRoot;
     const result = await unified.synchronizeWorkspace(root, ["codegraph"]);
     const current = await status(root);
     assert.equal(result[0].ready, true);
-    assert.equal(current.backends.codegraph.ready, true);
+    await assert.rejects(() => access(abandonedStoreRoot), { code: "ENOENT" });
     assert.equal(current.needsRecovery, false);
     const batch = await graphBatch(root);
     assert.equal(batch.sources.some((source) => source.relativePath === "a.js"), false);

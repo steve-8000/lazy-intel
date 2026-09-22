@@ -169,7 +169,7 @@ async function lifecycle(payload, context, operation) {
   if (operation === "close-store") {
     const key = keyFor(context.workspaceId, payload.stateRoot);
     const handle = handles.get(key);
-    if (!handle) return { closed: false, stateRoot: payload.stateRoot };
+    if (!handle) return { closed: true, stateRoot: payload.stateRoot };
     await serialized(handle, async () => { handle.graph.close(); handles.delete(key); });
     return { closed: true, stateRoot: payload.stateRoot };
   }

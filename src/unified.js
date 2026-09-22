@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { readFile, realpath, rm } from "node:fs/promises";
+import { readFile, readdir, realpath, rm, stat, utimes } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ADAPTER_VERSION, envelope, failureEnvelope } from "./contracts.js";
@@ -126,7 +126,11 @@ function scheduleWriterRelease(runtime) {
   runtime.idleTimer.unref?.();
 }
 async function retireStoreIfUnused(runtime, storeRoot, projection) {
-  if (!storeRoot || Object.values(runtime.publication.status().views).some((view) => view?.storeRoot === storeRoot)) return;
+  if (!storeRoot) return;
+  const status = runtime.publication.status();
+  if (Object.values(status.views).some((view) => view?.storeRoot === storeRoot)
+    || status.pendingBatches.some((batch) => batch.storeRoot === storeRoot)
+    || ["graph", "retrieval"].some((projection) => runtime.publication.currentBatch(projection)?.storeRoot === storeRoot)) return;
   const supervisor = supervisorFor(runtime, projection, storeRoot);
   const result = await supervisor.call("close-store", { root: runtime.root, stateRoot: storeRoot }, {
     requestId: runtime.api.newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
@@ -134,6 +138,41 @@ async function retireStoreIfUnused(runtime, storeRoot, projection) {
   if (!result.ok) throw new Error(result.message);
   await rm(storeRoot, { recursive: true, force: true });
 }
+async function sweepUnusedStores(runtime, root) {
+  const storesRoot = path.join(runtime.scope.canonicalStateRoot, "stores");
+  const graceValue = process.env.LAZY_INTEL_STORE_GRACE_MS === undefined ? 600_000 : Number(process.env.LAZY_INTEL_STORE_GRACE_MS);
+  const graceMs = Number.isFinite(graceValue) && graceValue >= 0 ? graceValue : 600_000;
+  const status = runtime.publication.status();
+  const referenced = new Set([
+    ...Object.values(status.views).map((view) => view?.storeRoot),
+    ...status.pendingBatches.map((batch) => batch.storeRoot),
+    ...["graph", "retrieval"].map((projection) => runtime.publication.currentBatch(projection)?.storeRoot),
+  ].filter((storeRoot) => typeof storeRoot === "string"));
+  let entries;
+  try { entries = await readdir(storesRoot, { withFileTypes: true }); }
+  catch (error) { if (error.code === "ENOENT") return; throw error; }
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const storeRoot = path.join(storesRoot, entry.name);
+    if (referenced.has(storeRoot)) continue;
+    try {
+      const information = await stat(storeRoot);
+      if (Date.now() - information.mtimeMs < graceMs) continue;
+      for (const projection of ["graph", "retrieval"]) {
+        const supervisor = supervisorFor(runtime, projection, storeRoot);
+        const result = await supervisor.call("close-store", { root, stateRoot: storeRoot }, {
+          requestId: runtime.api.newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId,
+          signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
+        });
+        if (!result.ok) throw new Error(result.message);
+      }
+      await rm(storeRoot, { recursive: true, force: true });
+    } catch (error) {
+      log("warn", "unused store sweep failed", { root, storeRoot, error: error.message });
+    }
+  }
+}
+
 function supervisorFor(runtime, projection, affinityKey = runtime.scope.canonicalStateRoot) {
   return (projection === "retrieval" ? runtime.retrievalPool : runtime.graphPool).acquire(affinityKey);
 }
@@ -261,17 +300,16 @@ export async function synchronizeWorkspace(root, backends, options = {}) {
       return view?.state === "clean" && view.appliedManifestId === batch.manifestId && view.profileDigest === profileDigest;
     });
     if (!unchanged) await runtime.publication.publishBatch(batch, (projection, pending) => applyProjection(runtime, projection, pending));
-    if (!unchanged && rebuild) {
-      for (const projection of projections) {
-        const old = previous.find((entry) => entry.projections.includes(projection));
-        if (!old?.storeRoot || old.storeRoot === storeRoot) continue;
-        const supervisor = supervisorFor(runtime, projection, old.storeRoot);
-        const result = await supervisor.call("close-store", { root, stateRoot: old.storeRoot }, {
-          requestId: runtime.api.newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
-        });
-        if (!result.ok) throw new Error(result.message);
+    // The sweep's grace window is measured from directory mtime, and a replaced store may
+    // not have been written for days. Stamp it now so a reader in another process that
+    // still holds the old view gets the full window after replacement, not after its last write.
+    if (!unchanged) {
+      const now = new Date();
+      for (const old of new Set(previous.map((entry) => entry.storeRoot).filter((entry) => entry && entry !== storeRoot))) {
+        await utimes(old, now, now).catch((error) => { if (error.code !== "ENOENT") log("warn", "replaced store could not be stamped", { root, storeRoot: old, error: error.message }); });
       }
     }
+    await sweepUnusedStores(runtime, root).catch((error) => log("warn", "unused store sweep failed", { root, error: error.message }));
     return projections.map((projection) => ({ backend: BACKEND[projection], ok: true, ready: true, building: false,
       action: rebuild ? "rebuilt" : unchanged ? "ready" : "synced", view: runtime.publication.view(projection) }));
   };

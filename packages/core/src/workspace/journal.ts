@@ -1,4 +1,4 @@
-import { mkdir, open, readFile, stat, truncate } from "node:fs/promises";
+import { mkdir, open, readFile, rename, stat } from "node:fs/promises";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 
@@ -20,6 +20,17 @@ function parseRecord(line: string): JournalRecord {
   const { checksum: ignored, ...withoutChecksum } = record;
   if (checksum(withoutChecksum) !== record.checksum) throw new Error("journal checksum mismatch");
   return record;
+}
+
+async function writeJournal(filePath: string, records: readonly JournalRecord[]): Promise<void> {
+  const directory = path.dirname(filePath);
+  await mkdir(directory, { recursive: true });
+  const temporary = filePath + "." + process.pid + "." + randomUUID();
+  const handle = await open(temporary, "w", 0o600);
+  try { await handle.writeFile(records.map(encode).join(""), "utf8"); await handle.sync(); } finally { await handle.close(); }
+  await rename(temporary, filePath);
+  const directoryHandle = await open(directory, "r");
+  try { await directoryHandle.sync(); } finally { await directoryHandle.close(); }
 }
 
 async function scanFile(filePath: string): Promise<JournalScan> {
@@ -52,7 +63,7 @@ async function scanFile(filePath: string): Promise<JournalScan> {
     }
   }
   const discardedTrailingBytes = bytes.byteLength - validEnd;
-  if (discardedTrailingBytes > 0) await truncate(filePath, validEnd);
+  if (discardedTrailingBytes > 0) await writeJournal(filePath, records);
   return { records, discardedTrailingBytes, discardedTrailingRecords };
 }
 
@@ -102,6 +113,15 @@ export class WorkspaceJournal {
     const record = await this.append(entry);
     return record as JournalAck<T> & { readonly seq: string };
   }
+
+  async compact(keep: (record: JournalRecord) => boolean): Promise<void> {
+    if (!this.opened) throw new Error("journal is not open");
+    const retained = this.records.filter(keep);
+    if (retained.length === this.records.length) return;
+    await writeJournal(this.filePath, retained);
+    this.records = retained;
+  }
+
 
   async replay(handlers: JournalReplayHandlers): Promise<readonly string[]> {
     const acknowledged = new Set(this.records.filter((record) => record.type === "ack").map((record) => record.operationId));
