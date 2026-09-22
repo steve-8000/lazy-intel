@@ -4,14 +4,13 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-
-test("a symbol request without a source path is refused instead of assuming TypeScript", async () => {
+test("a symbol request for an unrecognized file type is refused instead of assuming TypeScript", async () => {
   const workspace = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-symbol-language-"));
   const previousRoot = process.env.LAZY_INTEL_ROOT;
   const previousAllowedRoots = process.env.LAZY_INTEL_ALLOWED_ROOTS;
   const previousLsp = process.env.LAZY_INTEL_LSP;
   try {
-    await writeFile(path.join(workspace, "module.py"), "def target():\n    return 1\n");
+    await writeFile(path.join(workspace, "module.unknownlang"), "def target():\n    return 1\n");
     process.env.LAZY_INTEL_ROOT = workspace;
     process.env.LAZY_INTEL_ALLOWED_ROOTS = workspace;
     process.env.LAZY_INTEL_LSP = "";
@@ -21,6 +20,7 @@ test("a symbol request without a source path is refused instead of assuming Type
       backend: "serena",
       root: workspace,
       symbol: "target",
+      relativePath: "module.unknownlang",
       timeoutMs: 5_000,
       indexTimeoutMs: 5_000,
     });

@@ -256,6 +256,7 @@ export type ZvecGrep = {
   info(options?: ZvecGrepInfoOptions): Promise<ZvecGrepInfoResult>;
   context(options: ZvecGrepContextOptions): Promise<ZvecGrepContextResult>;
   close(): Promise<void>;
+  releaseEmbeddingResources(): Promise<void>;
 };
 
 export type ZvecGrepContent = Content;

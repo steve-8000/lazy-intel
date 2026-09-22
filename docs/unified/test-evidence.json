@@ -1,16 +1,24 @@
 {
-  "generated_at": "2026-09-22T03:17:15.162Z",
+  "generated_at": "2026-09-22T05:18:27.197Z",
   "command": "npm test --silent",
   "node": "v22.22.3",
   "exit_code": 0,
   "status": "PASS",
   "counts": {
-    "tests": 144,
-    "pass": 143,
+    "tests": 148,
+    "pass": 147,
     "fail": 0,
     "skipped": 1
   },
   "scenarios": [
+    {
+      "name": "auto keeps same-named indexed definitions ambiguous",
+      "status": "pass"
+    },
+    {
+      "name": "auto resolves a pathless symbol from the embedded CodeGraph index",
+      "status": "pass"
+    },
     {
       "name": "aborting an in-flight owned-worker MCP request leaves the connection usable",
       "status": "pass"
@@ -360,7 +368,7 @@
       "status": "pass"
     },
     {
-      "name": "a symbol request without a source path is refused instead of assuming TypeScript",
+      "name": "a symbol request for an unrecognized file type is refused instead of assuming TypeScript",
       "status": "pass"
     },
     {
@@ -500,6 +508,10 @@
       "status": "pass"
     },
     {
+      "name": "a pathless symbol resolves through CodeGraph before optional Serena enrichment",
+      "status": "pass"
+    },
+    {
       "name": "a reference question with no subject degrades to discovery instead of an unmeetable obligation",
       "status": "pass"
     },
@@ -544,7 +556,11 @@
       "status": "pass"
     },
     {
-      "name": "impact of known symbol is bounded to two backends",
+      "name": "impact of a pathless symbol stays on CodeGraph",
+      "status": "pass"
+    },
+    {
+      "name": "pathless subject routes resolve through CodeGraph before optional semantic reads",
       "status": "pass"
     },
     {
@@ -588,5 +604,5 @@
       "status": "pass"
     }
   ],
-  "output_sha256": "d5c646265423281bbb793dd0e08175d3e2385d57dcfbec270d62a2b930685438"
+  "output_sha256": "1074778581da1e9626e7bf0240dc5593e729c618f31465f5e83dbfb0037cd8d4"
 }

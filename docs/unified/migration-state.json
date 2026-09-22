@@ -5,7 +5,11 @@
     "mode": "unified-only",
     "entry": "src/engine.js",
     "control_plane": "src/unified.js",
-    "forks": ["vendor/zvec-grep", "vendor/codegraph", "vendor/serena"],
+    "forks": [
+      "vendor/zvec-grep",
+      "vendor/codegraph",
+      "vendor/serena"
+    ],
     "public_tool": "code_intel",
     "legacy_selector": false,
     "internal_llm": false,
@@ -26,13 +30,22 @@
     "parser_policy": "Separate native/WASM extractors retain their own grammar/runtime ABI. Snapshot parity is not parser convergence."
   },
   "semantic": {
-    "operations": ["symbol", "references", "implementations", "diagnostics"],
+    "operations": [
+      "symbol",
+      "references",
+      "implementations",
+      "diagnostics"
+    ],
     "configuration": "Explicit canonical executable per language; unsupported server capability is unavailable, not empty.",
     "observations": "Own LSP document version, raw-file/buffer hashes, position encoding and diagnostics completion only; no foreign editor-buffer claim. Fresh empty push/pull reports clear errors; silence is not_reported.",
     "text_roles": "source excerpts are checked against exact UTF-8 spans; descriptions qualify their anchor without pretending to quote source. Common captured bytes and hash fences validate public semantic excerpts; invalid/outside paths and malformed coordinates are not complete evidence."
   },
   "rollback": {
-    "procedure": ["Stop the candidate process.", "Restore the retained old release binary and its own archived old state.", "Launch that old release and exercise a real MCP query against the restored state."],
+    "procedure": [
+      "Stop the candidate process.",
+      "Restore the retained old release binary and its own archived old state.",
+      "Launch that old release and exercise a real MCP query against the restored state."
+    ],
     "evidence": "docs/unified/install-evidence.json",
     "producer": "scripts/verify-install.mjs",
     "verified": "Old CodeGraph MCP query succeeded before and after byte-identical old-state restoration; candidate used its separate .lazy-intel state.",
@@ -49,8 +62,8 @@
     "performance": "docs/unified/performance-measurement.json",
     "matrix": "Five actual samples per cold/restart/warm/dirty mode.",
     "quality": "Exact critical anchors and five dirty new-hash observations passed; 20/20 rows anchored.",
-    "rss_guardrail": "FAIL: process-tree RSS p95 4849709056 bytes exceeds the immutable 2000000000-byte preregistration, measured again on the final tree. The retrieval worker holds 4.73 GB of it. No model or threshold adjustment.",
-    "final_release": "docs/unified/release-evidence.json generated 2026-09-22T03:18:00.083Z, digest 180362b6523fb74552c4e743e8498082473e1ddda35a1ec6dcbceea71581ec7e: 19 of 20 required gates pass, performance-guardrails is the only failure, nothing is blocked, and the full suite runs 144 tests with 143 passed, 1 skipped and 0 failed."
+    "rss_guardrail": "PASS: process-tree RSS p95 1498418380.8 bytes against the unchanged 2000000000-byte preregistration. The retrieval worker peaks at 1357316096 bytes now that embedding contexts are sized to each batch, released after an index run, and one llama model is shared per process. No model, device or threshold change.",
+    "final_release": "docs/unified/release-evidence.json generated 2026-09-22T05:19:17.986Z, digest 14e28e91122af64e6150cd2ac466e121c90dd13f78c459eed205f1ab547fed3e: all 20 required gates pass, nothing is blocked, and the full suite runs 148 tests with 147 passed, 1 skipped and 0 failed."
   },
   "deployment": {
     "committed": false,

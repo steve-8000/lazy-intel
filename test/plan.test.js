@@ -42,10 +42,22 @@ test("auto stays within two logical reads and one dependent stage", () => {
 test("a dependent reference lookup requires a validated unique subject", () => {
   const plan = createPlan({ operation: "auto", query: "usages", symbol: "Foo/bar" });
   const [first, second] = plan.stages;
-  assert.equal(first.reads[0].operation, "symbol");
+  assert.equal(first.reads[0].backend, "codegraph");
+  assert.equal(first.reads[0].operation, "context");
   assert.equal(second.when, "validated_unique_subject");
   assert.equal(second.reads[0].inputSource, "validated_unique_subject");
   assert.deepEqual(plan.requiredObligations, ["subject_definition", "references_of_subject"]);
+});
+
+test("a pathless symbol resolves through CodeGraph before optional Serena enrichment", () => {
+  const plan = createPlan({ operation: "auto", query: "where is Foo/bar", symbol: "Foo/bar" });
+  const [first, second] = plan.stages;
+  assert.deepEqual(routesOf(plan), ["codegraph:context", "serena:symbol"]);
+  assert.equal(first.reads[0].obligation, "subject_definition");
+  assert.equal(second.when, "validated_unique_subject");
+  assert.equal(second.reads[0].role, "optional");
+  assert.equal(second.reads[0].inputSource, "validated_unique_subject");
+  assert.deepEqual(plan.requiredObligations, ["subject_definition"]);
 });
 
 test("a reference question with no subject degrades to discovery instead of an unmeetable obligation", () => {

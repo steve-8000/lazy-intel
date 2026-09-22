@@ -48,18 +48,18 @@
     {
       "path": "src/engine/service/types.ts",
       "original_blob": "1017431714998992853136dbfc5f9b4d959899e9",
-      "resulting_blob": "1349c26b881b159853a767793d03de1ea9013b6f",
-      "unit": "BUILD05",
-      "reason": "Expose explicit stateRoot and prepared snapshot apply service types for the headless worker.",
-      "test_evidence": "vendor build; prepared retrieval smoke."
+      "resulting_blob": "add9a8fc9e94306340a4a9e0f467033d52ff4e9f",
+      "unit": "BUILD05,MEM01",
+      "reason": "Expose explicit stateRoot and prepared snapshot apply service types for the headless worker. Expose releaseEmbeddingResources on the public ZvecGrep service type.",
+      "test_evidence": "vendor build; prepared retrieval smoke. vendor build; memory release proof; verify-vendor."
     },
     {
       "path": "src/engine/service/zvec-grep.ts",
       "original_blob": "11e6a763c325a7b882631710b08a87f9ebb2f084",
-      "resulting_blob": "97e08f9bd6ade209ca961bc04099fe4e130acfaa",
-      "unit": "BUILD05",
-      "reason": "Add serialized prepared-snapshot apply lifecycle and route indexed context/info through explicit stateRoot without scanner refresh.",
-      "test_evidence": "vendor build; prepared retrieval smoke."
+      "resulting_blob": "d9dd41c396fee35f2ad5fc8cee78aeb5863c8754",
+      "unit": "BUILD05,MEM01,MEM02",
+      "reason": "Add serialized prepared-snapshot apply lifecycle and route indexed context/info through explicit stateRoot without scanner refresh. Release idle embedding contexts across configured, recovered, and retired models without evicting loaded models. Share locally loaded embedding models process-wide with reference-counted release while retaining per-service authorization wrappers.",
+      "test_evidence": "vendor build; prepared retrieval smoke. vendor build; memory release proof; verify-vendor."
     },
     {
       "path": "src/engine/pipeline/indexing/prepared.ts",
@@ -68,9 +68,25 @@
       "unit": "IR02",
       "reason": "Allow prepared snapshot ingestion to delete captured paths without invoking scanner indexing.",
       "test_evidence": "test/parity/retrieval.test.js; vendor build."
+    },
+    {
+      "path": "src/engine/models/backends/llama-cpp.ts",
+      "original_blob": "a5f3c757b56bb4228b5848f826a94d4ae29fdb32",
+      "resulting_blob": "727f52fa95bd12b5580678f42dade01f5724505c",
+      "unit": "MEM01",
+      "reason": "Size llama.cpp embedding contexts to the truncated batch, cap parallel contexts using estimated resource requirements and an explicit memory budget, release contexts on demand, and serialize batches on one model so a resize cannot dispose contexts another batch is reading.",
+      "test_evidence": "Vector identity against the stock published package; peak and post-release RSS probe; vendor build and verify-vendor; npm test."
+    },
+    {
+      "path": "src/engine/models/embeddings.ts",
+      "original_blob": "1fb755397b065d1a4fa6b0efb4b70a442cc0ec3c",
+      "resulting_blob": "3a0b2c31694f5d96f837db8f6e3b5d479b5f3ead",
+      "unit": "MEM01",
+      "reason": "Add the optional idle embedding-resource release contract and context-budget model option.",
+      "test_evidence": "vendor build; memory release proof; verify-vendor."
     }
   ],
-  "patch_revision": 2,
+  "patch_revision": 3,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
@@ -80,7 +96,10 @@
     "src/lazy-entry.ts",
     "src/engine/pipeline/indexing/prepared.ts"
   ],
-  "added_files_sha256": {"src/lazy-entry.ts":"dae498d7e51d7171bb76f9a97e8918e8e539f7eb26b5a205f21e19cfe70ec85d","src/engine/pipeline/indexing/prepared.ts":"933038d580f33ac3c89c8d61dffc5e3c65335b0b13da2056dbdbc5d5be385ca1"},
+  "added_files_sha256": {
+    "src/lazy-entry.ts": "dae498d7e51d7171bb76f9a97e8918e8e539f7eb26b5a205f21e19cfe70ec85d",
+    "src/engine/pipeline/indexing/prepared.ts": "933038d580f33ac3c89c8d61dffc5e3c65335b0b13da2056dbdbc5d5be385ca1"
+  },
   "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
   "manifest": [
     {

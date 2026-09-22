@@ -1,17 +1,15 @@
 {
   "schema_version": 2,
   "unit": "U09",
-  "generated_at": "2026-09-22T03:18:00.083Z",
+  "generated_at": "2026-09-22T05:19:17.986Z",
   "host": {
     "platform": "darwin",
     "arch": "arm64",
     "node": "v22.22.3",
     "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
   },
-  "status": "FAIL",
-  "required_failures": [
-    "performance-guardrails"
-  ],
+  "status": "PASS",
+  "required_failures": [],
   "blocked": [],
   "gates": [
     {
@@ -26,12 +24,12 @@
       "title": "upstreams.lock.json agrees with every vendor ledger",
       "required": true,
       "status": "PASS",
-      "detail": "{\"zvec-grep\":{\"lock\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"ledger\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"patchRevision\":2},\"codegraph\":{\"lock\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"ledger\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"patchRevision\":4},\"serena\":{\"lock\":\"949a27ef1e5fda1a6e7b561e777bcece345c6ffd\",\"ledger\":\"949a27ef1e5fda1a6e7b561e777bcece345c6ffd\",\"patchRevision\":3}}",
+      "detail": "{\"zvec-grep\":{\"lock\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"ledger\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"patchRevision\":3},\"codegraph\":{\"lock\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"ledger\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"patchRevision\":4},\"serena\":{\"lock\":\"949a27ef1e5fda1a6e7b561e777bcece345c6ffd\",\"ledger\":\"949a27ef1e5fda1a6e7b561e777bcece345c6ffd\",\"patchRevision\":3}}",
       "pins": {
         "zvec-grep": {
           "lock": "309a66995809243d3274fa8b5bea63ab11dda1a0",
           "ledger": "309a66995809243d3274fa8b5bea63ab11dda1a0",
-          "patchRevision": 2
+          "patchRevision": 3
         },
         "codegraph": {
           "lock": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
@@ -50,7 +48,7 @@
       "title": "Vendored trees match their UPSTREAM.json ledgers",
       "required": true,
       "status": "PASS",
-      "detail": "codegraph@dfccdf62547f 827/833 verbatim, 6 declared patches; serena@949a27ef1e5f 1047/1048 verbatim, 1 declared patches; zvec-grep@309a66995809 364/369 verbatim, 5 declared patches",
+      "detail": "codegraph@dfccdf62547f 827/833 verbatim, 6 declared patches; serena@949a27ef1e5f 1047/1048 verbatim, 1 declared patches; zvec-grep@309a66995809 362/369 verbatim, 7 declared patches",
       "vendors": [
         {
           "vendor": "codegraph",
@@ -92,8 +90,10 @@
           "vendor": "zvec-grep",
           "commit": "309a66995809243d3274fa8b5bea63ab11dda1a0",
           "files": 369,
-          "verbatim": 364,
+          "verbatim": 362,
           "patched": [
+            "src/engine/models/backends/llama-cpp.ts",
+            "src/engine/models/embeddings.ts",
             "src/engine/pipeline/indexing/index.ts",
             "src/engine/service/root.ts",
             "src/engine/service/types.ts",
@@ -164,7 +164,7 @@
             {
               "step": "run build",
               "code": 0,
-              "ms": 722
+              "ms": 619
             }
           ],
           "status": "ok",
@@ -185,7 +185,7 @@
             {
               "step": "run build",
               "code": 0,
-              "ms": 1803
+              "ms": 1806
             }
           ],
           "status": "ok",
@@ -206,7 +206,7 @@
             {
               "step": "run build",
               "code": 0,
-              "ms": 2520
+              "ms": 2659
             }
           ],
           "status": "ok",
@@ -246,10 +246,10 @@
       "title": "The full applicable test suite passes",
       "required": true,
       "status": "PASS",
-      "detail": "{\"tests\":144,\"pass\":143,\"fail\":0,\"skipped\":1}",
+      "detail": "{\"tests\":148,\"pass\":147,\"fail\":0,\"skipped\":1}",
       "counts": {
-        "tests": 144,
-        "pass": 143,
+        "tests": 148,
+        "pass": 147,
         "fail": 0,
         "skipped": 1
       },
@@ -260,7 +260,7 @@
       "title": "Unified engine answers a real query end to end",
       "required": true,
       "status": "PASS",
-      "detail": "{\"status\":\"ok\",\"isError\":false,\"backends\":[{\"backend\":\"zvec\",\"ok\":true,\"outcome\":\"ok\",\"latencyMs\":408}],\"anchored\":3,\"queryMs\":4031}",
+      "detail": "{\"status\":\"ok\",\"isError\":false,\"backends\":[{\"backend\":\"zvec\",\"ok\":true,\"outcome\":\"ok\",\"latencyMs\":128}],\"anchored\":3,\"queryMs\":3657}",
       "measurement": {
         "status": "ok",
         "isError": false,
@@ -269,11 +269,11 @@
             "backend": "zvec",
             "ok": true,
             "outcome": "ok",
-            "latencyMs": 408
+            "latencyMs": 128
           }
         ],
         "anchored": 3,
-        "queryMs": 4031
+        "queryMs": 3657
       }
     },
     {
@@ -335,9 +335,9 @@
         "cold": {
           "mode": "cold",
           "n": 5,
-          "elapsedMsP95": 5191.068292,
-          "startupMsP95": 1.5619083999999996,
-          "processTreeRssBytesP95": 4699940454.4,
+          "elapsedMsP95": 3826.7408746,
+          "startupMsP95": 1.6903835999999999,
+          "processTreeRssBytesP95": 1300666777.6,
           "querySuccessCount": 5,
           "exactAnchorCount": 5,
           "minAnchoredResults": 4,
@@ -347,9 +347,9 @@
         "restart": {
           "mode": "restart",
           "n": 5,
-          "elapsedMsP95": 941.7423832,
-          "startupMsP95": 6.405183799999999,
-          "processTreeRssBytesP95": 3141612339.2,
+          "elapsedMsP95": 896.29,
+          "startupMsP95": 1.8776752,
+          "processTreeRssBytesP95": 1381164646.4,
           "querySuccessCount": 5,
           "exactAnchorCount": 5,
           "minAnchoredResults": 4,
@@ -359,9 +359,9 @@
         "warm": {
           "mode": "warm",
           "n": 5,
-          "elapsedMsP95": 458.7815249999999,
+          "elapsedMsP95": 159.8864164,
           "startupMsP95": 0,
-          "processTreeRssBytesP95": 4798414848,
+          "processTreeRssBytesP95": 1312161792,
           "querySuccessCount": 5,
           "exactAnchorCount": 5,
           "minAnchoredResults": 4,
@@ -371,9 +371,9 @@
         "dirty": {
           "mode": "dirty",
           "n": 5,
-          "elapsedMsP95": 3140.8728502000004,
+          "elapsedMsP95": 3124.2602754,
           "startupMsP95": 0,
-          "processTreeRssBytesP95": 4867319398.4,
+          "processTreeRssBytesP95": 1498713292.8,
           "querySuccessCount": 5,
           "exactAnchorCount": 5,
           "minAnchoredResults": 4,
@@ -433,11 +433,11 @@
       "id": "performance-guardrails",
       "title": "Preregistered latency and RSS guardrails remain unchanged",
       "required": true,
-      "status": "FAIL",
+      "status": "PASS",
       "detail": "Measurement completion and quality do not turn an exceeded RSS guardrail into PASS.",
       "checks": {
         "cold_p95_ms": {
-          "measured": 5191.068292,
+          "measured": 3826.7408746,
           "threshold": {
             "operator": "<=",
             "value": 30000
@@ -445,7 +445,7 @@
           "pass": true
         },
         "restart_p95_ms": {
-          "measured": 941.7423832,
+          "measured": 896.29,
           "threshold": {
             "operator": "<=",
             "value": 30000
@@ -453,7 +453,7 @@
           "pass": true
         },
         "warm_p95_ms": {
-          "measured": 458.7815249999999,
+          "measured": 159.8864164,
           "threshold": {
             "operator": "<=",
             "value": 10000
@@ -461,7 +461,7 @@
           "pass": true
         },
         "dirty_p95_ms": {
-          "measured": 3140.8728502000004,
+          "measured": 3124.2602754,
           "threshold": {
             "operator": "<=",
             "value": 30000
@@ -469,12 +469,12 @@
           "pass": true
         },
         "process_tree_rss_p95_bytes": {
-          "measured": 4861703782.4,
+          "measured": 1498418380.8,
           "threshold": {
             "operator": "<=",
             "value": 2000000000
           },
-          "pass": false
+          "pass": true
         }
       },
       "preregistrationSha256": "65165e42ca978791e1ce682eb1f14d32c21abf138d8f8c057dbeca806912afc8"
@@ -511,5 +511,5 @@
     "linkage_gate": "acceptance-linkage",
     "score_aggregation": "prohibited"
   },
-  "digest": "180362b6523fb74552c4e743e8498082473e1ddda35a1ec6dcbceea71581ec7e"
+  "digest": "14e28e91122af64e6150cd2ac466e121c90dd13f78c459eed205f1ab547fed3e"
 }

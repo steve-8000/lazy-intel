@@ -38,6 +38,9 @@ type LlamaModel = {
   trainContextSize?: number;
   tokenize?(text: string): readonly unknown[];
   detokenize?(tokens: readonly unknown[]): string;
+  fileInsights?: {
+    estimateContextResourceRequirements?: (options: { contextSize: number; isEmbeddingContext: boolean; sequences: number }) => { cpuRam?: number; gpuVram?: number } | Promise<{ cpuRam?: number; gpuVram?: number }>;
+  };
   createEmbeddingContext(
     options: Record<string, unknown>,
   ): Promise<LlamaEmbeddingContext>;
@@ -88,6 +91,8 @@ type LlamaCppDependencies = {
 const DEFAULT_MODEL_CACHE_DIR = join(defaultHome(), "models");
 const GGUF_MAGIC = Buffer.from("GGUF");
 const DEFAULT_PARALLELISM_CAP = 8;
+const DEFAULT_EMBEDDING_CONTEXT_BUDGET_BYTES = 1024 * 1024 * 1024;
+const EMBEDDING_CONTEXT_BUCKETS = [512, 1024, 2048, 4096, 8192] as const;
 const DEFAULT_DARWIN_CMAKE_OPTIONS = {
   GGML_OPENMP: "OFF",
 } as const;
@@ -146,15 +151,18 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
   private readonly modelCacheDir: string;
   private readonly gpu: LlamaGpuSelection;
   private readonly parallelism?: number;
+  private readonly embeddingContextBudgetBytes: number;
   private readonly dependencies: LlamaCppDependencies;
 
   private runtimeImport: Promise<NodeLlamaCppModule> | null = null;
   private llama: Llama | null = null;
   private model: LlamaModel | null = null;
   private contexts: LlamaEmbeddingContext[] = [];
+  private contextSize: number | null = null;
   private llamaLoadPromise: Promise<Llama> | null = null;
   private modelLoadPromise: Promise<LlamaModel> | null = null;
   private contextsCreatePromise: Promise<LlamaEmbeddingContext[]> | null = null;
+  private embedGate: Promise<void> = Promise.resolve();
   private usingCpuFallback = false;
   private disposed = false;
 
@@ -185,6 +193,7 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
     this.parallelism = resolveParallelismOverride(
       process.env.ZVEC_GREP_LLAMA_CONTEXT_PARALLELISM,
     );
+    this.embeddingContextBudgetBytes = resolveEmbeddingContextBudget(options.embeddingContextBudgetBytes, process.env.ZVEC_GREP_EMBEDDING_CONTEXT_BUDGET_MB);
     this.dependencies = { ...defaultDependencies, ...dependencies };
   }
 
@@ -205,7 +214,9 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
     );
 
     try {
-      return await this.embedTexts(texts, options.onProgress);
+      return await this.runExclusively(() =>
+        this.embedTexts(texts, options.onProgress),
+      );
     } catch (cause) {
       throw new EngineError("llama.cpp embedding failed", {
         code: "ZVEC_GREP.ENGINE.MODELS.LLAMA_CPP_EMBED_FAILED",
@@ -226,22 +237,45 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
     this.contextsCreatePromise = null;
   }
 
+  override async releaseIdleResources(): Promise<void> {
+    if (this.disposed) return;
+    await this.runExclusively(async () => {
+      await this.disposeEmbeddingContexts();
+    });
+  }
+
+  /**
+   * Embedding contexts are now sized per batch, so a second concurrent batch that needs a
+   * different size would otherwise dispose contexts the first batch is still reading from.
+   * Batches on one model therefore acquire and use their contexts exclusively; the parallel
+   * work inside a batch is unchanged.
+   */
+  private runExclusively<T>(task: () => Promise<T>): Promise<T> {
+    const run = this.embedGate.then(task, task);
+    this.embedGate = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  }
+
   private async embedTexts(
     texts: readonly string[],
     onProgress?: (progress: EmbeddingModelProgress) => void,
   ): Promise<EmbeddingResult> {
-    const contexts = await this.ensureEmbeddingContexts(
-      texts.length,
-      onProgress,
-    );
+    await this.ensureModel(onProgress);
     const truncatedInputIndexes: number[] = [];
+    let maxTokens = 0;
     const safeTexts = texts.map((text, index) => {
       const result = this.truncateToContextSize(text);
+      maxTokens = Math.max(maxTokens, result.tokenCount);
       if (result.truncated) {
         truncatedInputIndexes.push(index);
       }
       return result.text;
     });
+    const requiredContextSize = this.requiredContextSize(maxTokens);
+    const contexts = await this.ensureEmbeddingContexts(texts.length, requiredContextSize, onProgress);
     const chunkSize = Math.ceil(texts.length / contexts.length);
     const chunks = contexts
       .map((context, index) => ({
@@ -426,10 +460,11 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
   }
 
   private async ensureEmbeddingContexts(
-    textCount: number,
+    textCount: number, contextSize: number,
     onProgress?: (progress: EmbeddingModelProgress) => void,
   ): Promise<LlamaEmbeddingContext[]> {
-    const targetParallelism = await this.resolveEffectiveParallelism(textCount);
+    const targetParallelism = await this.resolveEffectiveParallelism(textCount, contextSize);
+    if (this.contexts.length > 0 && this.contextSize !== contextSize) await this.disposeEmbeddingContexts();
     if (this.contexts.length >= targetParallelism) {
       return this.contexts.slice(0, targetParallelism);
     }
@@ -443,6 +478,7 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
 
     this.contextsCreatePromise = this.createEmbeddingContextsWithFallback(
       targetParallelism,
+      contextSize,
       onProgress,
     );
 
@@ -456,10 +492,11 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
 
   private async createEmbeddingContextsWithFallback(
     targetParallelism: number,
+    contextSize: number,
     onProgress?: (progress: EmbeddingModelProgress) => void,
   ): Promise<LlamaEmbeddingContext[]> {
     try {
-      return await this.createEmbeddingContexts(targetParallelism, onProgress);
+      return await this.createEmbeddingContexts(targetParallelism, contextSize, onProgress);
     } catch (error) {
       if (!this.canRetryGpuOperationOnCpu()) {
         throw error;
@@ -470,26 +507,31 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
       );
       this.usingCpuFallback = true;
       await this.disposeLoadedRuntime();
-      return await this.createEmbeddingContexts(targetParallelism, onProgress);
+      return await this.createEmbeddingContexts(targetParallelism, contextSize, onProgress);
     }
   }
 
   private async createEmbeddingContexts(
     targetParallelism: number,
+    contextSize: number,
     onProgress?: (progress: EmbeddingModelProgress) => void,
   ): Promise<LlamaEmbeddingContext[]> {
     const model = await this.ensureModel(onProgress);
+    this.contextSize = contextSize;
     const threads = await this.resolveThreadsPerContext(targetParallelism);
     const initialContextCount = this.contexts.length;
 
     while (this.contexts.length < targetParallelism) {
       try {
-        this.contexts.push(
-          await model.createEmbeddingContext({
-            contextSize: this.entry.contextSize,
-            threads,
-          }),
-        );
+        const context = await model.createEmbeddingContext({
+          contextSize,
+          threads,
+        });
+        if (this.disposed) {
+          await context.dispose?.();
+          break;
+        }
+        this.contexts.push(context);
       } catch (error) {
         if (this.contexts.length === initialContextCount) {
           throw error;
@@ -510,11 +552,7 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
   }
 
   private async disposeLoadedRuntime(): Promise<void> {
-    const contexts = this.contexts;
-    this.contexts = [];
-    for (const context of contexts) {
-      await context.dispose?.();
-    }
+    await this.disposeEmbeddingContexts();
 
     const model = this.model;
     this.model = null;
@@ -554,37 +592,72 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
     return modelPath;
   }
 
-  private async resolveParallelism(): Promise<number> {
+  private async resolveEffectiveParallelism(
+    textCount: number,
+    contextSize: number,
+  ): Promise<number> {
+    const requested = await this.resolveParallelism(contextSize);
+    return Math.max(1, Math.min(requested, Math.max(1, textCount)));
+  }
+
+  /**
+   * Parallelism is an explicit memory decision. A qwen3 embedding context at the catalog
+   * maximum costs over a gigabyte of KV cache, so the number of contexts is derived from a
+   * declared byte budget and the real per-context cost of the size actually being created.
+   */
+  private async resolveParallelism(contextSize: number): Promise<number> {
     if (this.parallelism !== undefined) {
       return this.parallelism;
     }
 
+    const model = await this.ensureModel();
+    const perContextBytes = await this.estimateContextResourceCost(
+      contextSize,
+      model,
+    );
+    let limit = Math.min(
+      DEFAULT_PARALLELISM_CAP,
+      Math.floor(this.embeddingContextBudgetBytes / perContextBytes),
+    );
+
     const llama = await this.ensureLlama();
-    if (
-      !this.shouldDisableModelGpuOffload() &&
-      llama.gpu &&
-      llama.getVramState
-    ) {
+    if (!this.shouldDisableModelGpuOffload() && llama.gpu && llama.getVramState) {
       try {
         const vram = await llama.getVramState();
-        const freeMb = vram.free / (1024 * 1024);
-        return Math.max(
-          1,
-          Math.min(DEFAULT_PARALLELISM_CAP, Math.floor((freeMb * 0.25) / 150)),
-        );
+        limit = Math.min(limit, Math.floor((vram.free * 0.25) / perContextBytes));
       } catch {
-        return 2;
+        // Free-VRAM reporting is advisory. The declared budget above is the real bound.
       }
     }
 
-    return 1;
+    return Math.max(1, limit);
   }
 
-  private async resolveEffectiveParallelism(
-    textCount: number,
+  private async estimateContextResourceCost(
+    contextSize: number,
+    model: LlamaModel,
   ): Promise<number> {
-    const requested = await this.resolveParallelism();
-    return Math.max(1, Math.min(requested, Math.max(1, textCount)));
+    const fileInsights = model.fileInsights;
+    const estimate = fileInsights?.estimateContextResourceRequirements;
+    if (fileInsights && estimate) {
+      try {
+        const required = await estimate.call(fileInsights, {
+          contextSize,
+          isEmbeddingContext: true,
+          sequences: 1,
+        });
+        const total = (required?.cpuRam ?? NaN) + (required?.gpuVram ?? NaN);
+        if (Number.isFinite(total) && total > 0) {
+          return total;
+        }
+      } catch {
+        // Fall through to the measured estimate below.
+      }
+    }
+
+    // Measured on Qwen3-Embedding-0.6B: a context costs a small fixed allocation plus one
+    // KV entry per token (2 x 28 layers x 8 KV heads x 128 dims x 2 bytes = 114,688 B).
+    return 18 * 1024 * 1024 + 114688 * contextSize;
   }
 
   private async resolveThreadsPerContext(parallelism: number): Promise<number> {
@@ -604,10 +677,12 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
   private truncateToContextSize(text: string): {
     text: string;
     truncated: boolean;
+    tokenCount: number;
   } {
     const model = this.model;
     if (!model?.tokenize || !model.detokenize) {
-      return { text, truncated: false };
+      // Without a tokenizer the token count is unknowable, so assume the maximum.
+      return { text, truncated: false, tokenCount: this.entry.contextSize };
     }
 
     const limit = Math.max(
@@ -619,13 +694,38 @@ export class LlamaCppEmbeddingModel extends BaseEmbeddingModel {
     );
     const tokens = model.tokenize(text);
     if (tokens.length <= limit) {
-      return { text, truncated: false };
+      return { text, truncated: false, tokenCount: tokens.length };
     }
 
+    const limited = tokens.slice(0, Math.max(1, limit - 4));
     return {
-      text: model.detokenize(tokens.slice(0, Math.max(1, limit - 4))),
+      text: model.detokenize(limited),
       truncated: true,
+      tokenCount: limited.length,
     };
+  }
+
+  /**
+   * The catalog `contextSize` is the maximum this model supports, not the size every batch
+   * has to pay for. Embeddings depend only on the token sequence, so any context at least as
+   * large as the longest input produces identical vectors; the margin covers the BOS/EOS
+   * tokens the embedding context adds.
+   */
+  private requiredContextSize(maxTokens: number): number {
+    if (this.entry.contextSize < EMBEDDING_CONTEXT_BUCKETS[0]) {
+      return this.entry.contextSize;
+    }
+
+    const needed = maxTokens + 8;
+    const bucket = EMBEDDING_CONTEXT_BUCKETS.find((size) => size >= needed);
+    return Math.min(this.entry.contextSize, bucket ?? this.entry.contextSize);
+  }
+
+  private async disposeEmbeddingContexts(): Promise<void> {
+    const contexts = this.contexts;
+    this.contexts = [];
+    this.contextSize = null;
+    await Promise.all(contexts.map((context) => context.dispose?.()));
   }
 
   private ensureNotDisposed(): void {
@@ -725,6 +825,18 @@ function resolveParallelismOverride(
   }
 
   return Math.min(DEFAULT_PARALLELISM_CAP, parsed);
+}
+
+function resolveEmbeddingContextBudget(optionValue: number | undefined, envValue: string | undefined): number {
+  const fallback = optionValue !== undefined && Number.isFinite(optionValue) && optionValue > 0 ? optionValue : DEFAULT_EMBEDDING_CONTEXT_BUDGET_BYTES;
+  const normalized = envValue?.trim() ?? "";
+  if (!normalized) return fallback;
+  const parsed = Number.parseFloat(normalized);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    process.stderr.write('zvec-grep warning: invalid ZVEC_GREP_EMBEDDING_CONTEXT_BUDGET_MB="' + envValue + '", using the configured default.\n');
+    return fallback;
+  }
+  return parsed * 1024 * 1024;
 }
 
 function validateGgufFile(filePath: string, modelUri: string): void {

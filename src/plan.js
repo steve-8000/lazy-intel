@@ -45,6 +45,7 @@ const PRIMITIVE_READS = {
   search: { backend: "zvec", operation: "search", obligation: OBLIGATIONS.semantic_discovery },
   architecture: { backend: "codegraph", operation: "architecture", obligation: OBLIGATIONS.architecture_overview },
   impact: { backend: "codegraph", operation: "impact", obligation: OBLIGATIONS.impact_of_subject },
+  subject: { backend: "codegraph", operation: "context", obligation: OBLIGATIONS.subject_definition },
   symbol: { backend: "serena", operation: "symbol", obligation: OBLIGATIONS.subject_definition },
   references: { backend: "serena", operation: "references", obligation: OBLIGATIONS.references_of_subject },
   implementations: { backend: "serena", operation: "implementations", obligation: OBLIGATIONS.implementations_of_subject },
@@ -134,7 +135,7 @@ function autoPlan(input) {
       // Resolve the subject first, then ask the dependent question only if exactly one
       // typed candidate inside the root came back. A guessed path is never good enough.
       return plan("auto", "auto", [
-        stage("s1", [read(PRIMITIVE_READS.symbol, { id: "s1r1" })]),
+        stage("s1", [read(PRIMITIVE_READS.subject, { id: "s1r1" })]),
         stage("s2", [read(PRIMITIVE_READS[kind], { id: "s2r1", inputSource: "validated_unique_subject" })], "validated_unique_subject"),
       ]);
     }
@@ -145,6 +146,7 @@ function autoPlan(input) {
 
   if (intent.impact) {
     if (hasSymbol) {
+      if (!hasPath) return plan("auto", "auto", [stage("s1", [read(PRIMITIVE_READS.impact, { id: "s1r1" })])]);
       return plan("auto", "auto", [stage("s1", [
         read(PRIMITIVE_READS.impact, { id: "s1r1" }),
         read(PRIMITIVE_READS.symbol, { id: "s1r2", role: "optional" }),
@@ -154,12 +156,20 @@ function autoPlan(input) {
   }
 
   if (intent.architecture) {
-    return plan("auto", "auto", [stage("s1", hasSymbol
+    return plan("auto", "auto", [stage("s1", hasSymbol && hasPath
       ? [read(PRIMITIVE_READS.architecture, { id: "s1r1" }), read(PRIMITIVE_READS.symbol, { id: "s1r2", role: "optional" })]
-      : [read(PRIMITIVE_READS.architecture, { id: "s1r1" }), read(PRIMITIVE_READS.search, { id: "s1r2", role: "optional" })])]);
+      : hasSymbol
+        ? [read(PRIMITIVE_READS.architecture, { id: "s1r1" })]
+        : [read(PRIMITIVE_READS.architecture, { id: "s1r1" }), read(PRIMITIVE_READS.search, { id: "s1r2", role: "optional" })])]);
   }
 
-  if (hasSymbol) return plan("auto", "auto", [stage("s1", [read(PRIMITIVE_READS.symbol, { id: "s1r1" })])]);
+  if (hasSymbol && hasPath) return plan("auto", "auto", [stage("s1", [read(PRIMITIVE_READS.symbol, { id: "s1r1" })])]);
+  if (hasSymbol) {
+    return plan("auto", "auto", [
+      stage("s1", [read(PRIMITIVE_READS.subject, { id: "s1r1" })]),
+      stage("s2", [read(PRIMITIVE_READS.symbol, { id: "s2r1", role: "optional", inputSource: "validated_unique_subject" })], "validated_unique_subject"),
+    ]);
+  }
   return discoveryPlan();
 }
 

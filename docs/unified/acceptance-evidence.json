@@ -6,7 +6,7 @@
   "original_criteria_preserved": 68,
   "score_aggregation": "prohibited",
   "release_guardrails": {
-    "performance": "FAIL: immutable 2GB process-tree RSS guardrail exceeded; original REL-04 measurement and REL-05 quality are separate contracts."
+    "performance": "PASS: process-tree RSS p95 1498418380.8 B against the unchanged preregistered 2000000000 B guardrail."
   },
   "items": [
     {
@@ -1159,7 +1159,7 @@
       "expected": "Cold/restart/warm/dirty latency and memory measured separately.",
       "owner_unit": "U09",
       "status": "met",
-      "result": "20 actual rows: five per cold/restart/warm/dirty. Measurement requirement is met; separate preregistered RSS guardrail FAIL is retained, not waived.",
+      "result": "20 actual rows: five per cold/restart/warm/dirty. Every preregistered latency and RSS guardrail passed on the unchanged thresholds; nothing was waived.",
       "evidence": [
         {
           "path": "docs/unified/performance-measurement.json"

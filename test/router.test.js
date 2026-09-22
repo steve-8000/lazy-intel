@@ -14,8 +14,13 @@ test("known references use Serena", () => {
   assert.deepEqual(route({ operation: "auto", query: "find references", symbol: "PhotoIndex/update", relativePath: "Sources/PhotoIndex.swift" }), ["serena:references"]);
 });
 
-test("impact of known symbol is bounded to two backends", () => {
-  assert.deepEqual(route({ operation: "auto", query: "blast radius", symbol: "commit" }), ["codegraph:impact", "serena:symbol"]);
+test("impact of a pathless symbol stays on CodeGraph", () => {
+  assert.deepEqual(route({ operation: "auto", query: "blast radius", symbol: "commit" }), ["codegraph:impact"]);
+});
+
+test("pathless subject routes resolve through CodeGraph before optional semantic reads", () => {
+  assert.deepEqual(route({ operation: "auto", query: "find references", symbol: "commit" }), ["codegraph:context", "serena:references"]);
+  assert.deepEqual(route({ operation: "auto", query: "where is commit", symbol: "commit" }), ["codegraph:context", "serena:symbol"]);
 });
 
 

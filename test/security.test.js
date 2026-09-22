@@ -71,6 +71,7 @@ test("source paths cannot escape a permitted root through traversal or symlinks"
 
 test("engine rejects incomplete semantic contracts before starting a backend", async () => {
   await assert.rejects(codeIntel({ operation: "impact", query: "Foo change impact" }), /impact requires symbol/);
+  await assert.rejects(codeIntel({ operation: "symbol", symbol: "Foo" }), /symbol requires symbol and relativePath/);
   await assert.rejects(codeIntel({ operation: "references", symbol: "Foo" }), /symbol and relativePath/);
   await assert.rejects(codeIntel({ operation: "diagnostics", query: "errors" }), /requires relativePath/);
 });

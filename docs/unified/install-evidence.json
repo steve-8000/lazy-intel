@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "status": "PASS",
-  "generated_at": "2026-09-22T03:17:57.569Z",
+  "generated_at": "2026-09-22T05:19:14.679Z",
   "scope": "temporary HOME, source roots, archived binary and derived state",
   "phases": {
     "install": {
@@ -18,8 +18,8 @@
     "multiRoot": {
       "status": "PASS",
       "roots": [
-        "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
-        "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b"
+        "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
+        "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b"
       ],
       "independentProjectRegistrations": true
     },
@@ -30,17 +30,17 @@
         "content": [
           {
             "type": "text",
-            "text": "Status: ok\nLimits: maxChars=16000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Primary subject / definitions\n\n### definition [graph-97e92612-af76-40bb-bbe3-92c5e4363476-1]\nLocation: discount.mjs:1-1\nText: description\nSource check: matched\n\napplyDiscount\n\n### definition [graph-b51bde23-8da5-4cd1-bd6f-9ab77b2c2874-0]\nLocation: invoice.mjs:2-2\nText: description\nSource check: matched\n\ninvoiceTotal"
+            "text": "Status: ok\nLimits: maxChars=16000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Primary subject / definitions\n\n### definition [graph-6beef10c-9974-45ff-9029-a99fa1e15a5f-1]\nLocation: discount.mjs:1-1\nText: description\nSource check: matched\n\napplyDiscount\n\n### definition [graph-8175eee1-cb38-4f5e-9ed3-c924969e3728-0]\nLocation: invoice.mjs:2-2\nText: description\nSource check: matched\n\ninvoiceTotal"
           },
           {
             "type": "text",
-            "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"graph-97e92612-af76-40bb-bbe3-92c5e4363476-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a\",\"relativePath\":\"discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-698e28872ac5129fa399309e04b7fa06\",\"fileId\":\"fce1f1521d77733eadeb6688f2693519\",\"relativePath\":\"discount.mjs\",\"contentHash\":\"d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":100},\"kind\":\"function\",\"occurrenceId\":\"function:d69cf63684180f58c8835b0cb3a80069\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"0a98278b2cffba4dbe6e3f37f827267b\",\"appliedManifestId\":\"d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53\",\"profileDigest\":\"6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-97e92612-af76-40bb-bbe3-92c5e4363476\"}]},{\"id\":\"graph-b51bde23-8da5-4cd1-bd6f-9ab77b2c2874-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a\",\"relativePath\":\"invoice.mjs\",\"range\":{\"startLine\":1,\"endLineExclusive\":2}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-698e28872ac5129fa399309e04b7fa06\",\"fileId\":\"fa8143d9273895901a9c2bced35c95fa\",\"relativePath\":\"invoice.mjs\",\"contentHash\":\"930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":48,\"endByte\":135},\"kind\":\"function\",\"occurrenceId\":\"function:2d4801933a33340760461d6fa93e7536\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"0a98278b2cffba4dbe6e3f37f827267b\",\"appliedManifestId\":\"d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53\",\"profileDigest\":\"6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-b51bde23-8da5-4cd1-bd6f-9ab77b2c2874\"}]}],\"views\":[{\"projection\":\"graph\",\"viewId\":\"0a98278b2cffba4dbe6e3f37f827267b\",\"appliedManifestId\":\"d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53\",\"profileDigest\":\"6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347\"}],\"semanticObservations\":[],\"issues\":[]}"
+            "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"graph-6beef10c-9974-45ff-9029-a99fa1e15a5f-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a\",\"relativePath\":\"discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-8d4d8a697d1f90350e856b9f931f4284\",\"fileId\":\"cbcb25bfb1c3b95a402e602458ee98d2\",\"relativePath\":\"discount.mjs\",\"contentHash\":\"d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":100},\"kind\":\"function\",\"occurrenceId\":\"function:d69cf63684180f58c8835b0cb3a80069\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"2f66022a0eace9f476aa8dd92d002bb8\",\"appliedManifestId\":\"ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5\",\"profileDigest\":\"db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-6beef10c-9974-45ff-9029-a99fa1e15a5f\"}]},{\"id\":\"graph-8175eee1-cb38-4f5e-9ed3-c924969e3728-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a\",\"relativePath\":\"invoice.mjs\",\"range\":{\"startLine\":1,\"endLineExclusive\":2}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-8d4d8a697d1f90350e856b9f931f4284\",\"fileId\":\"7226a70923257163a7608450331307c8\",\"relativePath\":\"invoice.mjs\",\"contentHash\":\"930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":48,\"endByte\":135},\"kind\":\"function\",\"occurrenceId\":\"function:2d4801933a33340760461d6fa93e7536\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"2f66022a0eace9f476aa8dd92d002bb8\",\"appliedManifestId\":\"ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5\",\"profileDigest\":\"db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-8175eee1-cb38-4f5e-9ed3-c924969e3728\"}]}],\"views\":[{\"projection\":\"graph\",\"viewId\":\"2f66022a0eace9f476aa8dd92d002bb8\",\"appliedManifestId\":\"ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5\",\"profileDigest\":\"db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d\"}],\"semanticObservations\":[],\"issues\":[]}"
           }
         ],
         "isError": false,
         "structuredContent": {
           "schemaVersion": "lazy-intel.result/1",
-          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
           "operation": "architecture",
           "routes": [
             "codegraph:architecture"
@@ -51,7 +51,7 @@
               "backend": "codegraph",
               "ok": true,
               "outcome": "ok",
-              "latencyMs": 6
+              "latencyMs": 15
             }
           ],
           "status": "ok",
@@ -64,9 +64,9 @@
           "normalization": "typed",
           "evidence": [
             {
-              "id": "graph-97e92612-af76-40bb-bbe3-92c5e4363476-1",
+              "id": "graph-6beef10c-9974-45ff-9029-a99fa1e15a5f-1",
               "locator": {
-                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
                 "relativePath": "discount.mjs",
                 "range": {
                   "startLine": 0,
@@ -77,8 +77,8 @@
               "textKind": "description",
               "sourceCheck": "matched",
               "anchor": {
-                "workspaceId": "workspace-698e28872ac5129fa399309e04b7fa06",
-                "fileId": "fce1f1521d77733eadeb6688f2693519",
+                "workspaceId": "workspace-8d4d8a697d1f90350e856b9f931f4284",
+                "fileId": "cbcb25bfb1c3b95a402e602458ee98d2",
                 "relativePath": "discount.mjs",
                 "contentHash": "d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8",
                 "span": {
@@ -91,11 +91,11 @@
               },
               "projectionView": {
                 "projection": "graph",
-                "viewId": "0a98278b2cffba4dbe6e3f37f827267b",
-                "appliedManifestId": "d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53",
-                "profileDigest": "6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5",
+                "viewId": "2f66022a0eace9f476aa8dd92d002bb8",
+                "appliedManifestId": "ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5",
+                "profileDigest": "db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d"
               },
               "coverage": {
                 "kind": "bounded_graph",
@@ -110,14 +110,14 @@
                   "operation": "architecture",
                   "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                   "adapterVersion": "0.3.0",
-                  "executionId": "graph-97e92612-af76-40bb-bbe3-92c5e4363476"
+                  "executionId": "graph-6beef10c-9974-45ff-9029-a99fa1e15a5f"
                 }
               ]
             },
             {
-              "id": "graph-b51bde23-8da5-4cd1-bd6f-9ab77b2c2874-0",
+              "id": "graph-8175eee1-cb38-4f5e-9ed3-c924969e3728-0",
               "locator": {
-                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
                 "relativePath": "invoice.mjs",
                 "range": {
                   "startLine": 1,
@@ -128,8 +128,8 @@
               "textKind": "description",
               "sourceCheck": "matched",
               "anchor": {
-                "workspaceId": "workspace-698e28872ac5129fa399309e04b7fa06",
-                "fileId": "fa8143d9273895901a9c2bced35c95fa",
+                "workspaceId": "workspace-8d4d8a697d1f90350e856b9f931f4284",
+                "fileId": "7226a70923257163a7608450331307c8",
                 "relativePath": "invoice.mjs",
                 "contentHash": "930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547",
                 "span": {
@@ -142,11 +142,11 @@
               },
               "projectionView": {
                 "projection": "graph",
-                "viewId": "0a98278b2cffba4dbe6e3f37f827267b",
-                "appliedManifestId": "d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53",
-                "profileDigest": "6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5",
+                "viewId": "2f66022a0eace9f476aa8dd92d002bb8",
+                "appliedManifestId": "ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5",
+                "profileDigest": "db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d"
               },
               "coverage": {
                 "kind": "bounded_graph",
@@ -161,7 +161,7 @@
                   "operation": "architecture",
                   "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                   "adapterVersion": "0.3.0",
-                  "executionId": "graph-b51bde23-8da5-4cd1-bd6f-9ab77b2c2874"
+                  "executionId": "graph-8175eee1-cb38-4f5e-9ed3-c924969e3728"
                 }
               ]
             }
@@ -172,11 +172,11 @@
           "views": [
             {
               "projection": "graph",
-              "viewId": "0a98278b2cffba4dbe6e3f37f827267b",
-              "appliedManifestId": "d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53",
-              "profileDigest": "6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5",
+              "viewId": "2f66022a0eace9f476aa8dd92d002bb8",
+              "appliedManifestId": "ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5",
+              "profileDigest": "db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d"
             }
           ],
           "semanticObservations": [],
@@ -196,17 +196,17 @@
           "content": [
             {
               "type": "text",
-              "text": "Status: ok\nLimits: maxChars=16000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Primary subject / definitions\n\n### definition [graph-dce5dc49-4f42-4583-a933-c882f477e03c-1]\nLocation: discount.mjs:1-1\nText: description\nSource check: matched\n\napplyDiscount\n\n### definition [graph-32a0a279-dcda-4fd2-97b8-21e7b25afb12-0]\nLocation: invoice.mjs:2-2\nText: description\nSource check: matched\n\ninvoiceTotal"
+              "text": "Status: ok\nLimits: maxChars=16000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Primary subject / definitions\n\n### definition [graph-5b085673-2fb0-4c04-9a9a-6d8c9b0fd171-1]\nLocation: discount.mjs:1-1\nText: description\nSource check: matched\n\napplyDiscount\n\n### definition [graph-dbe0645f-8d09-4505-afc1-84f65ed4b04f-0]\nLocation: invoice.mjs:2-2\nText: description\nSource check: matched\n\ninvoiceTotal"
             },
             {
               "type": "text",
-              "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"graph-dce5dc49-4f42-4583-a933-c882f477e03c-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b\",\"relativePath\":\"discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-003b5925c04319d9b81ed46e29db2e7f\",\"fileId\":\"1a5dd3307ec01c6002d602c8dc66258d\",\"relativePath\":\"discount.mjs\",\"contentHash\":\"d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":100},\"kind\":\"function\",\"occurrenceId\":\"function:d69cf63684180f58c8835b0cb3a80069\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"c85ee6bdd7aee3a9a0d416c20ec2ee38\",\"appliedManifestId\":\"23a771994ff4a63a38db34fa33060ea0227785c3dc5ef0b116a548c7ac4904a5\",\"profileDigest\":\"4b3fefee69854867914aab996fdffcd153054e03d52b7865792aa8f0f7c053fe\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b/.lazy-intel/stores/691c73f6-17e7-4c54-8d16-94d877bd4b6a\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-dce5dc49-4f42-4583-a933-c882f477e03c\"}]},{\"id\":\"graph-32a0a279-dcda-4fd2-97b8-21e7b25afb12-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b\",\"relativePath\":\"invoice.mjs\",\"range\":{\"startLine\":1,\"endLineExclusive\":2}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-003b5925c04319d9b81ed46e29db2e7f\",\"fileId\":\"5c3301850758d6a72fbfb2a392d84dff\",\"relativePath\":\"invoice.mjs\",\"contentHash\":\"930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":48,\"endByte\":135},\"kind\":\"function\",\"occurrenceId\":\"function:2d4801933a33340760461d6fa93e7536\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"c85ee6bdd7aee3a9a0d416c20ec2ee38\",\"appliedManifestId\":\"23a771994ff4a63a38db34fa33060ea0227785c3dc5ef0b116a548c7ac4904a5\",\"profileDigest\":\"4b3fefee69854867914aab996fdffcd153054e03d52b7865792aa8f0f7c053fe\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b/.lazy-intel/stores/691c73f6-17e7-4c54-8d16-94d877bd4b6a\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-32a0a279-dcda-4fd2-97b8-21e7b25afb12\"}]}],\"views\":[{\"projection\":\"graph\",\"viewId\":\"c85ee6bdd7aee3a9a0d416c20ec2ee38\",\"appliedManifestId\":\"23a771994ff4a63a38db34fa33060ea0227785c3dc5ef0b116a548c7ac4904a5\",\"profileDigest\":\"4b3fefee69854867914aab996fdffcd153054e03d52b7865792aa8f0f7c053fe\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b/.lazy-intel/stores/691c73f6-17e7-4c54-8d16-94d877bd4b6a\"}],\"semanticObservations\":[],\"issues\":[]}"
+              "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"graph-5b085673-2fb0-4c04-9a9a-6d8c9b0fd171-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b\",\"relativePath\":\"discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-65f1c82620a8d098d958a9f973cfd4b7\",\"fileId\":\"5551f84af6a9c74c43140c70ffd2435f\",\"relativePath\":\"discount.mjs\",\"contentHash\":\"d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":100},\"kind\":\"function\",\"occurrenceId\":\"function:d69cf63684180f58c8835b0cb3a80069\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"74f01de8f92d5748c13c5f8367035237\",\"appliedManifestId\":\"655b9834192e3775e4154f172102daa6e3ad62e32926208a467e884d9f4b5c05\",\"profileDigest\":\"0dcd8c834498309edfcf5e19531ecce76602b09764e7bf598bb7687384d242b6\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b/.lazy-intel/stores/e64a85d1-d02c-454e-b8c8-9e1f8b756398\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-5b085673-2fb0-4c04-9a9a-6d8c9b0fd171\"}]},{\"id\":\"graph-dbe0645f-8d09-4505-afc1-84f65ed4b04f-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b\",\"relativePath\":\"invoice.mjs\",\"range\":{\"startLine\":1,\"endLineExclusive\":2}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-65f1c82620a8d098d958a9f973cfd4b7\",\"fileId\":\"7c81fddf633ed933c618aa6c7dbc1061\",\"relativePath\":\"invoice.mjs\",\"contentHash\":\"930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":48,\"endByte\":135},\"kind\":\"function\",\"occurrenceId\":\"function:2d4801933a33340760461d6fa93e7536\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"74f01de8f92d5748c13c5f8367035237\",\"appliedManifestId\":\"655b9834192e3775e4154f172102daa6e3ad62e32926208a467e884d9f4b5c05\",\"profileDigest\":\"0dcd8c834498309edfcf5e19531ecce76602b09764e7bf598bb7687384d242b6\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b/.lazy-intel/stores/e64a85d1-d02c-454e-b8c8-9e1f8b756398\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-dbe0645f-8d09-4505-afc1-84f65ed4b04f\"}]}],\"views\":[{\"projection\":\"graph\",\"viewId\":\"74f01de8f92d5748c13c5f8367035237\",\"appliedManifestId\":\"655b9834192e3775e4154f172102daa6e3ad62e32926208a467e884d9f4b5c05\",\"profileDigest\":\"0dcd8c834498309edfcf5e19531ecce76602b09764e7bf598bb7687384d242b6\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b/.lazy-intel/stores/e64a85d1-d02c-454e-b8c8-9e1f8b756398\"}],\"semanticObservations\":[],\"issues\":[]}"
             }
           ],
           "isError": false,
           "structuredContent": {
             "schemaVersion": "lazy-intel.result/1",
-            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b",
+            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b",
             "operation": "architecture",
             "routes": [
               "codegraph:architecture"
@@ -230,9 +230,9 @@
             "normalization": "typed",
             "evidence": [
               {
-                "id": "graph-dce5dc49-4f42-4583-a933-c882f477e03c-1",
+                "id": "graph-5b085673-2fb0-4c04-9a9a-6d8c9b0fd171-1",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b",
                   "relativePath": "discount.mjs",
                   "range": {
                     "startLine": 0,
@@ -243,8 +243,8 @@
                 "textKind": "description",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-003b5925c04319d9b81ed46e29db2e7f",
-                  "fileId": "1a5dd3307ec01c6002d602c8dc66258d",
+                  "workspaceId": "workspace-65f1c82620a8d098d958a9f973cfd4b7",
+                  "fileId": "5551f84af6a9c74c43140c70ffd2435f",
                   "relativePath": "discount.mjs",
                   "contentHash": "d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8",
                   "span": {
@@ -257,11 +257,11 @@
                 },
                 "projectionView": {
                   "projection": "graph",
-                  "viewId": "c85ee6bdd7aee3a9a0d416c20ec2ee38",
-                  "appliedManifestId": "23a771994ff4a63a38db34fa33060ea0227785c3dc5ef0b116a548c7ac4904a5",
-                  "profileDigest": "4b3fefee69854867914aab996fdffcd153054e03d52b7865792aa8f0f7c053fe",
+                  "viewId": "74f01de8f92d5748c13c5f8367035237",
+                  "appliedManifestId": "655b9834192e3775e4154f172102daa6e3ad62e32926208a467e884d9f4b5c05",
+                  "profileDigest": "0dcd8c834498309edfcf5e19531ecce76602b09764e7bf598bb7687384d242b6",
                   "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b/.lazy-intel/stores/691c73f6-17e7-4c54-8d16-94d877bd4b6a"
+                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b/.lazy-intel/stores/e64a85d1-d02c-454e-b8c8-9e1f8b756398"
                 },
                 "coverage": {
                   "kind": "bounded_graph",
@@ -276,14 +276,14 @@
                     "operation": "architecture",
                     "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                     "adapterVersion": "0.3.0",
-                    "executionId": "graph-dce5dc49-4f42-4583-a933-c882f477e03c"
+                    "executionId": "graph-5b085673-2fb0-4c04-9a9a-6d8c9b0fd171"
                   }
                 ]
               },
               {
-                "id": "graph-32a0a279-dcda-4fd2-97b8-21e7b25afb12-0",
+                "id": "graph-dbe0645f-8d09-4505-afc1-84f65ed4b04f-0",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b",
                   "relativePath": "invoice.mjs",
                   "range": {
                     "startLine": 1,
@@ -294,8 +294,8 @@
                 "textKind": "description",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-003b5925c04319d9b81ed46e29db2e7f",
-                  "fileId": "5c3301850758d6a72fbfb2a392d84dff",
+                  "workspaceId": "workspace-65f1c82620a8d098d958a9f973cfd4b7",
+                  "fileId": "7c81fddf633ed933c618aa6c7dbc1061",
                   "relativePath": "invoice.mjs",
                   "contentHash": "930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547",
                   "span": {
@@ -308,11 +308,11 @@
                 },
                 "projectionView": {
                   "projection": "graph",
-                  "viewId": "c85ee6bdd7aee3a9a0d416c20ec2ee38",
-                  "appliedManifestId": "23a771994ff4a63a38db34fa33060ea0227785c3dc5ef0b116a548c7ac4904a5",
-                  "profileDigest": "4b3fefee69854867914aab996fdffcd153054e03d52b7865792aa8f0f7c053fe",
+                  "viewId": "74f01de8f92d5748c13c5f8367035237",
+                  "appliedManifestId": "655b9834192e3775e4154f172102daa6e3ad62e32926208a467e884d9f4b5c05",
+                  "profileDigest": "0dcd8c834498309edfcf5e19531ecce76602b09764e7bf598bb7687384d242b6",
                   "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b/.lazy-intel/stores/691c73f6-17e7-4c54-8d16-94d877bd4b6a"
+                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b/.lazy-intel/stores/e64a85d1-d02c-454e-b8c8-9e1f8b756398"
                 },
                 "coverage": {
                   "kind": "bounded_graph",
@@ -327,7 +327,7 @@
                     "operation": "architecture",
                     "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                     "adapterVersion": "0.3.0",
-                    "executionId": "graph-32a0a279-dcda-4fd2-97b8-21e7b25afb12"
+                    "executionId": "graph-dbe0645f-8d09-4505-afc1-84f65ed4b04f"
                   }
                 ]
               }
@@ -338,11 +338,11 @@
             "views": [
               {
                 "projection": "graph",
-                "viewId": "c85ee6bdd7aee3a9a0d416c20ec2ee38",
-                "appliedManifestId": "23a771994ff4a63a38db34fa33060ea0227785c3dc5ef0b116a548c7ac4904a5",
-                "profileDigest": "4b3fefee69854867914aab996fdffcd153054e03d52b7865792aa8f0f7c053fe",
+                "viewId": "74f01de8f92d5748c13c5f8367035237",
+                "appliedManifestId": "655b9834192e3775e4154f172102daa6e3ad62e32926208a467e884d9f4b5c05",
+                "profileDigest": "0dcd8c834498309edfcf5e19531ecce76602b09764e7bf598bb7687384d242b6",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-b/.lazy-intel/stores/691c73f6-17e7-4c54-8d16-94d877bd4b6a"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-b/.lazy-intel/stores/e64a85d1-d02c-454e-b8c8-9e1f8b756398"
               }
             ],
             "semanticObservations": [],
@@ -359,10 +359,10 @@
     "selector_switch_is_not_rollback": true,
     "baseline_source": "/Users/steve/lazy-project/lazy-intel-source-baselines/lazy-intel",
     "archived_binary_sha256": "07f0c4ea782b4078a12907edda70ad7995fd17823d4e1703b360afcf6fc539bd",
-    "old_state": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.codegraph",
-    "candidate_state": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel",
+    "old_state": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.codegraph",
+    "candidate_state": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel",
     "before": {
-      "sha256": "4462bc466f6d8fe09ba4fb9c9a30b90c10e913cea1d5880688a3292054f75091",
+      "sha256": "076f16b9f75aefe2008a92ba4c148ca53dbb07917982d42eb5c4e2191ddf2ea4",
       "files": [
         {
           "path": ".gitignore",
@@ -370,12 +370,12 @@
         },
         {
           "path": "codegraph.db",
-          "sha256": "abd9862fd8559acbc4053638be59083bb0b1f51f5a75eaa358d8b0e5dc903ea5"
+          "sha256": "56f6a5a0644d68407ca8bf0a9ca727e6c82dad5694a7075476144e13055ce58d"
         }
       ]
     },
     "afterCandidate": {
-      "sha256": "4462bc466f6d8fe09ba4fb9c9a30b90c10e913cea1d5880688a3292054f75091",
+      "sha256": "076f16b9f75aefe2008a92ba4c148ca53dbb07917982d42eb5c4e2191ddf2ea4",
       "files": [
         {
           "path": ".gitignore",
@@ -383,12 +383,12 @@
         },
         {
           "path": "codegraph.db",
-          "sha256": "abd9862fd8559acbc4053638be59083bb0b1f51f5a75eaa358d8b0e5dc903ea5"
+          "sha256": "56f6a5a0644d68407ca8bf0a9ca727e6c82dad5694a7075476144e13055ce58d"
         }
       ]
     },
     "restored": {
-      "sha256": "4462bc466f6d8fe09ba4fb9c9a30b90c10e913cea1d5880688a3292054f75091",
+      "sha256": "076f16b9f75aefe2008a92ba4c148ca53dbb07917982d42eb5c4e2191ddf2ea4",
       "files": [
         {
           "path": ".gitignore",
@@ -396,7 +396,7 @@
         },
         {
           "path": "codegraph.db",
-          "sha256": "abd9862fd8559acbc4053638be59083bb0b1f51f5a75eaa358d8b0e5dc903ea5"
+          "sha256": "56f6a5a0644d68407ca8bf0a9ca727e6c82dad5694a7075476144e13055ce58d"
         }
       ]
     },
@@ -407,11 +407,11 @@
         "content": [
           {
             "type": "text",
-            "text": "## Structural evidence · CodeGraph\n**Exploration: invoiceTotal**\n\nFound 1 symbol across 1 file.\n\n**Source Code**\n\n> The code below is the **verbatim, current on-disk source** of these files — re-read from disk on this call and line-numbered, byte-for-byte identical to what the Read tool returns. It is NOT a summary, outline, or stale cache. Treat each block as a Read you have already performed: do not Read a file shown here.\n\n**`invoice.mjs`** — invoiceTotal(function)\n\n```javascript\n1\timport { applyDiscount } from './discount.mjs';\n2\texport function invoiceTotal(cents, percent) { return applyDiscount(cents, percent); }\n```\n\n**Not shown above — explore these names for their source**\n\n- discount.mjs: applyDiscount:1\n\n_latency: 153ms_\n\n## Evidence priority\ncurrent source/compiler > live LSP (Serena) > indexed graph (CodeGraph) > retrieval relevance (zvec). Verify correctness with OMP native source/build/tests before editing or claiming completion."
+            "text": "## Structural evidence · CodeGraph\n**Exploration: invoiceTotal**\n\nFound 1 symbol across 1 file.\n\n**Source Code**\n\n> The code below is the **verbatim, current on-disk source** of these files — re-read from disk on this call and line-numbered, byte-for-byte identical to what the Read tool returns. It is NOT a summary, outline, or stale cache. Treat each block as a Read you have already performed: do not Read a file shown here.\n\n**`invoice.mjs`** — invoiceTotal(function)\n\n```javascript\n1\timport { applyDiscount } from './discount.mjs';\n2\texport function invoiceTotal(cents, percent) { return applyDiscount(cents, percent); }\n```\n\n**Not shown above — explore these names for their source**\n\n- discount.mjs: applyDiscount:1\n\n_latency: 226ms_\n\n## Evidence priority\ncurrent source/compiler > live LSP (Serena) > indexed graph (CodeGraph) > retrieval relevance (zvec). Verify correctness with OMP native source/build/tests before editing or claiming completion."
           }
         ],
         "structuredContent": {
-          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
           "operation": "architecture",
           "routes": [
             "codegraph:architecture"
@@ -421,7 +421,7 @@
             {
               "backend": "codegraph",
               "ok": true,
-              "latencyMs": 153
+              "latencyMs": 226
             }
           ]
         },
@@ -435,17 +435,17 @@
         "content": [
           {
             "type": "text",
-            "text": "Status: ok\nLimits: maxChars=16000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Primary subject / definitions\n\n### definition [graph-6bb45d8c-00a3-4e53-97d3-ccaf5c6e5dc0-1]\nLocation: discount.mjs:1-1\nText: description\nSource check: matched\n\napplyDiscount\n\n### definition [graph-67627cc4-123e-4ea7-8b71-b89d2c893363-0]\nLocation: invoice.mjs:2-2\nText: description\nSource check: matched\n\ninvoiceTotal"
+            "text": "Status: ok\nLimits: maxChars=16000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Primary subject / definitions\n\n### definition [graph-c47edee8-e792-4d06-8237-e798ce523785-1]\nLocation: discount.mjs:1-1\nText: description\nSource check: matched\n\napplyDiscount\n\n### definition [graph-c02c7b31-b59b-45ad-8a29-e4e87d4c1c2b-0]\nLocation: invoice.mjs:2-2\nText: description\nSource check: matched\n\ninvoiceTotal"
           },
           {
             "type": "text",
-            "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"graph-6bb45d8c-00a3-4e53-97d3-ccaf5c6e5dc0-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a\",\"relativePath\":\"discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-698e28872ac5129fa399309e04b7fa06\",\"fileId\":\"fce1f1521d77733eadeb6688f2693519\",\"relativePath\":\"discount.mjs\",\"contentHash\":\"d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":100},\"kind\":\"function\",\"occurrenceId\":\"function:d69cf63684180f58c8835b0cb3a80069\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"0a98278b2cffba4dbe6e3f37f827267b\",\"appliedManifestId\":\"d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53\",\"profileDigest\":\"6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-6bb45d8c-00a3-4e53-97d3-ccaf5c6e5dc0\"}]},{\"id\":\"graph-67627cc4-123e-4ea7-8b71-b89d2c893363-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a\",\"relativePath\":\"invoice.mjs\",\"range\":{\"startLine\":1,\"endLineExclusive\":2}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-698e28872ac5129fa399309e04b7fa06\",\"fileId\":\"fa8143d9273895901a9c2bced35c95fa\",\"relativePath\":\"invoice.mjs\",\"contentHash\":\"930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":48,\"endByte\":135},\"kind\":\"function\",\"occurrenceId\":\"function:2d4801933a33340760461d6fa93e7536\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"0a98278b2cffba4dbe6e3f37f827267b\",\"appliedManifestId\":\"d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53\",\"profileDigest\":\"6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-67627cc4-123e-4ea7-8b71-b89d2c893363\"}]}],\"views\":[{\"projection\":\"graph\",\"viewId\":\"0a98278b2cffba4dbe6e3f37f827267b\",\"appliedManifestId\":\"d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53\",\"profileDigest\":\"6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347\"}],\"semanticObservations\":[],\"issues\":[]}"
+            "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"graph-c47edee8-e792-4d06-8237-e798ce523785-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a\",\"relativePath\":\"discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-8d4d8a697d1f90350e856b9f931f4284\",\"fileId\":\"cbcb25bfb1c3b95a402e602458ee98d2\",\"relativePath\":\"discount.mjs\",\"contentHash\":\"d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":100},\"kind\":\"function\",\"occurrenceId\":\"function:d69cf63684180f58c8835b0cb3a80069\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"2f66022a0eace9f476aa8dd92d002bb8\",\"appliedManifestId\":\"ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5\",\"profileDigest\":\"db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-c47edee8-e792-4d06-8237-e798ce523785\"}]},{\"id\":\"graph-c02c7b31-b59b-45ad-8a29-e4e87d4c1c2b-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a\",\"relativePath\":\"invoice.mjs\",\"range\":{\"startLine\":1,\"endLineExclusive\":2}},\"method\":\"indexed_graph\",\"textKind\":\"description\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-8d4d8a697d1f90350e856b9f931f4284\",\"fileId\":\"7226a70923257163a7608450331307c8\",\"relativePath\":\"invoice.mjs\",\"contentHash\":\"930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":48,\"endByte\":135},\"kind\":\"function\",\"occurrenceId\":\"function:2d4801933a33340760461d6fa93e7536\"},\"projectionView\":{\"projection\":\"graph\",\"viewId\":\"2f66022a0eace9f476aa8dd92d002bb8\",\"appliedManifestId\":\"ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5\",\"profileDigest\":\"db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d\"},\"coverage\":{\"kind\":\"bounded_graph\",\"completeWithinScope\":false,\"scopeDescription\":\"CodeGraph indexed graph result bounded by the request depth and evidence limit\",\"returned\":1,\"omitted\":null},\"provenance\":[{\"backend\":\"codegraph\",\"operation\":\"architecture\",\"backendVersion\":\"dfccdf62547fcd76d343344d823a0e1998d3a89f\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"graph-c02c7b31-b59b-45ad-8a29-e4e87d4c1c2b\"}]}],\"views\":[{\"projection\":\"graph\",\"viewId\":\"2f66022a0eace9f476aa8dd92d002bb8\",\"appliedManifestId\":\"ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5\",\"profileDigest\":\"db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d\"}],\"semanticObservations\":[],\"issues\":[]}"
           }
         ],
         "isError": false,
         "structuredContent": {
           "schemaVersion": "lazy-intel.result/1",
-          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
           "operation": "architecture",
           "routes": [
             "codegraph:architecture"
@@ -456,7 +456,7 @@
               "backend": "codegraph",
               "ok": true,
               "outcome": "ok",
-              "latencyMs": 115
+              "latencyMs": 215
             }
           ],
           "status": "ok",
@@ -469,9 +469,9 @@
           "normalization": "typed",
           "evidence": [
             {
-              "id": "graph-6bb45d8c-00a3-4e53-97d3-ccaf5c6e5dc0-1",
+              "id": "graph-c47edee8-e792-4d06-8237-e798ce523785-1",
               "locator": {
-                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
                 "relativePath": "discount.mjs",
                 "range": {
                   "startLine": 0,
@@ -482,8 +482,8 @@
               "textKind": "description",
               "sourceCheck": "matched",
               "anchor": {
-                "workspaceId": "workspace-698e28872ac5129fa399309e04b7fa06",
-                "fileId": "fce1f1521d77733eadeb6688f2693519",
+                "workspaceId": "workspace-8d4d8a697d1f90350e856b9f931f4284",
+                "fileId": "cbcb25bfb1c3b95a402e602458ee98d2",
                 "relativePath": "discount.mjs",
                 "contentHash": "d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8",
                 "span": {
@@ -496,11 +496,11 @@
               },
               "projectionView": {
                 "projection": "graph",
-                "viewId": "0a98278b2cffba4dbe6e3f37f827267b",
-                "appliedManifestId": "d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53",
-                "profileDigest": "6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5",
+                "viewId": "2f66022a0eace9f476aa8dd92d002bb8",
+                "appliedManifestId": "ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5",
+                "profileDigest": "db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d"
               },
               "coverage": {
                 "kind": "bounded_graph",
@@ -515,14 +515,14 @@
                   "operation": "architecture",
                   "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                   "adapterVersion": "0.3.0",
-                  "executionId": "graph-6bb45d8c-00a3-4e53-97d3-ccaf5c6e5dc0"
+                  "executionId": "graph-c47edee8-e792-4d06-8237-e798ce523785"
                 }
               ]
             },
             {
-              "id": "graph-67627cc4-123e-4ea7-8b71-b89d2c893363-0",
+              "id": "graph-c02c7b31-b59b-45ad-8a29-e4e87d4c1c2b-0",
               "locator": {
-                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
                 "relativePath": "invoice.mjs",
                 "range": {
                   "startLine": 1,
@@ -533,8 +533,8 @@
               "textKind": "description",
               "sourceCheck": "matched",
               "anchor": {
-                "workspaceId": "workspace-698e28872ac5129fa399309e04b7fa06",
-                "fileId": "fa8143d9273895901a9c2bced35c95fa",
+                "workspaceId": "workspace-8d4d8a697d1f90350e856b9f931f4284",
+                "fileId": "7226a70923257163a7608450331307c8",
                 "relativePath": "invoice.mjs",
                 "contentHash": "930f9e58a1fe5cd6bc3567b2bd2e8a6ba29204619f6f7b2747facbaac551e547",
                 "span": {
@@ -547,11 +547,11 @@
               },
               "projectionView": {
                 "projection": "graph",
-                "viewId": "0a98278b2cffba4dbe6e3f37f827267b",
-                "appliedManifestId": "d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53",
-                "profileDigest": "6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5",
+                "viewId": "2f66022a0eace9f476aa8dd92d002bb8",
+                "appliedManifestId": "ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5",
+                "profileDigest": "db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d"
               },
               "coverage": {
                 "kind": "bounded_graph",
@@ -566,7 +566,7 @@
                   "operation": "architecture",
                   "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                   "adapterVersion": "0.3.0",
-                  "executionId": "graph-67627cc4-123e-4ea7-8b71-b89d2c893363"
+                  "executionId": "graph-c02c7b31-b59b-45ad-8a29-e4e87d4c1c2b"
                 }
               ]
             }
@@ -577,11 +577,11 @@
           "views": [
             {
               "projection": "graph",
-              "viewId": "0a98278b2cffba4dbe6e3f37f827267b",
-              "appliedManifestId": "d43aa8afc6a9f27281a2dcdb1638064170c10e5998f89c1f235feaa30474bf53",
-              "profileDigest": "6dda39151797b8e6b11bdbb3e8ac7ea6116a565b04cc38d377ea7c2a7bd4f3c5",
+              "viewId": "2f66022a0eace9f476aa8dd92d002bb8",
+              "appliedManifestId": "ab80b995a8bf0f1e079234302c0579cbd80bb1870470155d7c0e17deeee08bb5",
+              "profileDigest": "db805977537f1e1e9e58579b9dd2c6576f4c7f760bcbc100dc34a4d66942b19d",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a/.lazy-intel/stores/0d84641e-8efc-4f88-b59d-557744f97347"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a/.lazy-intel/stores/57dd5c21-5525-4970-b2a9-aa581db03b4d"
             }
           ],
           "semanticObservations": [],
@@ -597,11 +597,11 @@
         "content": [
           {
             "type": "text",
-            "text": "## Structural evidence · CodeGraph\n**Exploration: invoiceTotal**\n\nFound 1 symbol across 1 file.\n\n**Source Code**\n\n> The code below is the **verbatim, current on-disk source** of these files — re-read from disk on this call and line-numbered, byte-for-byte identical to what the Read tool returns. It is NOT a summary, outline, or stale cache. Treat each block as a Read you have already performed: do not Read a file shown here.\n\n**`invoice.mjs`** — invoiceTotal(function)\n\n```javascript\n1\timport { applyDiscount } from './discount.mjs';\n2\texport function invoiceTotal(cents, percent) { return applyDiscount(cents, percent); }\n```\n\n**Not shown above — explore these names for their source**\n\n- discount.mjs: applyDiscount:1\n\n_latency: 154ms_\n\n## Evidence priority\ncurrent source/compiler > live LSP (Serena) > indexed graph (CodeGraph) > retrieval relevance (zvec). Verify correctness with OMP native source/build/tests before editing or claiming completion."
+            "text": "## Structural evidence · CodeGraph\n**Exploration: invoiceTotal**\n\nFound 1 symbol across 1 file.\n\n**Source Code**\n\n> The code below is the **verbatim, current on-disk source** of these files — re-read from disk on this call and line-numbered, byte-for-byte identical to what the Read tool returns. It is NOT a summary, outline, or stale cache. Treat each block as a Read you have already performed: do not Read a file shown here.\n\n**`invoice.mjs`** — invoiceTotal(function)\n\n```javascript\n1\timport { applyDiscount } from './discount.mjs';\n2\texport function invoiceTotal(cents, percent) { return applyDiscount(cents, percent); }\n```\n\n**Not shown above — explore these names for their source**\n\n- discount.mjs: applyDiscount:1\n\n_latency: 199ms_\n\n## Evidence priority\ncurrent source/compiler > live LSP (Serena) > indexed graph (CodeGraph) > retrieval relevance (zvec). Verify correctness with OMP native source/build/tests before editing or claiming completion."
           }
         ],
         "structuredContent": {
-          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-V679YC/root-a",
+          "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-install-Fubjph/root-a",
           "operation": "architecture",
           "routes": [
             "codegraph:architecture"
@@ -611,7 +611,7 @@
             {
               "backend": "codegraph",
               "ok": true,
-              "latencyMs": 154
+              "latencyMs": 199
             }
           ]
         },

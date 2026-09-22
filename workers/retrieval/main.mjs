@@ -124,7 +124,16 @@ async function apply(payload, context) {
     const service = await serviceFor(request.root, request.stateRoot, request.options);
     const prepared = preparedBatch(request.root, batch);
     const signal = AbortSignal.timeout(Math.max(1, context.remainingBudgetMs));
-    const result = await service.indexPrepared({ stateRoot: request.stateRoot, batch: prepared, signal });
+    let result;
+    try {
+      result = await service.indexPrepared({ stateRoot: request.stateRoot, batch: prepared, signal });
+    } finally {
+      try {
+        await service.releaseEmbeddingResources();
+      } catch {
+        // Resource release is best-effort and must not fail the apply.
+      }
+    }
     return {
       outcome: "ok",
       payload: {

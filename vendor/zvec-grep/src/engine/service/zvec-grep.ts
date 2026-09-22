@@ -83,6 +83,33 @@ const DEFAULT_CONTEXT_TOTAL_LIMIT = 30;
 const DEFAULT_LOCAL_EMBEDDING = "local/potion-code-16m-v2";
 const PROVIDER_API_KEY_IDENTITY_SECRET = randomBytes(32);
 const MAX_RECOVERED_EMBEDDING_MODELS = 4;
+const sharedEmbeddingModels = new Map<
+  string,
+  { model: EmbeddingModel; refs: number }
+>();
+async function releaseEmbeddingModel(
+  model: EmbeddingModel,
+  releasedUnsharedModels?: Set<EmbeddingModel>,
+): Promise<void> {
+  for (const [key, shared] of sharedEmbeddingModels) {
+    if (shared.model !== model) {
+      continue;
+    }
+    shared.refs -= 1;
+    if (shared.refs === 0) {
+      sharedEmbeddingModels.delete(key);
+      await model.dispose();
+    }
+    return;
+  }
+  if (
+    releasedUnsharedModels === undefined ||
+    !releasedUnsharedModels.has(model)
+  ) {
+    releasedUnsharedModels?.add(model);
+    await model.dispose();
+  }
+}
 
 export type EmbeddingModelIdentity = Pick<
   EmbeddingModelInfo,
@@ -191,7 +218,7 @@ class ZvecGrepService implements ZvecGrep {
   readonly root: string;
   private readonly embeddingModel?: EmbeddingModel;
   private readonly recoveredEmbeddingModels = new Map<string, EmbeddingModel>();
-  private readonly retiredEmbeddingModels = new Set<EmbeddingModel>();
+  private readonly retiredEmbeddingModels = new Map<EmbeddingModel, number>();
   private activeEmbeddingModelOperations = 0;
   private closed = false;
 
@@ -545,23 +572,46 @@ class ZvecGrepService implements ZvecGrep {
     });
   }
 
-  async close(): Promise<void> {
+  async releaseEmbeddingResources(): Promise<void> {
+    if (this.closed) {
+      return;
+    }
     const models = new Set<EmbeddingModel>([
-      ...(this.embeddingModel &&
-      this.options.embeddingModelOwnership !== "borrowed"
-        ? [this.embeddingModel]
-        : []),
+      ...(this.embeddingModel ? [this.embeddingModel] : []),
       ...this.recoveredEmbeddingModels.values(),
-      ...this.retiredEmbeddingModels,
+      ...this.retiredEmbeddingModels.keys(),
     ]);
+    await Promise.all(
+      [...models].map((model) => model.releaseIdleResources?.()),
+    );
+  }
+
+  async close(): Promise<void> {
+    if (this.closed) {
+      return;
+    }
+    this.closed = true;
+    const releasedUnsharedModels = new Set<EmbeddingModel>();
+    if (
+      this.embeddingModel &&
+      this.options.embeddingModelOwnership !== "borrowed"
+    ) {
+      releasedUnsharedModels.add(this.embeddingModel);
+      await this.embeddingModel.dispose();
+    }
+    const recoveredModels = [...this.recoveredEmbeddingModels.values()];
+    const retiredModels = [...this.retiredEmbeddingModels.entries()];
     this.recoveredEmbeddingModels.clear();
     this.retiredEmbeddingModels.clear();
 
-    for (const model of models) {
-      await model.dispose();
+    for (const model of recoveredModels) {
+      await releaseEmbeddingModel(model, releasedUnsharedModels);
     }
-
-    this.closed = true;
+    for (const [model, refs] of retiredModels) {
+      for (let i = 0; i < refs; i += 1) {
+        await releaseEmbeddingModel(model, releasedUnsharedModels);
+      }
+    }
   }
 
   private async contextFromWorkspaceIndex(
@@ -872,8 +922,8 @@ class ZvecGrepService implements ZvecGrep {
       config,
       workspaceRuntime,
     );
-    const key = `${reference}/${providerOptionsFingerprint(options)}`;
-    return this.cachedEmbeddingModel(key, () =>
+    const sharedKey = `${reference}/${providerOptionsFingerprint(options)}`;
+    return this.cachedEmbeddingModel(sharedKey, sharedKey, () =>
       createServiceEmbeddingModel(reference, options, this.options),
     );
   }
@@ -890,14 +940,19 @@ class ZvecGrepService implements ZvecGrep {
       config,
       workspaceRuntime,
     );
-    const key = `configured/${reference}/${providerOptionsFingerprint(options)}`;
-    return this.cachedEmbeddingModel(key, () =>
+    // The per-service cache keeps the recovered and configured paths apart, but both
+    // produce the same model for the same reference and provider options, so the
+    // process-wide registry has to key on that identity alone or it loads it twice.
+    const sharedKey = `${reference}/${providerOptionsFingerprint(options)}`;
+    const key = `configured/${sharedKey}`;
+    return this.cachedEmbeddingModel(key, sharedKey, () =>
       createServiceEmbeddingModel(reference, options, this.options),
     );
   }
 
   private cachedEmbeddingModel(
     key: string,
+    sharedKey: string,
     create: () => EmbeddingModel,
   ): EmbeddingModel {
     const cached = this.recoveredEmbeddingModels.get(key);
@@ -907,7 +962,13 @@ class ZvecGrepService implements ZvecGrep {
       return cached;
     }
 
-    const model = create();
+    const shared = sharedEmbeddingModels.get(sharedKey);
+    const model = shared?.model ?? create();
+    if (shared) {
+      shared.refs += 1;
+    } else if (model.info.provider !== "qwen") {
+      sharedEmbeddingModels.set(sharedKey, { model, refs: 1 });
+    }
     this.recoveredEmbeddingModels.set(key, model);
     this.trimRecoveredEmbeddingModels();
     return model;
@@ -925,7 +986,10 @@ class ZvecGrepService implements ZvecGrep {
       const model = this.recoveredEmbeddingModels.get(oldestKey);
       this.recoveredEmbeddingModels.delete(oldestKey);
       if (model) {
-        this.retiredEmbeddingModels.add(model);
+        this.retiredEmbeddingModels.set(
+          model,
+          (this.retiredEmbeddingModels.get(model) ?? 0) + 1,
+        );
       }
     }
   }
@@ -945,10 +1009,13 @@ class ZvecGrepService implements ZvecGrep {
   }
 
   private async disposeRetiredEmbeddingModels(): Promise<void> {
-    const models = [...this.retiredEmbeddingModels];
+    const models = [...this.retiredEmbeddingModels.entries()];
     this.retiredEmbeddingModels.clear();
-    for (const model of models) {
-      await model.dispose();
+    const releasedUnsharedModels = new Set<EmbeddingModel>();
+    for (const [model, refs] of models) {
+      for (let i = 0; i < refs; i += 1) {
+        await releaseEmbeddingModel(model, releasedUnsharedModels);
+      }
     }
   }
 

@@ -6,6 +6,7 @@ export type CreateEmbeddingModelOptions = {
   endpoint?: string;
   modelCacheDir?: string;
   device?: "auto" | "cpu" | "metal" | "vulkan" | "cuda";
+  embeddingContextBudgetBytes?: number;
 };
 
 export const EmbeddingPurpose = {
@@ -69,6 +70,8 @@ export interface EmbeddingModel {
   ): Promise<EmbeddingResult>;
 
   dispose(): Promise<void>;
+
+  releaseIdleResources?(): Promise<void>;
 }
 
 export type NormalizedEmbeddingOptions = {
@@ -96,6 +99,10 @@ export abstract class BaseEmbeddingModel implements EmbeddingModel {
 
   async dispose(): Promise<void> {
     // Most embedding backends do not hold local resources.
+  }
+
+  async releaseIdleResources(): Promise<void> {
+    // Most embedding backends do not hold idle per-operation resources.
   }
 
   protected abstract doEmbed(

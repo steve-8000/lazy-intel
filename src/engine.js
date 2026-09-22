@@ -187,8 +187,12 @@ function uniqueSubject(envelopes, input) {
       candidates.push(item);
     }
   }
+  const named = input.symbol ? candidates.filter((item) => {
+    const qualified = item.subject?.qualifiedName;
+    return qualified === input.symbol || qualified?.split(/[/:.]/u).at(-1) === input.symbol || item.text === input.symbol;
+  }) : candidates;
   const distinct = new Map();
-  for (const item of candidates) {
+  for (const item of named) {
     const name = item.subject?.qualifiedName ?? input.symbol;
     distinct.set(`${item.locator.relativePath}\0${name ?? ""}`, {
       relativePath: item.locator.relativePath,
@@ -345,7 +349,7 @@ async function normalizeInput(raw) {
   const symbol = optionalString(raw.symbol, "symbol", 1024);
   const relativePath = optionalString(raw.relativePath, "relativePath", 4096);
   if (operation === "impact" && !symbol) throw new Error("impact requires symbol");
-  if (["references", "implementations"].includes(operation) && (!symbol || !relativePath)) {
+  if (["symbol", "references", "implementations"].includes(operation) && (!symbol || !relativePath)) {
     throw new Error(`${operation} requires symbol and relativePath`);
   }
   // Diagnostics are addressed by file. Demanding a query or symbol here is what pushed
