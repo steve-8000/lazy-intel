@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
+import { promisify } from "node:util";
 import test from "node:test";
+const execFileAsync = promisify(execFile);
 import { openWorkspaceRuntime } from "../../packages/core/dist/workspace/runtime.js";
 import { captureWorkspaceSnapshot, discoverWorkspaceFiles } from "../../packages/core/dist/workspace/snapshots.js";
 
@@ -128,4 +130,23 @@ test("prepared source transport rejects escaped directories and altered bytes", 
   await writeFile(staged.reference.path, JSON.stringify({ ...batch, full: false }));
   await assert.rejects(readPreparedBatch(state, staged.reference), /changed/);
   await staged.release();
+});
+test("workspace ignore policy filters tracked and walked vendor files and changes scope digest", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-shared-scope-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, "vendor"));
+  await writeFile(path.join(root, "keep.ts"), "keep\n");
+  await writeFile(path.join(root, "vendor", "fork.ts"), "fork\n");
+  await writeFile(path.join(root, ".lazy-intel-ignore"), "# pinned fork\nvendor/\n");
+  const walked = await discoverWorkspaceFiles(root);
+  assert.equal(walked.includes("vendor/fork.ts"), false);
+  await execFileAsync("git", ["-C", root, "init", "-q"]);
+  await execFileAsync("git", ["-C", root, "add", "."]);
+  const tracked = await discoverWorkspaceFiles(root);
+  assert.equal(tracked.includes("vendor/fork.ts"), false);
+  const before = await captureWorkspaceSnapshot({ workspaceId: "scope", sourceRoot: root, observedSeq: "1", parserProfileDigest: "p", resolverProfileDigest: "r" });
+  await writeFile(path.join(root, ".lazy-intel-ignore"), "# pinned fork\nvendor/\nkeep.ts\n");
+  const after = await captureWorkspaceSnapshot({ workspaceId: "scope", sourceRoot: root, observedSeq: "1", parserProfileDigest: "p", resolverProfileDigest: "r" });
+  assert.notEqual(after.manifest.scopeDigest, before.manifest.scopeDigest);
+  assert.equal(after.sources.some((source) => source.relativePath === "keep.ts"), false);
 });

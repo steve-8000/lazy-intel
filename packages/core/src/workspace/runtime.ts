@@ -16,7 +16,22 @@ async function canonicalStateDirectory(sourceRoot: string, requested?: string): 
   const canonical = await realpath(target);
   if (canonical === sourceRoot) throw new Error("state directory must be separate from source root");
   if (!requested && canonical !== target) throw new Error("default state directory symlink is outside owned state");
+  await selfIgnore(canonical);
   return canonical;
+}
+/**
+ * Derived state lives inside the workspace, so without this every repository the
+ * tool touches gains an untracked `.lazy-intel/` in `git status`. A `.gitignore`
+ * holding `*` ignores the directory's contents and itself, which keeps the
+ * workspace clean without asking each repository to add an entry.
+ *
+ * Best-effort: an existing file or an unwritable state root must still open.
+ */
+async function selfIgnore(stateRoot: string): Promise<void> {
+  let handle;
+  try { handle = await open(path.join(stateRoot, ".gitignore"), "wx", 0o600); }
+  catch { return; }
+  try { await handle.writeFile("*\n", "utf8"); } finally { await handle.close(); }
 }
 async function sourceIdentity(sourceRoot: string): Promise<string> { const information = await stat(sourceRoot); return digest(`${information.dev}:${information.ino}:${information.birthtimeMs}`); }
 async function processIsAlive(pid: number): Promise<boolean> { if (!Number.isInteger(pid) || pid <= 0) return false; try { process.kill(pid, 0); return true; } catch (error) { return (error as NodeJS.ErrnoException).code === "EPERM"; } }

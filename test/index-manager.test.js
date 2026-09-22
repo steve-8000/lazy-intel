@@ -263,3 +263,15 @@ test("recursive watcher attach noise does not dirty the initial publication", as
     syncBuiltinESMExports();
   }
 });
+test("scope-derived directories stay unwatched while scope policy changes are dirty", async (t) => {
+  const root = await fixture(t);
+  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  const before = observeIndexState(root).generation;
+  await mkdir(path.join(root, ".next"), { recursive: true });
+  await writeFile(path.join(root, ".next", "generated.js"), "generated\n");
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  assert.equal(observeIndexState(root).generation, before);
+  await writeFile(path.join(root, ".lazy-intel-ignore"), ".next/\n");
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  assert.ok(observeIndexState(root).generation > before);
+});

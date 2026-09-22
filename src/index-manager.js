@@ -5,6 +5,7 @@ import path from "node:path";
 import { canonicalDirectory, containsPath } from "./lib/roots.js";
 import { log } from "./lib/log.js";
 import { configuredEmbedding } from "./lifecycle.js";
+import { IGNORE_FILE_NAME, isDerivedSegment, isTransientFile, loadScopeIgnore } from "../packages/core/dist/workspace/scope-policy.js";
 
 const roots = new Map();
 const processEpoch = randomUUID();
@@ -15,11 +16,7 @@ const DEFAULT_TIMEOUT_MS = intEnv("LAZY_INTEL_INDEX_TIMEOUT_MS", 120_000, 5_000,
 const EXPLICIT_EMBEDDING = process.env.LAZY_INTEL_EMBEDDING || undefined;
 const AUTO_REPAIR = process.env.LAZY_INTEL_AUTO_REPAIR !== "false";
 export const INDEX_BACKENDS = ["zvec", "codegraph"];
-const IGNORED_SEGMENTS = new Set([
-  ".git", ".hg", ".svn", ".lazy-intel", ".zvec-grep", ".codegraph", ".serena", ".serena-lazy", "node_modules", ".venv", "venv",
-  "DerivedData", ".build", ".swiftpm", "target", "dist", "build", "out", ".next", ".turbo",
-  ".gradle", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".cache",
-]);
+
 const DENIED_TREES = [...new Set([
   process.env.OMP_HOME || path.join(homedir(), ".omp"),
   process.env.ZVEC_GREP_HOME || path.join(homedir(), ".zvec-grep"),
@@ -94,7 +91,8 @@ async function ensureState(root) {
   const existing = roots.get(absolute);
   if (existing) return existing;
   if (roots.size >= MAX_ROOTS) throw new Error(`workspace limit reached (${MAX_ROOTS}); restart lazy-intel to release watchers`);
-  const state = { root: absolute, generation: 1, watcher: null, watcherActive: false, watcherState: "unknown", closed: false,
+  const scopeIgnore = await loadScopeIgnore(absolute);
+  const state = { root: absolute, scopeIgnore, generation: 1, watcher: null, watcherActive: false, watcherState: "unknown", closed: false,
     publicationQueue: Promise.resolve(), queueDepth: 0, ensures: new Map(), backends: { zvec: backendState(), codegraph: backendState() } };
   roots.set(absolute, state);
   attachWatcher(state);
@@ -114,16 +112,16 @@ function attachWatcher(state) {
   };
   try {
     state.watcher = watch(state.root, { recursive: true, persistent: false }, (_event, filename) => {
-      if (!filename || !shouldIgnore(String(filename))) state.generation += 1;
+      if (!filename || !shouldIgnore(String(filename), state)) state.generation += 1;
     });
     state.watcher.on("error", failed);
     state.watcherActive = true; state.watcherState = "active";
   } catch (error) { failed(error); }
 }
-function shouldIgnore(filename) {
+function shouldIgnore(filename, state) {
   const normalized = filename.replaceAll("\\", "/").replace(/^\.\//, "");
-  return normalized.endsWith(".swp") || normalized.endsWith("~") || normalized.endsWith(".tmp") ||
-    normalized.split("/").some((segment) => segment === ".DS_Store" || IGNORED_SEGMENTS.has(segment));
+  if (normalized === IGNORE_FILE_NAME) { loadScopeIgnore(state.root).then((policy) => { state.scopeIgnore = policy; }).catch(() => {}); return false; }
+  return isTransientFile(normalized) || normalized.split("/").some((segment) => isDerivedSegment(segment)) || state.scopeIgnore.ignores(normalized, false);
 }
 function markApplied(b, generation) {
   b.applied = generation; b.lastSyncAt = Date.now(); b.consecutiveFailures = 0; b.lastError = null;
