@@ -1,7 +1,6 @@
 /** The typed retrieval port over the private zvec-grep worker. */
 
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -14,6 +13,7 @@ import type {
   RetrievalPort,
   SearchRequest,
   SourceSpan,
+  SourceSnapshot,
 } from "../contracts.js";
 import { WorkerSupervisor, type CallResult, type SupervisorOptions } from "../runtime/supervisor.js";
 
@@ -25,12 +25,14 @@ type RetrievalWorkerOptions = {
   readonly rg?: boolean;
   readonly rgOptions?: Readonly<Record<string, unknown>>;
   readonly root: string;
+  readonly stateRoot: string;
   readonly routes?: readonly { readonly mode: "fts" | "vector"; readonly query: string }[];
   readonly fuse?: boolean;
   readonly limit: number;
 };
 
 type WorkerContextPayload = {
+  readonly stateRoot: string;
   readonly root: string;
   readonly options: RetrievalWorkerOptions;
 };
@@ -51,7 +53,10 @@ type WorkerContextItem = {
   readonly rank: number;
   readonly file: { readonly absolutePath: string; readonly relativePath: string };
   readonly range: WorkerRange;
+  /** The exact source excerpt range when the displayed entity range is broader. */
+  readonly excerptRange?: WorkerRange;
   readonly content: string;
+  readonly contentRole?: "source" | "outline";
   readonly matchedBy: "fts" | "vector" | "fts+vector" | "lexical";
   readonly score?: number;
   readonly entityId?: string;
@@ -110,15 +115,22 @@ function lineStarts(text: string): number[] {
   return starts;
 }
 
-function byteOffsetAtCharacter(text: string, offset: number): number {
-  return Buffer.byteLength(text.slice(0, Math.max(0, offset)), "utf8");
+/**
+ * zvec-grep text ranges are UTF-16 code-unit offsets: tree-sitter's web
+ * binding and line-based extractors expose offsets usable by String#slice.
+ * Convert that native coordinate system at the adapter boundary before
+ * publishing canonical UTF-8-byte anchors.
+ */
+function utf8ByteOffsetAtUtf16(text: string, offset: number): number {
+  if (!Number.isInteger(offset) || offset < 0 || offset > text.length) return -1;
+  if (offset > 0 && offset < text.length && text.charCodeAt(offset - 1) >= 0xd800 && text.charCodeAt(offset - 1) <= 0xdbff && text.charCodeAt(offset) >= 0xdc00 && text.charCodeAt(offset) <= 0xdfff) return -1;
+  return Buffer.byteLength(text.slice(0, offset), "utf8");
 }
 
 function textRangeToSpan(
   range: Extract<WorkerRange, { kind: "text" }>,
   item: WorkerContextItem,
   fileText: string,
-  fileBytes: Buffer,
 ): SourceSpan {
   const starts = lineStarts(fileText);
   const startLine = Math.max(1, range.startLine);
@@ -126,25 +138,14 @@ function textRangeToSpan(
   const startLineOffset = starts[startLine - 1] ?? 0;
   const endLineOffset = starts[endLine - 1] ?? fileText.length;
 
-  // Indexed code entities use tree-sitter byte offsets or extractor-wide character
-  // offsets, while ripgrep context items use line-relative character columns. The
-  // source bytes let us distinguish the two without pretending the units agree.
+  // Indexed extraction ranges are absolute UTF-16 offsets. Ripgrep context
+  // ranges are line-relative UTF-16 columns (converted from ripgrep's byte
+  // offsets by zvec-grep before crossing this boundary).
   if (item.kind === "indexed_entity") {
-    const byteStart = range.startOffset;
-    const byteEnd = range.endOffset;
-    if (byteStart >= 0 && byteEnd >= byteStart && byteEnd <= fileBytes.length) {
-      const candidate = fileBytes.subarray(byteStart, byteEnd).toString("utf8");
-      if (candidate.length > 0 && item.content.includes(candidate.slice(0, Math.min(candidate.length, 16)))) {
-        return { coordinateSystem: "utf8-bytes", startByte: byteStart, endByte: byteEnd };
-      }
-    }
-
-    const charStart = range.startOffset >= startLineOffset ? range.startOffset : startLineOffset + range.startOffset;
-    const charEnd = range.endOffset >= endLineOffset ? range.endOffset : endLineOffset + range.endOffset;
     return {
       coordinateSystem: "utf8-bytes",
-      startByte: byteOffsetAtCharacter(fileText, charStart),
-      endByte: byteOffsetAtCharacter(fileText, Math.max(charStart, charEnd)),
+      startByte: utf8ByteOffsetAtUtf16(fileText, range.startOffset),
+      endByte: utf8ByteOffsetAtUtf16(fileText, range.endOffset),
     };
   }
 
@@ -152,29 +153,27 @@ function textRangeToSpan(
   const charEnd = endLineOffset + range.endOffset;
   return {
     coordinateSystem: "utf8-bytes",
-    startByte: byteOffsetAtCharacter(fileText, charStart),
-    endByte: byteOffsetAtCharacter(fileText, Math.max(charStart, charEnd)),
+    startByte: utf8ByteOffsetAtUtf16(fileText, charStart),
+    endByte: utf8ByteOffsetAtUtf16(fileText, Math.max(charStart, charEnd)),
   };
 }
-
 function anchorFor(
   input: SearchRequest,
   item: WorkerContextItem,
 ): CanonicalAnchor | null {
-  let bytes: Buffer;
-  try {
-    bytes = readFileSync(item.file.absolutePath);
-  } catch {
-    return null;
-  }
-  const fileText = bytes.toString("utf8");
+  const source: SourceSnapshot | undefined = input.sources?.find(({ relativePath }) => relativePath === item.file.relativePath);
+  if (!source || source.encoding !== "utf-8") return null;
+  const bytes = Buffer.from(source.content, "utf8");
+  if (bytes.length !== source.byteLength || sha256(bytes) !== source.contentHash) return null;
+  const fileText = source.content;
+  const range = item.contentRole === "source" ? item.excerptRange ?? item.range : item.range;
   let span: SourceSpan;
-  switch (item.range.kind) {
+  switch (range.kind) {
     case "byte":
-      span = { coordinateSystem: "utf8-bytes", startByte: item.range.startOffset, endByte: item.range.endOffset };
+      span = { coordinateSystem: "utf8-bytes", startByte: range.startOffset, endByte: range.endOffset };
       break;
     case "text":
-      span = textRangeToSpan(item.range, item, fileText, bytes);
+      span = textRangeToSpan(range, item, fileText);
       break;
     case "file":
       span = { coordinateSystem: "utf8-bytes", startByte: 0, endByte: bytes.length };
@@ -182,15 +181,22 @@ function anchorFor(
     default:
       return null;
   }
-  const relativePath = item.file.relativePath;
-  const fileId = `zvec:${input.scope.workspaceId}:${relativePath}`;
-  const occurrenceId = sha256(Buffer.from(`${relativePath}\0${JSON.stringify(item.range)}`));
+  const startByte = span.startByte;
+  const endByte = span.endByte;
+  if (startByte < 0 || endByte <= startByte || endByte > bytes.length) return null;
+  const observed = bytes.subarray(startByte, endByte).toString("utf8");
+  // Indexed source content is the native excerpt for this exact range. Keep
+  // descriptions and lexical line matches separate: their displayed content
+  // may intentionally be broader than the anchored match range.
+  if (item.kind === "indexed_entity" && item.contentRole === "source" && observed !== item.content) return null;
+  const relativePath = source.relativePath;
+  const occurrenceId = sha256(Buffer.from(`${relativePath}\0${JSON.stringify(range)}`, "utf8"));
   const stableEntityId = item.entityId;
   return {
     workspaceId: input.scope.workspaceId,
-    fileId,
+    fileId: source.fileId,
     relativePath,
-    contentHash: sha256(bytes),
+    contentHash: source.contentHash,
     span,
     kind: item.kind,
     occurrenceId,
@@ -205,33 +211,49 @@ function methodFor(matchedBy: WorkerContextItem["matchedBy"]): Evidence["method"
 }
 
 function nativeIdFor(item: WorkerContextItem): string {
-  return item.entityId ?? sha256(Buffer.from(`${item.file.relativePath}\0${JSON.stringify(item.range)}`));
+  const range = item.contentRole === "source" ? item.excerptRange ?? item.range : item.range;
+  return item.entityId ?? sha256(Buffer.from(`${item.file.relativePath}\0${JSON.stringify(range)}`));
 }
 
 function evidenceFor(input: SearchRequest, result: WorkerContextResult, revision: string): Evidence[] {
   const coverage = coverageFor(result);
-  return result.items.map((item) => ({
-    id: `zvec:${nativeIdFor(item)}`,
-    kind: "retrieval",
-    anchor: anchorFor(input, item),
-    aliases: [{ engine: "zvec", engineRevision: revision, nativeId: nativeIdFor(item) }],
-    method: methodFor(item.matchedBy),
-    sourceCheck: "unchecked",
-    projectionView: input.view,
-    semanticObservation: null,
-    relevanceScore: item.score ?? null,
-    text: item.content,
-    coverage,
-  }));
+  return result.items.flatMap((item) => {
+    const anchor = anchorFor(input, item);
+    if (!anchor) return [];
+    const source = input.sources?.find(({ relativePath }) => relativePath === item.file.relativePath);
+    const capturedText = source
+      ? Buffer.from(source.content, "utf8").subarray(anchor.span.startByte, anchor.span.endByte).toString("utf8")
+      : "";
+    const textKind = item.contentRole === "outline" ? "description" : "source";
+    const nativeId = nativeIdFor(item);
+    return [{
+      id: "zvec:" + anchor.fileId + ":" + nativeId,
+      kind: "retrieval",
+      anchor,
+      aliases: [{ engine: "zvec", engineRevision: revision, nativeId }],
+      method: methodFor(item.matchedBy),
+      sourceCheck: "unchecked",
+      projectionView: input.view,
+      semanticObservation: null,
+      relevanceScore: item.score ?? null,
+      textKind,
+      text: textKind === "source" ? capturedText : item.content,
+      coverage,
+    }];
+  });
+}
+
+function stateRootFor(input: SearchRequest): string {
+  return input.mode === "exact" ? input.scope.canonicalStateRoot : input.view.storeRoot ?? input.scope.canonicalStateRoot;
 }
 
 function optionsFor(input: SearchRequest): RetrievalWorkerOptions {
-  const common = { root: input.scope.canonicalSourceRoot, limit: input.limit };
+  const common = { root: input.scope.canonicalSourceRoot, stateRoot: stateRootFor(input), limit: input.limit };
   switch (input.mode) {
     case "exact":
-      return { ...common, query: input.query, rg: true, rgOptions: { fixedStrings: true } };
-    case "lexical":
       return { ...common, query: input.query, rg: true };
+    case "lexical":
+      return { ...common, query: input.query, routes: [{ mode: "fts", query: input.query }] };
     case "semantic":
       return { ...common, query: input.query, routes: [{ mode: "vector", query: input.query }] };
     case "hybrid":
@@ -272,7 +294,28 @@ export function createRetrievalAdapter(options: RetrievalAdapterOptions = {}): R
   return {
     supervisor,
     async read(input, context): Promise<ReadResult> {
-      const payload: WorkerContextPayload = { root: resolve(input.scope.canonicalSourceRoot), options: optionsFor(input) };
+      const indexedView = input.mode === "exact" ? null : input.view;
+      const storeRoot = stateRootFor(input);
+      const missingSources = input.mode !== "exact" && input.sources === undefined;
+      if (missingSources || !storeRoot || (indexedView !== null && indexedView.state !== "clean")) {
+        const code: EngineIssue["code"] = missingSources
+          ? "invalid_input"
+          : indexedView?.state === "needs_recovery"
+            ? "needs_recovery"
+            : "index_building";
+        return {
+          outcome: "unavailable",
+          evidence: [],
+          issues: [makeIssue(code, missingSources ? "indexed retrieval requires captured source snapshots" : indexedView?.state === "needs_recovery" ? "retrieval store needs recovery" : "retrieval store is not cleanly published", code !== "invalid_input")],
+          coverage: { kind: "unknown", completeWithinScope: null, scopeDescription: "retrieval store is not queryable", returned: 0, omitted: null },
+          consistency: "unknown",
+        };
+      }
+      const payload: WorkerContextPayload = {
+        root: resolve(input.scope.canonicalSourceRoot),
+        stateRoot: resolve(storeRoot),
+        options: optionsFor(input),
+      };
       const call = await supervisor.call<WorkerContextPayload, WorkerContextResult>("context", payload, {
         requestId: context.requestId,
         signal: context.signal,
@@ -289,16 +332,24 @@ export function createRetrievalAdapter(options: RetrievalAdapterOptions = {}): R
       }
       const result = call.payload;
       const coverage = coverageFor(result);
+      const evidence = evidenceFor(input, result, supervisor.upstreamCommit ?? ZVEC_UPSTREAM_COMMIT);
       const issues: EngineIssue[] = [];
       if (result.diagnostics.emptyReason === "no_searchable_files") {
         issues.push(makeIssue("unsupported_capability", "no_searchable_files: zvec-grep found no searchable files", false));
       }
+      const omittedAnchors = result.items.length - evidence.length;
+      const effectiveCoverage = omittedAnchors > 0
+        ? { ...coverage, completeWithinScope: false, omitted: omittedAnchors }
+        : coverage;
+      if (omittedAnchors > 0) {
+        issues.push(makeIssue("output_truncated", "retrieval omitted hits without matching captured source bytes", false));
+      }
       return {
-        outcome: result.items.length === 0 ? "empty" : result.coverage === "rg_truncated" ? "partial" : "ok",
-        evidence: evidenceFor(input, result, supervisor.upstreamCommit ?? ZVEC_UPSTREAM_COMMIT),
+        outcome: omittedAnchors > 0 ? "partial" : result.items.length === 0 ? "empty" : result.coverage === "rg_truncated" ? "partial" : "ok",
+        evidence,
         issues,
-        coverage,
-        consistency: "live-observation",
+        coverage: effectiveCoverage,
+        consistency: "captured-manifest",
       };
     },
     close(): Promise<void> {

@@ -1,7 +1,10 @@
 {
   "unit": "U00",
   "title": "Immutable source/provenance preflight",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "baselineSourceIds": "all 65 ids in docs/unified/source-checks.json",
   "sourceCheckReport": "docs/unified/source-checks.json",
   "changedPaths": [],

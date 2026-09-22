@@ -86,6 +86,7 @@ export function makeEvidence(spec) {
   if (!EVIDENCE_METHODS.includes(spec.method)) throw new TypeError(`unsupported evidence method: ${spec.method}`);
   requiredString(spec.id, "id");
   requiredString(spec.text, "text");
+  if (spec.textKind !== undefined && spec.textKind !== "source" && spec.textKind !== "description") throw new TypeError("evidence textKind is invalid");
   const item = {
     id: spec.id,
     kind: spec.kind,
@@ -99,8 +100,14 @@ export function makeEvidence(spec) {
       },
     }),
     text: spec.text,
+    textKind: spec.textKind ?? "source",
     sourceCheck: validateSourceCheck(spec.sourceCheck),
     observation: validateObservation(spec.observation),
+    ...(spec.anchor === undefined ? {} : { anchor: copy(spec.anchor) }),
+    ...(spec.projectionView === undefined ? {} : { projectionView: copy(spec.projectionView) }),
+    ...(spec.semanticObservation === undefined ? {} : { semanticObservation: copy(spec.semanticObservation) }),
+    ...(spec.coverage === undefined ? {} : { coverage: copy(spec.coverage) }),
+    ...(spec.relatedAnchors === undefined ? {} : { relatedAnchors: copy(spec.relatedAnchors) }),
     provenance: validateProvenance(spec.provenance ?? []),
   };
   return freeze(item);
@@ -154,6 +161,7 @@ function identityPart(item) {
 }
 
 function fingerprint(item) {
+  if (item.anchor?.contentHash && item.anchor.contentHash !== "unknown") return `sha256:${item.anchor.contentHash}`;
   const source = item.sourceCheck;
   if (source?.status === "matched" && source.sha256) return `sha256:${source.sha256}`;
   const observation = item.observation;
@@ -175,7 +183,7 @@ export function identityKey(item) {
   if (!location || !identity || !EVIDENCE_KINDS.includes(item.kind)) return null;
   const source = fingerprint(item);
   if (!source) return null;
-  return json({ location, kind: item.kind, identity, source });
+  return json({ location, kind: item.kind, textKind: item.textKind ?? "source", identity, source });
 }
 
 function provenanceKey(entry) {

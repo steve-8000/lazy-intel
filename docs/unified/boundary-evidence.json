@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "latest_validation": {
+    "node": "v22.22.3",
+    "command": "node scripts/verify-release.mjs --write docs/unified/release-evidence.json",
+    "result": "19 of 20 required gates pass; performance-guardrails is the only failure (process-tree RSS p95 4849709056 bytes against the immutable 2000000000-byte preregistration); full suite 144 tests, 143 passed, 1 skipped, 0 failed",
+    "review": "docs/unified/review-evidence.json",
+    "regressions": ["warm immediate abort does not dispatch", "concurrent close waits for child exit", "startup close reaps the actual PID", "nested TypeScript/JavaScript configs invalidate capture scope", "recursive watcher attach noise leaves a byte-identical workspace clean", "an answer to an abandoned job never settles the next caller", "a partial stdout line from a replaced Python child cannot fail the next caller", "a response whose id matches no caller is discarded"]
+  },
+  "source_identity": {
+    "repository": "/Users/steve/lazy-project/lazy-intel",
+    "commit_at_capture": "94e33b2fded3b5affeea00ce8fad84c3dee3a64e",
+    "working_tree_changes": true,
+    "node": "v26.7.0"
+  },
+  "criteria": {
+    "EVID-06": {
+      "status": "PASS",
+      "contract": "A typed worker response without a payload is never accepted as an empty success, and the worker remains usable.",
+      "command": "node --test --test-name-pattern='malformed typed worker payload' test/contracts/worker-lifecycle.test.js",
+      "exit_code": 0,
+      "duration_ms": 46,
+      "observed": {
+        "malformed": {
+          "ok": false,
+          "code": "backend_failed",
+          "retryable": false
+        },
+        "followup": {
+          "ok": true,
+          "payload": "healthy"
+        }
+      },
+      "regression_before_fix": {
+        "command": "node --test --test-name-pattern='malformed typed worker payload' test/contracts/worker-lifecycle.test.js",
+        "exit_code": 1,
+        "observed": "The assertion failed because the malformed response was accepted with ok=true (true !== false)."
+      },
+      "shutdown_proof": {
+        "command": "node --test --test-name-pattern='idle owned worker exits' test/contracts/worker-lifecycle.test.js",
+        "exit_code": 0,
+        "observed": "An idle owned worker reported ready, received SIGTERM, and exited with code=0 and signal=null in 60.5ms; the 5s SIGKILL guard was not used."
+      },
+      "core_build": {
+        "command": "npm run build",
+        "exit_code": 0,
+        "source": "finish-semantic-live-evidence agent report"
+      }
+    },
+    "EVID-07": {
+      "status": "PASS",
+      "contract": "Bounded context output retains headers, warnings, metadata, and honest truncation; MCP carries valid JSON text within both text and wire budgets.",
+      "unit_proof": {
+        "command": "node --test --test-name-pattern='bounded output keeps headers' test/context-pack.test.js",
+        "exit_code": 0,
+        "observed": [
+          "Status, Limits including wireCapBytes, Stop reason, backend warning, unmet obligations, truncation warning, and omitted-items marker are retained.",
+          "Metadata remains valid JSON and retains truncated=true, views, semanticObservations, and issues.",
+          "Combined rendered text and metadata are at most 1048576 UTF-8 bytes."
+        ]
+      },
+      "mcp_wire_proof": {
+        "command": "node --test --test-name-pattern='MCP tool output preserves' test/mcp-protocol.test.js",
+        "exit_code": 0,
+        "duration_ms": 4070,
+        "observed": [
+          "Rendered text retains Status, Limits, and Stop reason headers.",
+          "Metadata parses as JSON and reports truncated=true rather than claiming completeness.",
+          "Rendered text is at most 4000 bytes and the actual newline-terminated stdio frame is at most 1048576 bytes.",
+          "The parsed wire frame equals the received JSON-RPC response."
+        ]
+      }
+    },
+    "WS-08": {
+      "status": "PASS",
+      "contract": "Compiler/build configuration changes invalidate and republish the required graph projection.",
+      "command": "node --test --test-name-pattern='compiler and build configuration' test/index-manager.test.js",
+      "exit_code": 0,
+      "duration_ms": 2650,
+      "mutated_files": ["tsconfig.json", "jsconfig.json", "build.config.js"],
+      "observed": [
+        "Each mutation advanced the watcher generation.",
+        "Each mutation set codegraph dirty=true.",
+        "Each rebuild returned a clean published view with a changed appliedManifestId."
+      ]
+    },
+    "STATE-08": {
+      "status": "PASS",
+      "contract": "A failed staged rebuild leaves the old generation bytes intact; an operator backup restores catalog/state and the old catalog remains queryable after shutdown.",
+      "command": "node --test --test-name-pattern='failed staged rebuild restores' test/faults/publication-live.test.js",
+      "exit_code": 0,
+      "duration_ms": 6566,
+      "observed": [
+        "Stable old-store byte digest was unchanged after after-component-write-before-ack failure.",
+        "Operator backup digest matched after removing and restoring state.",
+        "Restored old view reopened ready=true, state=clean, with the original storeRoot.",
+        "A post-restore codegraph context query fulfilled and returned an item containing target."
+      ],
+      "transient_files_excluded_from_digest": ["*-wal", "*-shm", "*-journal"]
+    },
+    "EVID-09": {
+      "status": "PASS",
+      "contract": "Closing during worker startup deterministically rejects the pending call, prevents ready publication, and reaps the owned starting child; malformed hello handshakes fail before the startup deadline.",
+      "command": "python3 /tmp/lazy-intel-review-verify-8ad34c91.py '[[\"npm\",\"--prefix\",\"packages/core\",\"exec\",\"--\",\"tsc\",\"--outDir\",\"/tmp/lazy-intel-runtime-check\",\"--rootDir\",\"packages/core/src\",\"--target\",\"ES2022\",\"--module\",\"NodeNext\",\"--moduleResolution\",\"NodeNext\",\"--skipLibCheck\",\"packages/core/src/contracts.ts\",\"packages/core/src/runtime/protocol.ts\",\"packages/core/src/runtime/supervisor.ts\"],[\"node\",\"/tmp/lazy-intel-runtime-smoke.mjs\"]]'",
+      "exit_code": 0,
+      "duration_ms": 965,
+      "observed": [
+        "The delayed real child was closed before ready; the pending call returned worker_failed with message supervisor closed during worker startup.",
+        "After close, running=false and epoch=null; the released startup gate did not publish a late child.",
+        "A malformed protocol-version hello returned typed worker_failed without waiting for the startup deadline."
+      ],
+      "cleanup": {
+        "temporary_runtime_output_removed": true,
+        "temporary_worker_removed": true
+      }
+    }
+  },
+  "cleanup": {
+    "temporary_workspaces_removed": true,
+    "temporary_operator_backups_removed": true,
+    "worker_processes_closed": true
+  }
+}

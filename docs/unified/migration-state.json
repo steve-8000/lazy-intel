@@ -1,75 +1,60 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "unit": "U09",
-  "generated_at": "2026-09-21T14:05:50.390Z",
-  "summary": "The unified engine is built, tested and selectable. It is not yet the default: LAZY_INTEL_ENGINE must be set to `unified`. Rollback is unsetting that variable, which needs no state migration because the two readers share one derived-state owner.",
-  "engine_modes": {
-    "legacy": {
-      "selector": "LAZY_INTEL_ENGINE unset or any value other than `unified`",
-      "reader": "src/backends/{zvec,codegraph,serena}.js",
-      "transport": "zg and codegraph CLI subprocesses plus an externally provisioned Serena MCP server over stdio",
-      "evidence_quality": "retrieval and graph results arrive as formatted text and are preserved as opaque blocks; no locator may be derived from them",
-      "status": "default",
-      "index_lifecycle": "src/lifecycle.js CLI driver: zg index / codegraph sync / status prose, unchanged."
-    },
-    "unified": {
-      "selector": "LAZY_INTEL_ENGINE=unified",
-      "reader": "src/unified.js over packages/core adapters",
-      "transport": "long-lived private worker processes loading the vendored fork libraries over a Node IPC channel",
-      "evidence_quality": "retrieval, graph and semantic results carry canonical anchors with UTF-8 byte spans and the backend's own native id",
-      "status": "selectable, verified by scripts/verify-release.mjs",
-      "index_lifecycle": "src/lifecycle.js embedded driver: service.index()/graph.sync() inside the same private workers. No zg or codegraph executable is reached; proven by test/contracts/embedded-lifecycle.test.js with PATH reduced to the Node binary directory and a legacy control run in the same environment."
-    }
+  "engine": {
+    "mode": "unified-only",
+    "entry": "src/engine.js",
+    "control_plane": "src/unified.js",
+    "forks": ["vendor/zvec-grep", "vendor/codegraph", "vendor/serena"],
+    "public_tool": "code_intel",
+    "legacy_selector": false,
+    "internal_llm": false,
+    "embedding_configuration_changed": false
   },
   "state_compatibility": {
-    "derived_indexes": "Unchanged. Both readers call ensureIndexes in src/index-manager.js, so .zvec-grep/ and .codegraph/ keep the same layout, the same owner and the same leases. Switching modes migrates nothing and invalidates nothing.",
-    "new_state": "packages/core/src/workspace writes under a .lazy-intel state root. Nothing on the default query path writes there yet; it is exercised by test/contracts/workspace-scope.test.js and test/faults/publication.test.js.",
-    "external_backends": "In unified mode the external `zg`, `codegraph` and `serena` executables are not invoked on the query path. They remain installed and are still used by the legacy reader, which is what makes rollback instant."
+    "default_state": ".lazy-intel",
+    "publication": "One captured source manifest, parent-owned journal and catalog, durable projection acknowledgements, read leases, recovery before new publication.",
+    "source_root": "Canonical workspace source; never replaced by stateRoot.",
+    "stores": "Physically contained generation directories. Rebuild uses a new generation; old bytes are retained.",
+    "legacy_state": ".codegraph and .zvec-grep are not adopted, migrated or mutated by the unified path.",
+    "external_products": "No external zg/codegraph/Serena MCP CLI on the normal query path; no machine daemon restart."
+  },
+  "shared_inputs": {
+    "captured_bytes": true,
+    "prepared_transport": "Content-hashed private spool references; graph stages all parts and acknowledges durable application only on the final part. Captured source/metadata/file-existence lookups cannot fall back to live disk.",
+    "single_parse": false,
+    "parser_policy": "Separate native/WASM extractors retain their own grammar/runtime ABI. Snapshot parity is not parser convergence."
+  },
+  "semantic": {
+    "operations": ["symbol", "references", "implementations", "diagnostics"],
+    "configuration": "Explicit canonical executable per language; unsupported server capability is unavailable, not empty.",
+    "observations": "Own LSP document version, raw-file/buffer hashes, position encoding and diagnostics completion only; no foreign editor-buffer claim. Fresh empty push/pull reports clear errors; silence is not_reported.",
+    "text_roles": "source excerpts are checked against exact UTF-8 spans; descriptions qualify their anchor without pretending to quote source. Common captured bytes and hash fences validate public semantic excerpts; invalid/outside paths and malformed coordinates are not complete evidence."
   },
   "rollback": {
-    "procedure": [
-      "Unset LAZY_INTEL_ENGINE (or set it to `legacy`) and restart the MCP server.",
-      "No index rebuild, no state deletion and no downgrade of a database is required.",
-      "Confirm with `node src/cli.js doctor`: the `engine` row reports the active mode and the legacy rows reappear."
-    ],
-    "verified_by": "scripts/verify-release.mjs gate `rollback-switch`, which asserts the selector resolves to `legacy` when unset and `unified` when set."
+    "procedure": ["Stop the candidate process.", "Restore the retained old release binary and its own archived old state.", "Launch that old release and exercise a real MCP query against the restored state."],
+    "evidence": "docs/unified/install-evidence.json",
+    "producer": "scripts/verify-install.mjs",
+    "verified": "Old CodeGraph MCP query succeeded before and after byte-identical old-state restoration; candidate used its separate .lazy-intel state.",
+    "selector_switch_is_rollback": false
   },
-  "not_yet_migrated": [
-    "The unified reader is not the default. Flipping the default is a separate, deliberate release decision.",
-    "The workspace publication layer is implemented and tested but is not yet the gate in front of the derived indexes; the index-manager still owns readiness.",
-    "Single-parse convergence is enabled only for the languages in docs/unified/parser-convergence.json with `converged: true`. Every other language keeps its existing extractor.",
-    "Semantic reads cover `symbol` and `references`. `implementations` and `diagnostics` return unsupported_capability rather than a substituted answer."
-  ],
-  "review_fixes": [
-    {
-      "id": "P0-semantic-correlation",
-      "defect": "workers/semantic/main.mjs generated a requestId but never sent it, and #onData resolved the first waiter in the map. After one budget expiry the Python bridge responses were permanently off by one, attaching one request evidence to another.",
-      "fix": "requestId travels both ways; unmatched ids are discarded; a budget expiry recycles the bridge because Serena/LSP work cannot be cancelled and the loop is single-threaded.",
-      "regression": "test/faults/semantic-correlation.test.js"
-    },
-    {
-      "id": "P0-supervisor-accounting",
-      "defect": "abort and deadline marked a job abandoned and incremented the counter, then cleanup deleted the pending entry, so the decrement in #onResponse was unreachable. #abandoned counted lifetime abandonments and recycled healthy workers; the deadline path never checked the threshold at all.",
-      "fix": "physical in-flight jobs are tracked separately from logical pending calls; abort and deadline share one abandon path.",
-      "regression": "test/contracts/worker-lifecycle.test.js"
-    },
-    {
-      "id": "P1-stale-source-cache",
-      "defect": "src/unified.js and packages/core/src/adapters/graph.ts cached file bytes for the process lifetime, so evidence text and contentHash could be computed from a pre-edit copy of a file.",
-      "fix": "both caches are scoped to one read request.",
-      "regression": "test/faults/stale-source.test.js"
-    },
-    {
-      "id": "P1-language-fallback",
-      "defect": "a symbol read with no recognizable extension silently defaulted to TypeScript, starting the wrong language server against the wrong source.",
-      "fix": "typed UNSUPPORTED_CAPABILITY refusal naming what is missing.",
-      "regression": "test/faults/stale-source.test.js"
-    },
-    {
-      "id": "P1-embedded-lifecycle",
-      "defect": "unified reads were embedded but ensureIndexes still spawned zg and codegraph, contradicting the documented no-external-install claim.",
-      "fix": "src/lifecycle.js driver indirection; index-manager keeps all policy.",
-      "regression": "test/contracts/embedded-lifecycle.test.js"
-    }
-  ]
+  "acceptance": {
+    "original_criteria": "docs/unified/acceptance.json",
+    "current_evidence": "docs/unified/acceptance-evidence.json",
+    "release_evidence": "docs/unified/release-evidence.json",
+    "aggregate_score_replacement": false,
+    "independent_review": "docs/unified/review-evidence.json"
+  },
+  "known_measurement": {
+    "performance": "docs/unified/performance-measurement.json",
+    "matrix": "Five actual samples per cold/restart/warm/dirty mode.",
+    "quality": "Exact critical anchors and five dirty new-hash observations passed; 20/20 rows anchored.",
+    "rss_guardrail": "FAIL: process-tree RSS p95 4849709056 bytes exceeds the immutable 2000000000-byte preregistration, measured again on the final tree. The retrieval worker holds 4.73 GB of it. No model or threshold adjustment.",
+    "final_release": "docs/unified/release-evidence.json generated 2026-09-22T03:18:00.083Z, digest 180362b6523fb74552c4e743e8498082473e1ddda35a1ec6dcbceea71581ec7e: 19 of 20 required gates pass, performance-guardrails is the only failure, nothing is blocked, and the full suite runs 144 tests with 143 passed, 1 skipped and 0 failed."
+  },
+  "deployment": {
+    "committed": false,
+    "live_mcp_registration_changed": false,
+    "machine_daemon_restarted": false
+  }
 }

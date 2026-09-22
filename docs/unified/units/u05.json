@@ -1,7 +1,10 @@
 {
   "unit": "U05",
   "title": "Fork Serena typed read surface and private semantic worker",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "newPaths": [
     "vendor/serena/src/serena/lazy_read_api.py",
     "workers/semantic/lazy_semantic/bridge.py",

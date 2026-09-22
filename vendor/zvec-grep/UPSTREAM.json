@@ -36,9 +36,41 @@
       "unit": "U07",
       "reason": "Exposed indexPrepared on the existing writable WorkspaceIndex service without creating a second storage handle or durability point.",
       "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
+    },
+    {
+      "path": "src/engine/service/root.ts",
+      "original_blob": "e0844e0b2cb3a679ff3436a97fb30d04838fe449",
+      "resulting_blob": "2667bb156af80c4dd5e044a3e9f6f3cda0e23655",
+      "unit": "BUILD05",
+      "reason": "Inject explicit stateRoot into workspace location helpers while preserving sourceRoot as the indexed-file root.",
+      "test_evidence": "vendor build; prepared retrieval smoke."
+    },
+    {
+      "path": "src/engine/service/types.ts",
+      "original_blob": "1017431714998992853136dbfc5f9b4d959899e9",
+      "resulting_blob": "1349c26b881b159853a767793d03de1ea9013b6f",
+      "unit": "BUILD05",
+      "reason": "Expose explicit stateRoot and prepared snapshot apply service types for the headless worker.",
+      "test_evidence": "vendor build; prepared retrieval smoke."
+    },
+    {
+      "path": "src/engine/service/zvec-grep.ts",
+      "original_blob": "11e6a763c325a7b882631710b08a87f9ebb2f084",
+      "resulting_blob": "97e08f9bd6ade209ca961bc04099fe4e130acfaa",
+      "unit": "BUILD05",
+      "reason": "Add serialized prepared-snapshot apply lifecycle and route indexed context/info through explicit stateRoot without scanner refresh.",
+      "test_evidence": "vendor build; prepared retrieval smoke."
+    },
+    {
+      "path": "src/engine/pipeline/indexing/prepared.ts",
+      "original_blob": "73e57c606118d81690a5e77a421d26638aacd78c",
+      "resulting_blob": "71fcf29cdc2ebdecbe0c5bef41554cd9ff9bb21b",
+      "unit": "IR02",
+      "reason": "Allow prepared snapshot ingestion to delete captured paths without invoking scanner indexing.",
+      "test_evidence": "test/parity/retrieval.test.js; vendor build."
     }
   ],
-  "patch_revision": 1,
+  "patch_revision": 2,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
@@ -48,6 +80,7 @@
     "src/lazy-entry.ts",
     "src/engine/pipeline/indexing/prepared.ts"
   ],
+  "added_files_sha256": {"src/lazy-entry.ts":"dae498d7e51d7171bb76f9a97e8918e8e539f7eb26b5a205f21e19cfe70ec85d","src/engine/pipeline/indexing/prepared.ts":"933038d580f33ac3c89c8d61dffc5e3c65335b0b13da2056dbdbc5d5be385ca1"},
   "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
   "manifest": [
     {

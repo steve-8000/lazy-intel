@@ -21,7 +21,13 @@ function sourceDescriptor(item) {
     id: item.id,
     locator: item.locator,
     method: item.method,
+    textKind: item.textKind ?? "source",
     sourceCheck: item.sourceCheck?.status ?? "unchecked",
+    ...(item.anchor ? { anchor: item.anchor } : {}),
+    ...(item.projectionView ? { projectionView: item.projectionView } : {}),
+    ...(item.semanticObservation ? { semanticObservation: item.semanticObservation } : {}),
+    ...(item.coverage ? { coverage: item.coverage } : {}),
+    ...(item.relatedAnchors ? { relatedAnchors: item.relatedAnchors } : {}),
     provenance: item.provenance ?? [],
   };
 }
@@ -40,6 +46,10 @@ function envelopeFacts(envelopes) {
   let truncated = false;
   let returned = 0;
   let total = 0;
+  const unique = (values) => [...new Map(values.map((value) => [JSON.stringify(value), value])).values()];
+  const views = unique(envelopes.flatMap((env) => env.views ?? []));
+  const semanticObservations = unique(envelopes.flatMap((env) => env.semanticObservations ?? []));
+  const issues = unique(envelopes.flatMap((env) => env.issues ?? []));
   let knownTotal = (envelopes ?? []).length > 0;
   for (const env of envelopes ?? []) {
     if (env?.error?.message) errors.push(`${env.backend ?? "backend"}: ${env.error.message}`);
@@ -51,11 +61,11 @@ function envelopeFacts(envelopes) {
     if (Number.isFinite(env?.total)) total += env.total;
     else knownTotal = false;
   }
-  return { errors, truncated, returned, total: knownTotal ? total : null };
+  return { errors, truncated, returned, total: knownTotal ? total : null, views, semanticObservations, issues };
 }
 
 function candidateBlock(item) {
-  const heading = `### ${item.kind} [${item.id}]\nLocation: ${locatorLabel(item.locator)}\nSource check: ${item.sourceCheck?.status ?? "unchecked"}`;
+  const heading = "### " + item.kind + " [" + item.id + "]\nLocation: " + locatorLabel(item.locator) + "\nText: " + (item.textKind ?? "source") + "\nSource check: " + (item.sourceCheck?.status ?? "unchecked");
   return `${heading}\n\n${item.text}`;
 }
 
@@ -134,12 +144,17 @@ export function buildContextPack({
       status,
       fulfillment: { requiredMet: Boolean(fulfillment.requiredMet), unmet: [...(fulfillment.unmet ?? [])] },
       stopReason,
-      coverage: facts.truncated ? "bounded" : "backend_complete",
+      coverage: facts.truncated || omitted !== 0 || envelopes.some((env) => env.coverage === "bounded")
+        ? "bounded" : envelopes.length > 0 && envelopes.every((env) => env.coverage === "backend_complete")
+          ? "backend_complete" : "unknown",
       omittedItems: omitted,
       truncated: Boolean(truncated || omitted !== 0),
       evidence: selected.map(({ descriptor }) => descriptor),
+      views: facts.views,
+      semanticObservations: facts.semanticObservations,
+      issues: facts.issues,
     };
-    return { text: sections.join("\n"), metaText: safeMetadata(metadata), omitted };
+    return { text: sections.join("\n"), metaText: safeMetadata(metadata), omitted, metadata };
   }
 
   const fits = (rendered) => rendered.text.length + rendered.metaText.length <= effectiveMax &&
@@ -157,7 +172,7 @@ export function buildContextPack({
     // No source item is split. If even mandatory prose is too large, use a compact mandatory
     // representation and retain valid JSON metadata rather than slicing either output.
     const omitted = omissionCount([]);
-    let metadata = safeMetadata({ status, stopReason, omittedItems: omitted, truncated: true, evidence: [] });
+    let metadata = safeMetadata({ status, stopReason, omittedItems: omitted, truncated: true, evidence: [], metadataOmitted: true });
     let text = mandatory(0, omitted);
     if (text.length + metadata.length > effectiveMax || byteLength(text) + byteLength(metadata) > WIRE_CAP_BYTES) {
       text = compactFallback(status, stopReason, isError);
@@ -169,7 +184,8 @@ export function buildContextPack({
     if (text.length + metadata.length > effectiveMax || byteLength(text) + byteLength(metadata) > WIRE_CAP_BYTES) {
       text = "0";
     }
-    rendered = { text, metaText: metadata, omitted };
+    selected.length = 0;
+    rendered = { text, metaText: metadata, omitted, metadata: { metadataOmitted: true } };
   }
 
   const selectedIds = selected.map(({ item }) => item.id);
@@ -187,5 +203,10 @@ export function buildContextPack({
     truncated: Boolean(truncated || rendered.omitted !== 0),
     normalization: normal,
     evidence: descriptors,
+    coverage: rendered.metadata.coverage ?? "bounded",
+    views: rendered.metadata.views ?? [],
+    semanticObservations: rendered.metadata.semanticObservations ?? [],
+    issues: rendered.metadata.issues ?? [],
+    metadataOmitted: rendered.metadata.metadataOmitted ?? false,
   };
 }

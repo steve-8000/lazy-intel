@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "unit": "U00",
-  "generated_at": "2026-09-21T07:17:57.120Z",
+  "generated_at": "2026-09-21T21:56:14.621Z",
   "question": "Is the installed npm/PyPI distribution byte-equivalent to the pinned Git tag source, and may lazy-intel treat the distribution as the fork source?",
   "answer": "The executable payload of both Node distributions is byte-reproducible from the pinned Git commits (measured). The CodeGraph *root npm package* is still not a build of the tag: it is a thin installer around a per-platform bundle, with a GitHub Releases download fallback. The fork is therefore taken from the pinned Git checkout, which is exactly the source those bundles were built from.",
   "distributions": {
@@ -162,5 +162,33 @@
   "rules_upheld": [
     "No tag, semver range, or published tarball was substituted for a pinned commit.",
     "Pinned tag source is not treated as proof of package byte equivalence."
-  ]
+  ],
+  "evidence_producers": {
+    "installed_closure": "scripts/verify-dependencies.mjs",
+    "source_inventory": "scripts/verify-release.mjs::src04-inventory",
+    "runtime_network": "scripts/verify-release.mjs::build06-network"
+  },
+  "source_inventory_review": {
+    "requirement": "SRC-04",
+    "status": "partial",
+    "retrospective_proof": false,
+    "statement": "This release record does not claim retrospective read-before-edit proof. A future source edit must record the complete file read before the edit; current manifests and blob hashes are provenance only."
+  },
+  "runtime_assets": {
+    "native_and_grammar_notices": "Per-asset packaged or upstream notice evidence (including tree-sitter-wasms/LICENSE for copied grammar WASM) in docs/unified/dependency-audit.json; THIRD_PARTY_NOTICES.md is an index plus exact external-model licence text",
+    "model_artifacts_retained": false,
+    "model_downloads_allowed": false,
+    "grammar_assets": "Pinned vendor/codegraph and vendor/zvec-grep WASM payloads map to their packaged tree-sitter-wasms LICENSE; package-owned WASM maps to its own package LICENSE",
+    "external_runtime_model": {
+      "configured_embedding": "local/qwen3-embedding-0.6b",
+      "status": "EXTERNAL_CACHED_NOT_REDISTRIBUTED",
+      "attribution": "Qwen Team; https://huggingface.co/Qwen/Qwen3-Embedding-0.6B",
+      "license": "Apache-2.0",
+      "model_card_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+      "license_source_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "license_source": "https://huggingface.co/Qwen/Qwen3-0.6B/blob/c1899de289a04d12100db370d81485cdf75e47ca/LICENSE",
+      "license_text_retained_in": "THIRD_PARTY_NOTICES.md",
+      "retained_artifacts": []
+    }
+  }
 }

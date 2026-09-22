@@ -1,0 +1,900 @@
+{
+  "schemaVersion": "lazy-intel.offline-evidence.v1",
+  "status": "PASS",
+  "generatedAt": "2026-09-22T03:17:57.507Z",
+  "platform": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.22.3"
+  },
+  "scope": {
+    "processTreeOnly": true,
+    "machineGlobalMutation": false,
+    "modelDownloads": false,
+    "policy": "temporary DYLD_INSERT_LIBRARIES scoped to verifier-owned process tree",
+    "hooks": [
+      "socket",
+      "socket$NOCANCEL",
+      "connect",
+      "connect$NOCANCEL",
+      "sendto",
+      "getaddrinfo"
+    ],
+    "source": "scripts/native/offline_interposer.c"
+  },
+  "prerequisites": {
+    "platform": true,
+    "clang": true,
+    "pyright": true,
+    "built": true,
+    "pyrightPath": "/opt/homebrew/bin/pyright-langserver",
+    "buildRequired": "npm run build (does not download or change models)"
+  },
+  "compile": {
+    "library": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/offline-interposer.dylib",
+    "result": {
+      "code": 0,
+      "signal": null,
+      "stdout": "",
+      "stderr": "/Users/steve/lazy-project/lazy-intel/scripts/native/offline_interposer.c:163:62: warning: unused parameter 'service' [-Wunused-parameter]\n  163 | static int blocked_getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **result) {\n      |                                                              ^\n1 warning generated.\n"
+    },
+    "compiled": true,
+    "command": [
+      "clang",
+      "-dynamiclib",
+      "-fPIC",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/offline-interposer.dylib",
+      "/Users/steve/lazy-project/lazy-intel/scripts/native/offline_interposer.c"
+    ]
+  },
+  "positiveControl": {
+    "status": "PASS",
+    "child": {
+      "pid": 40347,
+      "code": 0,
+      "signal": null
+    },
+    "sandboxBlocked": true,
+    "attempts": [
+      {
+        "kind": "attempt",
+        "operation": "connect$NOCANCEL",
+        "pid": 40347,
+        "ppid": 40314,
+        "family": 2,
+        "blocked": true,
+        "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+        "timeMs": 1790047066955
+      }
+    ],
+    "rawEvents": [
+      "{\"kind\":\"boot\",\"pid\":40347,\"ppid\":40314,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":40347,\"ppid\":40314,\"family\":2,\"blocked\":false,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\",\"timeMs\":1790047066952}",
+      "{\"kind\":\"attempt\",\"operation\":\"connect$NOCANCEL\",\"pid\":40347,\"ppid\":40314,\"family\":2,\"blocked\":true,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\",\"timeMs\":1790047066955}"
+    ],
+    "stdout": "POSITIVE_RESULT:{\"pid\":40347,\"blocked\":true}\n",
+    "stderr": ""
+  },
+  "nativeControl": {
+    "status": "PASS",
+    "child": {
+      "pid": 40386,
+      "code": 0,
+      "signal": null
+    },
+    "attempts": [
+      {
+        "kind": "attempt",
+        "operation": "connect$NOCANCEL",
+        "pid": 40386,
+        "ppid": 40314,
+        "family": 2,
+        "blocked": true,
+        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control",
+        "timeMs": 1790047068765
+      },
+      {
+        "kind": "attempt",
+        "operation": "sendto",
+        "pid": 40386,
+        "ppid": 40314,
+        "family": 2,
+        "blocked": true,
+        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control",
+        "timeMs": 1790047068765
+      },
+      {
+        "kind": "attempt",
+        "operation": "getaddrinfo",
+        "pid": 40386,
+        "ppid": 40314,
+        "family": 0,
+        "blocked": true,
+        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control",
+        "host": "localhost",
+        "timeMs": 1790047068765
+      }
+    ],
+    "operations": [
+      "connect$NOCANCEL",
+      "sendto",
+      "getaddrinfo"
+    ],
+    "rawEvents": [
+      "{\"kind\":\"boot\",\"pid\":40386,\"ppid\":40314,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control\"}",
+      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":40386,\"ppid\":40314,\"family\":2,\"blocked\":false,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control\",\"timeMs\":1790047068765}",
+      "{\"kind\":\"attempt\",\"operation\":\"connect$NOCANCEL\",\"pid\":40386,\"ppid\":40314,\"family\":2,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control\",\"timeMs\":1790047068765}",
+      "{\"kind\":\"attempt\",\"operation\":\"sendto\",\"pid\":40386,\"ppid\":40314,\"family\":2,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control\",\"timeMs\":1790047068765}",
+      "{\"kind\":\"attempt\",\"operation\":\"getaddrinfo\",\"pid\":40386,\"ppid\":40314,\"family\":0,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/native-control\",\"host\":\"localhost\",\"timeMs\":1790047068765}"
+    ],
+    "stdout": "",
+    "stderr": ""
+  },
+  "sandboxControl": {
+    "status": "PASS",
+    "child": {
+      "pid": 40388,
+      "code": 0,
+      "signal": null
+    },
+    "blocked": true,
+    "stdout": "SANDBOX_RESULT:{\"blocked\":true}\n",
+    "stderr": ""
+  },
+  "runtime": {
+    "workspace": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+    "status": "PASS",
+    "child": {
+      "pid": 40444,
+      "code": 0,
+      "signal": null
+    },
+    "queryOutcomes": {
+      "search": {
+        "present": true,
+        "isError": false,
+        "status": "ok",
+        "stopReason": "plan_complete",
+        "routes": [
+          "zvec:search"
+        ],
+        "backends": [
+          {
+            "backend": "zvec",
+            "ok": true,
+            "outcome": "ok",
+            "latencyMs": 469
+          }
+        ],
+        "evidence": [
+          {
+            "id": "retrieval-41410e28-f7d8-4ff8-9cc8-cdc4e68af5b7-3",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "discount.mjs",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 1
+              }
+            },
+            "method": "hybrid_retrieval",
+            "textKind": "source",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "fccc2d86cff280c9a0e5469ffebcbf92",
+              "relativePath": "discount.mjs",
+              "contentHash": "d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 100
+              },
+              "kind": "indexed_entity",
+              "occurrenceId": "aecdf4a39da178c28c78342c6015b9497826bbdfc535e8ffff7e3d1740df1ac6",
+              "stableEntityId": "d14fd463fddc2cf252a55aa1d3972fd946a3bd90e1acc4407356bbb3ea2391e0"
+            },
+            "projectionView": {
+              "projection": "retrieval",
+              "viewId": "5ffa375701816b569e6b3d73b46ff858",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/90bf8f13-ce11-4564-a13e-bfb310d1f131"
+            },
+            "coverage": {
+              "kind": "ranked_sample",
+              "completeWithinScope": false,
+              "scopeDescription": "source=index; zvec-grep ranked_sample",
+              "returned": 6,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "zvec",
+                "operation": "search",
+                "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+                "adapterVersion": "0.3.0",
+                "executionId": "retrieval-41410e28-f7d8-4ff8-9cc8-cdc4e68af5b7"
+              }
+            ]
+          },
+          {
+            "id": "retrieval-20311bfc-46ba-4cad-86b7-a46de6c0b02c-2",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "discount.py",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 2
+              }
+            },
+            "method": "hybrid_retrieval",
+            "textKind": "source",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "92e5a5c77c877b8e62d0bd2fe8fd03dc",
+              "relativePath": "discount.py",
+              "contentHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 84
+              },
+              "kind": "indexed_entity",
+              "occurrenceId": "71e9e5e0bfe846a7b3f75d0f86bb775aa93b7a136af0d7968d37e8d59b801861",
+              "stableEntityId": "b20f1b02e7f6dd85f8e6267c698b6deb5451699e372c0ce4bc181d2cbfd2009a"
+            },
+            "projectionView": {
+              "projection": "retrieval",
+              "viewId": "5ffa375701816b569e6b3d73b46ff858",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/90bf8f13-ce11-4564-a13e-bfb310d1f131"
+            },
+            "coverage": {
+              "kind": "ranked_sample",
+              "completeWithinScope": false,
+              "scopeDescription": "source=index; zvec-grep ranked_sample",
+              "returned": 6,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "zvec",
+                "operation": "search",
+                "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+                "adapterVersion": "0.3.0",
+                "executionId": "retrieval-20311bfc-46ba-4cad-86b7-a46de6c0b02c"
+              }
+            ]
+          },
+          {
+            "id": "retrieval-6ec42c0d-3090-4e61-abe8-2914b833eaa1-4",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "flow.mjs",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 1
+              }
+            },
+            "method": "hybrid_retrieval",
+            "textKind": "source",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "95b556a62283aaab6f51cac93fb250a1",
+              "relativePath": "flow.mjs",
+              "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 130
+              },
+              "kind": "indexed_entity",
+              "occurrenceId": "637efd3a80cea6ea983acce09eae61d6ce2012ddf63dad94f5c0cdbf99d8edb6",
+              "stableEntityId": "57c5971545fd194583685c2f9047d81a18b9e3d893b9988e010e707b9f45872e"
+            },
+            "projectionView": {
+              "projection": "retrieval",
+              "viewId": "5ffa375701816b569e6b3d73b46ff858",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/90bf8f13-ce11-4564-a13e-bfb310d1f131"
+            },
+            "coverage": {
+              "kind": "ranked_sample",
+              "completeWithinScope": false,
+              "scopeDescription": "source=index; zvec-grep ranked_sample",
+              "returned": 6,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "zvec",
+                "operation": "search",
+                "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+                "adapterVersion": "0.3.0",
+                "executionId": "retrieval-6ec42c0d-3090-4e61-abe8-2914b833eaa1"
+              }
+            ]
+          },
+          {
+            "id": "retrieval-94a40461-e71f-4237-ba24-c6645d35b320-5",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "package.json",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 1
+              }
+            },
+            "method": "hybrid_retrieval",
+            "textKind": "source",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "7e6f3c2c6843db480fbbc8135323bbb9",
+              "relativePath": "package.json",
+              "contentHash": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 18
+              },
+              "kind": "indexed_entity",
+              "occurrenceId": "cbe77415c235b3e1abd6b1e73ee711ee985e0d9023221979fa365a9859f56cd9",
+              "stableEntityId": "417334c5619cb29b6785f8cb1fc3bf7a53188ec7e9f327e55348697e53668ee0"
+            },
+            "projectionView": {
+              "projection": "retrieval",
+              "viewId": "5ffa375701816b569e6b3d73b46ff858",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/90bf8f13-ce11-4564-a13e-bfb310d1f131"
+            },
+            "coverage": {
+              "kind": "ranked_sample",
+              "completeWithinScope": false,
+              "scopeDescription": "source=index; zvec-grep ranked_sample",
+              "returned": 6,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "zvec",
+                "operation": "search",
+                "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
+                "adapterVersion": "0.3.0",
+                "executionId": "retrieval-94a40461-e71f-4237-ba24-c6645d35b320"
+              }
+            ]
+          }
+        ],
+        "issues": []
+      },
+      "graph": {
+        "present": true,
+        "isError": false,
+        "status": "ok",
+        "stopReason": "plan_complete",
+        "routes": [
+          "codegraph:architecture"
+        ],
+        "backends": [
+          {
+            "backend": "codegraph",
+            "ok": true,
+            "outcome": "ok",
+            "latencyMs": 4
+          }
+        ],
+        "evidence": [
+          {
+            "id": "graph-c8a8e9db-c90c-4bbb-bad5-a012dbb498a4-0",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "flow.mjs",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 1
+              }
+            },
+            "method": "indexed_graph",
+            "textKind": "description",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "95b556a62283aaab6f51cac93fb250a1",
+              "relativePath": "flow.mjs",
+              "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 130
+              },
+              "kind": "function",
+              "occurrenceId": "function:13f535c77fbf9712ed58ca7082822eaf"
+            },
+            "projectionView": {
+              "projection": "graph",
+              "viewId": "4ecaac0c67065c871470d46f7ca174dd",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/ce0298c8-68a7-40b3-ba20-73322c3d4e94"
+            },
+            "coverage": {
+              "kind": "bounded_graph",
+              "completeWithinScope": false,
+              "scopeDescription": "CodeGraph indexed graph result bounded by the request depth and evidence limit",
+              "returned": 1,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "codegraph",
+                "operation": "architecture",
+                "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+                "adapterVersion": "0.3.0",
+                "executionId": "graph-c8a8e9db-c90c-4bbb-bad5-a012dbb498a4"
+              }
+            ]
+          },
+          {
+            "id": "graph-24d50670-a229-4194-91a2-8ecb3f68a966-2",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "flow.mjs",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 1
+              }
+            },
+            "method": "indexed_graph",
+            "textKind": "description",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "95b556a62283aaab6f51cac93fb250a1",
+              "relativePath": "flow.mjs",
+              "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 130
+              },
+              "kind": "function",
+              "occurrenceId": "function:8914c7ca414720cda26b3bd3f8e1689d"
+            },
+            "projectionView": {
+              "projection": "graph",
+              "viewId": "4ecaac0c67065c871470d46f7ca174dd",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/ce0298c8-68a7-40b3-ba20-73322c3d4e94"
+            },
+            "coverage": {
+              "kind": "bounded_graph",
+              "completeWithinScope": false,
+              "scopeDescription": "CodeGraph indexed graph result bounded by the request depth and evidence limit",
+              "returned": 1,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "codegraph",
+                "operation": "architecture",
+                "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+                "adapterVersion": "0.3.0",
+                "executionId": "graph-24d50670-a229-4194-91a2-8ecb3f68a966"
+              }
+            ]
+          },
+          {
+            "id": "graph-2ca4dc7a-2e0d-433b-a30b-4ab97c061a6b-1",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "flow.mjs",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 1
+              }
+            },
+            "method": "indexed_graph",
+            "textKind": "description",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "95b556a62283aaab6f51cac93fb250a1",
+              "relativePath": "flow.mjs",
+              "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 130
+              },
+              "kind": "function",
+              "occurrenceId": "function:edf563a2a7c417c79b81cbb5da8d1427"
+            },
+            "projectionView": {
+              "projection": "graph",
+              "viewId": "4ecaac0c67065c871470d46f7ca174dd",
+              "appliedManifestId": "7e87c266f4291bd0fef04d866fdec4e2882171894d0cd0b183729d0eeadfa6e8",
+              "profileDigest": "22178d2fa90baab8f9f9bed1ec921894864ecef8e21450a95ec775933823ff1f",
+              "state": "clean",
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX/.lazy-intel/stores/ce0298c8-68a7-40b3-ba20-73322c3d4e94"
+            },
+            "coverage": {
+              "kind": "bounded_graph",
+              "completeWithinScope": false,
+              "scopeDescription": "CodeGraph indexed graph result bounded by the request depth and evidence limit",
+              "returned": 1,
+              "omitted": null
+            },
+            "provenance": [
+              {
+                "backend": "codegraph",
+                "operation": "architecture",
+                "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+                "adapterVersion": "0.3.0",
+                "executionId": "graph-2ca4dc7a-2e0d-433b-a30b-4ab97c061a6b"
+              }
+            ]
+          }
+        ],
+        "issues": []
+      },
+      "symbol": {
+        "present": true,
+        "isError": false,
+        "status": "ok",
+        "stopReason": "plan_complete",
+        "routes": [
+          "serena:symbol"
+        ],
+        "backends": [
+          {
+            "backend": "serena",
+            "ok": true,
+            "outcome": "ok",
+            "latencyMs": 677
+          }
+        ],
+        "evidence": [
+          {
+            "id": "semantic-b4b76522-53c1-48a4-819a-d1267122954e-0",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "discount.py",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 2
+              }
+            },
+            "method": "lsp",
+            "textKind": "description",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "discount.py",
+              "relativePath": "discount.py",
+              "contentHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 83
+              },
+              "kind": "Function",
+              "occurrenceId": "discount.py:0:0:apply_discount"
+            },
+            "semanticObservation": {
+              "sessionEpoch": "1414b67c8de74297b8cf5f22f2d6194f",
+              "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+              "fileHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "bufferHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "discount.py",
+              "diagnosticsStatus": "not_reported"
+            },
+            "coverage": {
+              "kind": "semantic_scope",
+              "completeWithinScope": true,
+              "scopeDescription": "Serena semantic result in discount.py",
+              "returned": 1,
+              "omitted": 0
+            },
+            "provenance": [
+              {
+                "backend": "serena",
+                "operation": "symbol",
+                "backendVersion": "unknown",
+                "adapterVersion": "0.3.0",
+                "executionId": "semantic-b4b76522-53c1-48a4-819a-d1267122954e"
+              }
+            ]
+          }
+        ],
+        "issues": []
+      },
+      "references": {
+        "present": true,
+        "isError": false,
+        "status": "ok",
+        "stopReason": "plan_complete",
+        "routes": [
+          "serena:references"
+        ],
+        "backends": [
+          {
+            "backend": "serena",
+            "ok": true,
+            "outcome": "ok",
+            "latencyMs": 2009
+          }
+        ],
+        "evidence": [
+          {
+            "id": "semantic-58c6e74d-45b7-43d9-af04-0c095ad07344-0",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "invoice.py",
+              "range": {
+                "startLine": 0,
+                "endLineExclusive": 2
+              }
+            },
+            "method": "lsp",
+            "textKind": "source",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "invoice.py",
+              "relativePath": "invoice.py",
+              "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 0,
+                "endByte": 37
+              },
+              "kind": "File",
+              "occurrenceId": "invoice.py:0:0:invoice"
+            },
+            "semanticObservation": {
+              "sessionEpoch": "1414b67c8de74297b8cf5f22f2d6194f",
+              "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+              "fileHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "bufferHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "discount.py",
+              "diagnosticsStatus": "not_reported"
+            },
+            "coverage": {
+              "kind": "semantic_scope",
+              "completeWithinScope": true,
+              "scopeDescription": "Serena semantic result in invoice.py",
+              "returned": 1,
+              "omitted": 0
+            },
+            "relatedAnchors": [
+              {
+                "role": "containing-symbol",
+                "anchor": {
+                  "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+                  "fileId": "invoice.py",
+                  "relativePath": "invoice.py",
+                  "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
+                  "span": {
+                    "coordinateSystem": "utf8-bytes",
+                    "startByte": 0,
+                    "endByte": 114
+                  },
+                  "kind": "File",
+                  "occurrenceId": "invoice.py:0:0:invoice"
+                }
+              }
+            ],
+            "provenance": [
+              {
+                "backend": "serena",
+                "operation": "references",
+                "backendVersion": "unknown",
+                "adapterVersion": "0.3.0",
+                "executionId": "semantic-58c6e74d-45b7-43d9-af04-0c095ad07344"
+              }
+            ]
+          },
+          {
+            "id": "semantic-d6e92af6-c72e-4213-bfae-450000c8ba7e-1",
+            "locator": {
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-OvphIX",
+              "relativePath": "invoice.py",
+              "range": {
+                "startLine": 2,
+                "endLineExclusive": 4
+              }
+            },
+            "method": "lsp",
+            "textKind": "source",
+            "sourceCheck": "matched",
+            "anchor": {
+              "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+              "fileId": "invoice.py",
+              "relativePath": "invoice.py",
+              "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
+              "span": {
+                "coordinateSystem": "utf8-bytes",
+                "startByte": 37,
+                "endByte": 114
+              },
+              "kind": "Function",
+              "occurrenceId": "invoice.py:2:0:invoice_total"
+            },
+            "semanticObservation": {
+              "sessionEpoch": "1414b67c8de74297b8cf5f22f2d6194f",
+              "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+              "fileHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "bufferHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "discount.py",
+              "diagnosticsStatus": "not_reported"
+            },
+            "coverage": {
+              "kind": "semantic_scope",
+              "completeWithinScope": true,
+              "scopeDescription": "Serena semantic result in invoice.py",
+              "returned": 1,
+              "omitted": 0
+            },
+            "relatedAnchors": [
+              {
+                "role": "containing-symbol",
+                "anchor": {
+                  "workspaceId": "workspace-c501acc5ba8294453d6000313e8cd081",
+                  "fileId": "invoice.py",
+                  "relativePath": "invoice.py",
+                  "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
+                  "span": {
+                    "coordinateSystem": "utf8-bytes",
+                    "startByte": 37,
+                    "endByte": 113
+                  },
+                  "kind": "Function",
+                  "occurrenceId": "invoice.py:2:0:invoice_total"
+                }
+              }
+            ],
+            "provenance": [
+              {
+                "backend": "serena",
+                "operation": "references",
+                "backendVersion": "unknown",
+                "adapterVersion": "0.3.0",
+                "executionId": "semantic-d6e92af6-c72e-4213-bfae-450000c8ba7e"
+              }
+            ]
+          }
+        ],
+        "issues": []
+      }
+    },
+    "queryFailure": null,
+    "shutdownOrder": [
+      "closeIndexManager",
+      "closeUnified"
+    ],
+    "shutdownCorrect": true,
+    "rawEvents": [
+      "{\"kind\":\"boot\",\"pid\":40444,\"ppid\":40314,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":40456,\"ppid\":40444,\"executable\":\"/opt/homebrew/bin/git\"}",
+      "{\"kind\":\"boot\",\"pid\":40457,\"ppid\":40444,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":40504,\"ppid\":40444,\"executable\":\"/opt/homebrew/bin/git\"}",
+      "{\"kind\":\"boot\",\"pid\":40505,\"ppid\":40444,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":40509,\"ppid\":40444,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":40511,\"ppid\":40509,\"executable\":\"/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python\"}",
+      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":40511,\"ppid\":40509,\"family\":30,\"blocked\":false,\"executable\":\"/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python\",\"timeMs\":1790047074919}"
+    ],
+    "rawPhases": [
+      "{\"name\":\"retrieval\",\"pid\":40444,\"timeMs\":1790047070393}",
+      "{\"name\":\"graph\",\"pid\":40444,\"timeMs\":1790047074549}",
+      "{\"name\":\"semantic\",\"pid\":40444,\"timeMs\":1790047074765}"
+    ],
+    "boots": [
+      {
+        "kind": "boot",
+        "pid": 40444,
+        "ppid": 40314,
+        "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
+      },
+      {
+        "kind": "boot",
+        "pid": 40456,
+        "ppid": 40444,
+        "executable": "/opt/homebrew/bin/git"
+      },
+      {
+        "kind": "boot",
+        "pid": 40457,
+        "ppid": 40444,
+        "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
+      },
+      {
+        "kind": "boot",
+        "pid": 40504,
+        "ppid": 40444,
+        "executable": "/opt/homebrew/bin/git"
+      },
+      {
+        "kind": "boot",
+        "pid": 40505,
+        "ppid": 40444,
+        "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
+      },
+      {
+        "kind": "boot",
+        "pid": 40509,
+        "ppid": 40444,
+        "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
+      },
+      {
+        "kind": "boot",
+        "pid": 40511,
+        "ppid": 40509,
+        "executable": "/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python"
+      }
+    ],
+    "attempts": [],
+    "coverage": {
+      "queryPid": 40444,
+      "bootCount": 7,
+      "bootPids": [
+        40444,
+        40456,
+        40457,
+        40504,
+        40505,
+        40509,
+        40511
+      ],
+      "ownedChildBootCount": 6,
+      "nodeChildBootPids": [
+        40457,
+        40505,
+        40509
+      ],
+      "pythonLspChildPids": [
+        40511
+      ],
+      "retrievalAndGraphChildBoots": true,
+      "semanticLspChildBoot": true,
+      "noObservationIsPass": false
+    }
+  },
+  "limitations": [],
+  "cleanup": {
+    "scratchRemoved": true,
+    "scratchPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn",
+    "ownedTemporaryAssets": [
+      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-N2eAFn/offline-interposer.dylib"
+    ]
+  }
+}

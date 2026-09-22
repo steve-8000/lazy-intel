@@ -139,12 +139,9 @@ export function hashContent(content: string): string {
   return crypto.createHash('sha256').update(content).digest('hex');
 }
 
-/**
- * Skip files larger than this (bytes). Generated bundles, minified JS, and
- * vendored blobs blow the WASM heap and the worker-recycle budget for no useful
- * symbols. 1 MB covers essentially all hand-written source.
- */
-const MAX_FILE_SIZE = 1024 * 1024;
+// Source snapshots are intentionally not capped here. Published-source and
+// prepared-batch boundaries own transport limits; the parser must retain
+// symbols from oversized but valid source files.
 
 /**
  * Directory names that are dependency, build, cache, or tooling output across the
@@ -1496,52 +1493,37 @@ export class ExtractionOrchestrator {
    * the DB hasn't been populated yet, but detect() only uses readFile,
    * fileExists, and getAllFiles, so that's fine.
    */
-  private buildDetectionContext(files: string[]): ResolutionContext {
+  private buildDetectionContext(files: string[], capturedSources?: ReadonlyMap<string, string>): ResolutionContext {
     const rootDir = this.rootDir;
     return {
-      getNodesInFile: () => [],
-      getNodesByName: () => [],
-      getNodesByQualifiedName: () => [],
-      getNodesByKind: () => [],
-      getNodesByLowerName: () => [],
-      getImportMappings: () => [],
-      getAllFiles: () => files,
-      getProjectRoot: () => rootDir,
+      getNodesInFile: () => [], getNodesByName: () => [], getNodesByQualifiedName: () => [],
+      getNodesByKind: () => [], getNodesByLowerName: () => [], getImportMappings: () => [],
+      getAllFiles: () => files, getProjectRoot: () => rootDir,
       fileExists: (relativePath: string) => {
+        if (capturedSources) return capturedSources.has(relativePath);
         const full = validatePathWithinRoot(rootDir, relativePath);
         if (!full) return false;
-        try {
-          return fs.existsSync(full);
-        } catch {
-          return false;
-        }
+        try { return fs.existsSync(full); } catch { return false; }
       },
       readFile: (relativePath: string) => {
+        if (capturedSources) return capturedSources.get(relativePath) ?? null;
         const full = validatePathWithinRoot(rootDir, relativePath);
         if (!full) return null;
-        try {
-          return fs.readFileSync(full, 'utf-8');
-        } catch {
-          return null;
-        }
+        try { return fs.readFileSync(full, 'utf-8'); } catch { return null; }
       },
-      // Monorepo support — needed by framework detect()s that probe
-      // subpackage manifests (e.g. fabric-view looking at
-      // packages/<sub>/package.json when the root manifest is just a
-      // workspace declaration). Matches the resolver-context shape.
       listDirectories: (relativePath: string) => {
-        const target =
-          relativePath === '.' || relativePath === ''
-            ? rootDir
-            : path.join(rootDir, relativePath);
-        try {
-          return fs
-            .readdirSync(target, { withFileTypes: true })
-            .filter((entry) => entry.isDirectory())
-            .map((entry) => entry.name);
-        } catch {
-          return [];
+        if (capturedSources) {
+          const prefix = relativePath === '.' || relativePath === '' ? '' : relativePath.replace(/\\/g, '/').replace(/\/$/, '') + '/';
+          const directories = new Set<string>();
+          for (const filePath of capturedSources.keys()) {
+            if (!filePath.startsWith(prefix)) continue;
+            const rest = filePath.slice(prefix.length); const slash = rest.indexOf('/');
+            if (slash > 0) directories.add(rest.slice(0, slash));
+          }
+          return [...directories];
         }
+        const target = relativePath === '.' || relativePath === '' ? rootDir : path.join(rootDir, relativePath);
+        try { return fs.readdirSync(target, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name); } catch { return []; }
       },
     };
   }
@@ -1551,17 +1533,13 @@ export class ExtractionOrchestrator {
    * scan if none are provided). Cached on the orchestrator so repeat calls
    * inside a single run don't re-scan.
    */
-  private ensureDetectedFrameworks(files?: string[]): string[] {
-    if (this.detectedFrameworkNames !== null) return this.detectedFrameworkNames;
+  private ensureDetectedFrameworks(files?: string[], capturedSources?: ReadonlyMap<string, string>, force = false): string[] {
+    if (this.detectedFrameworkNames !== null && !force) return this.detectedFrameworkNames;
     const fileList = files ?? scanDirectory(this.rootDir);
-    const context = this.buildDetectionContext(fileList);
+    const context = this.buildDetectionContext(fileList, capturedSources);
     this.detectedFrameworkNames = detectFrameworks(context).map((r) => r.name);
     return this.detectedFrameworkNames;
   }
-
-  /**
-   * Index all files in the project
-   */
   async indexAll(
     onProgress?: (progress: IndexProgress) => void,
     signal?: AbortSignal,
@@ -1952,26 +1930,6 @@ export class ExtractionOrchestrator {
           continue;
         }
 
-        // Honour MAX_FILE_SIZE. Without this check, vendored generated
-        // headers, minified bundles, and other multi-MB files get indexed,
-        // wasting WASM heap and the worker recycle budget on inputs with no
-        // useful symbols. The single-file extractFile path already enforces
-        // this; the bulk path used to silently skip the check.
-        if (stats.size > MAX_FILE_SIZE) {
-          await storeResult(filePath, content, stats, {
-            nodes: [],
-            edges: [],
-            unresolvedReferences: [],
-            errors: [{
-              message: `File exceeds max size (${stats.size} > ${MAX_FILE_SIZE})`,
-              filePath,
-              severity: 'warning',
-              code: 'size_exceeded',
-            }],
-            durationMs: 0,
-          });
-          continue;
-        }
 
         // Parse on the pool (main thread stays unblocked). Errors/timeouts are
         // handled inside feed() → recordParseFailure, feeding the retry pass.
@@ -2238,10 +2196,18 @@ export class ExtractionOrchestrator {
   async syncSnapshots(
     snapshots: readonly SnapshotInput[],
     deletedPaths: readonly string[] = [],
+    completeSources?: ReadonlyMap<string, string>,
   ): Promise<SyncResult> {
     await initGrammars();
     const startTime = Date.now();
-    const changedPaths = [...new Set([...snapshots.map((snapshot) => snapshot.relativePath), ...deletedPaths])];
+    const authoritativeSources = completeSources ?? new Map(snapshots.map((snapshot) => [snapshot.relativePath, snapshot.content]));
+    const previousFrameworks = this.detectedFrameworkNames;
+    const detectedFrameworks = this.ensureDetectedFrameworks([...authoritativeSources.keys()], authoritativeSources, true);
+    const profileChanged = previousFrameworks !== null && JSON.stringify(previousFrameworks) !== JSON.stringify(detectedFrameworks);
+    const effectiveSnapshots = profileChanged
+      ? [...authoritativeSources.entries()].map(([relativePath, content]) => ({ relativePath, content, modifiedAt: 0 }))
+      : snapshots;
+    const changedPaths = [...new Set([...effectiveSnapshots.map((snapshot) => snapshot.relativePath), ...deletedPaths])];
     const beforePairs = new Set(this.queries.getNodeNamePairsByFiles(changedPaths));
     let filesAdded = 0;
     let filesModified = 0;
@@ -2262,14 +2228,14 @@ export class ExtractionOrchestrator {
 
     const languages = new Set<Language>();
     const overrides = loadExtensionOverrides(this.rootDir);
-    for (const snapshot of snapshots) {
+    for (const snapshot of effectiveSnapshots) {
       languages.add(detectLanguage(snapshot.relativePath, snapshot.content, overrides));
     }
     if (languages.size > 0) await loadGrammarsForLanguages([...languages]);
 
-    for (const snapshot of snapshots) {
+    for (const snapshot of effectiveSnapshots) {
       const existing = this.queries.getFileByPath(snapshot.relativePath);
-      if (existing && existing.contentHash === hashContent(snapshot.content)) continue;
+      if (!profileChanged && existing && existing.contentHash === hashContent(snapshot.content)) continue;
       if (existing) filesModified++;
       else filesAdded++;
       const result = await this.indexFileWithContent(
@@ -2360,25 +2326,6 @@ export class ExtractionOrchestrator {
 
     const language = detectLanguage(relativePath, content, loadExtensionOverrides(this.rootDir));
 
-    // Check file size
-    if (stats.size > MAX_FILE_SIZE) {
-      const result: ExtractionResult = {
-        nodes: [],
-        edges: [],
-        unresolvedReferences: [],
-        errors: [
-          {
-            message: `File exceeds max size (${stats.size} > ${MAX_FILE_SIZE})`,
-            filePath: relativePath,
-            severity: 'warning',
-            code: 'size_exceeded',
-          },
-        ],
-        durationMs: 0,
-      };
-      await this.storeExtractionResult(relativePath, content, language, stats, result, createYielder());
-      return result;
-    }
 
     // Detect language (honoring the project's codegraph.json extension overrides)
     if (!isLanguageSupported(language)) {

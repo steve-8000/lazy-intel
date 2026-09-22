@@ -1,7 +1,10 @@
 {
   "unit": "U07",
   "title": "Shared snapshots and per-language parser convergence",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "newPaths": [
     "vendor/codegraph/src/extraction/snapshot-input.ts",
     "vendor/zvec-grep/src/engine/pipeline/indexing/prepared.ts",

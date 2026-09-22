@@ -10,9 +10,6 @@ import {
   optionalBoolean,
 } from "./contracts.js";
 import { createPlan, routesOf } from "./plan.js";
-import { zvecSearch } from "./backends/zvec.js";
-import { codegraphQuery } from "./backends/codegraph.js";
-import { repairSerena, serenaQuery, serenaStatus } from "./backends/serena.js";
 import { buildContextPack } from "./context-pack.js";
 import { dedupe, makeEvidence } from "./evidence.js";
 import { createSourceVerifier, observationSpan } from "./lib/source.js";
@@ -31,7 +28,7 @@ import {
   syncIndexes,
 } from "./index-manager.js";
 import { log } from "./lib/log.js";
-import { ENGINE_MODE, unifiedRead } from "./unified.js";
+import { unifiedRead, unifiedStage, unifiedSemanticStatus, repairUnifiedSemantic } from "./unified.js";
 
 const SUCCESSFUL_OUTCOMES = new Set(["ok", "empty"]);
 
@@ -78,7 +75,7 @@ async function intelligence(input, deadline) {
     }
     // allSettled, not all: a thrown preparation error in one read must never discard a
     // sibling backend's valid result.
-    const settled = await Promise.allSettled(reads.map((read) => executeRead(read, input, deadline)));
+    const settled = await unifiedStage(reads, input, deadline, (read, lease) => executeRead(read, input, deadline, lease));
     for (const [index, entry] of settled.entries()) {
       if (entry.status === "fulfilled") {
         envelopes.push({ read: reads[index], envelope: entry.value });
@@ -130,19 +127,23 @@ async function intelligence(input, deadline) {
       status: pack.status,
       fulfillment: pack.fulfillment,
       stopReason: pack.stopReason,
-      coverage: coverageOf(envelopes),
+      coverage: pack.coverage,
       normalization: pack.normalization,
       evidence: pack.evidence,
       truncated: pack.truncated,
       omittedItems: pack.omittedItems,
       observation: observation.consistency,
+      views: pack.views,
+      semanticObservations: pack.semanticObservations,
+      issues: pack.issues,
+      metadataOmitted: pack.metadataOmitted,
     },
     isError: pack.isError,
   };
 }
 
 /** One read of one backend, bounded by whatever is left of the request budget. */
-function executeRead(read, input, deadline) {
+function executeRead(read, input, deadline, lease) {
   const timeoutMs = deadline.budget(input.timeoutMs);
   const indexTimeoutMs = deadline.budget(input.indexTimeoutMs);
   const subject = read.subject;
@@ -153,17 +154,11 @@ function executeRead(read, input, deadline) {
     indexTimeoutMs,
     ...(subject ? { symbol: subject.symbol, relativePath: subject.relativePath } : {}),
   };
-  // Both readers return an envelope for every outcome, so the stage loop does not
-  // care which one answered. The legacy CLI/MCP adapters stay the default until the
-  // release gate flips LAZY_INTEL_ENGINE, which keeps the switch reversible.
-  if (ENGINE_MODE === "unified") return unifiedRead(read, scoped, deadline);
-  if (read.backend === "zvec") return zvecSearch(scoped, deadline.signal);
-  if (read.backend === "codegraph") return codegraphQuery(read.operation, scoped, deadline.signal);
-  return serenaQuery(read.operation, scoped, deadline.signal);
+  return unifiedRead(read, scoped, deadline, lease);
 }
 
 function localFailure(read, error, deadline) {
-  const code = classifyAbort(error, deadline) ?? "INTERNAL_ERROR";
+  const code = classifyAbort(error, deadline) ?? (error?.code === "source_changed" ? "SOURCE_MISMATCH" : ["needs_recovery", "mixed-views", "unavailable", "applying"].includes(error?.code) ? "INDEX_UNAVAILABLE" : "INTERNAL_ERROR");
   return {
     backend: read.backend,
     operation: read.operation,
@@ -217,7 +212,7 @@ async function verifyItems(items, input, observation, deadline) {
     let sourceCheck = { status: "unchecked", reason: "source verification budget not spent" };
     if (deadline.affords(1)) {
       try {
-        sourceCheck = await verifier.verify(item.locator, item.text);
+        sourceCheck = await verifier.verify(item.locator, item.text, item.anchor?.contentHash, item.anchor?.span, item.textKind);
       } catch (error) {
         sourceCheck = { status: "unchecked", reason: `verification failed: ${error.message}` };
       }
@@ -259,12 +254,6 @@ function judgeStopReason({ fulfillment, gate, budgetExhausted, observation, item
   return "plan_complete";
 }
 
-function coverageOf(envelopes) {
-  if (!envelopes.length) return "unknown";
-  if (envelopes.some(({ envelope }) => envelope.coverage === "unknown")) return "unknown";
-  return envelopes.every(({ envelope }) => envelope.coverage === "backend_complete") ? "backend_complete" : "bounded";
-}
-
 async function control(input, signal) {
   if (input.backend === "serena" && !["status", "repair"].includes(input.operation)) {
     throw new Error(`${input.operation} is not applicable to Serena; it has no derived index. Use repair to restart its live LSP backend`);
@@ -284,7 +273,7 @@ async function control(input, signal) {
         backends: { [input.backend]: indexes.backends[input.backend] },
       };
     }
-    if (input.backend === "all" || input.backend === "serena") payload.serena = serenaStatus(input.root);
+    if (input.backend === "all" || input.backend === "serena") payload.serena = await unifiedSemanticStatus(input.root);
     return controlResult(input, payload, true);
   }
 
@@ -295,7 +284,7 @@ async function control(input, signal) {
     else payload.push(...await repairIndexes(input.root, indexTargets, { timeoutMs: input.indexTimeoutMs, signal }));
   }
   if ((input.backend === "all" || input.backend === "serena") && input.operation === "repair") {
-    const repaired = await repairSerena(input.root, input.indexTimeoutMs, signal);
+    const repaired = await repairUnifiedSemantic(input.root);
     payload.push(serenaControlRow(repaired));
   }
   // A build still in flight is not a completed effect and is never journalled as one.

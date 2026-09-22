@@ -1,414 +1,234 @@
-import { watch } from "node:fs";
+import { watch, realpathSync } from "node:fs";
 import { randomUUID } from "node:crypto";
-import { realpathSync } from "node:fs";
-import { canonicalDirectory, containsPath } from "./lib/roots.js";
 import { homedir } from "node:os";
 import path from "node:path";
+import { canonicalDirectory, containsPath } from "./lib/roots.js";
 import { log } from "./lib/log.js";
+import { configuredEmbedding } from "./lifecycle.js";
 
 const roots = new Map();
 const processEpoch = randomUUID();
 const MAX_ROOTS = intEnv("LAZY_INTEL_MAX_ROOTS", 8, 1, 64);
 const MAINTENANCE_MS = intEnv("LAZY_INTEL_MAINTENANCE_MS", 5_000, 0, 300_000);
-// Only used when the filesystem watcher is unavailable: without change events, time is
-// the only remaining freshness signal.
 const MAX_STALE_MS = intEnv("LAZY_INTEL_MAX_STALE_MS", 60_000, 5_000, 3_600_000);
 const DEFAULT_TIMEOUT_MS = intEnv("LAZY_INTEL_INDEX_TIMEOUT_MS", 120_000, 5_000, 1_800_000);
-const PROBE_TIMEOUT_MS = intEnv("LAZY_INTEL_PROBE_TIMEOUT_MS", 20_000, 1_000, 120_000);
-const AUTO_REPAIR = process.env.LAZY_INTEL_AUTO_REPAIR !== "false";
 const EXPLICIT_EMBEDDING = process.env.LAZY_INTEL_EMBEDDING || undefined;
+const AUTO_REPAIR = process.env.LAZY_INTEL_AUTO_REPAIR !== "false";
 export const INDEX_BACKENDS = ["zvec", "codegraph"];
-
-let driverPromise;
-
-async function lifecycleDriver(backend) {
-  // This import is dynamic to break the intentional manager -> driver -> unified -> manager cycle.
-  driverPromise ??= new Map();
-  let driver = driverPromise.get(backend);
-  if (!driver) {
-    driver = import("./lifecycle.js").then(({ getDriver }) => getDriver(backend));
-    driverPromise.set(backend, driver);
-  }
-  return driver;
-}
-
 const IGNORED_SEGMENTS = new Set([
-  ".git", ".hg", ".svn", ".zvec-grep", ".codegraph", ".serena", "node_modules", ".venv", "venv",
+  ".git", ".hg", ".svn", ".lazy-intel", ".zvec-grep", ".codegraph", ".serena", ".serena-lazy", "node_modules", ".venv", "venv",
   "DerivedData", ".build", ".swiftpm", "target", "dist", "build", "out", ".next", ".turbo",
   ".gradle", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".cache",
 ]);
-
-// Agent private state is not a source workspace. The OMP home holds ~100k session
-// transcripts, blobs, logs and SQLite WALs that the harness rewrites every second, so a
-// watcher rooted there can never settle: every sync re-embeds files the running agent is
-// still appending to. The deny covers the whole tree, not only the exact directory: the
-// harness keeps a real git repository at ~/.omp/agent holding rules, memories, skills and
-// session databases, so an exact-match deny still embedded precisely the private state
-// this rule exists to protect.
-const DENIED_TREES = [...new Set(
-  [
-    process.env.OMP_HOME || path.join(homedir(), ".omp"),
-    process.env.ZVEC_GREP_HOME || path.join(homedir(), ".zvec-grep"),
-    ...(process.env.LAZY_INTEL_DENY_ROOTS ?? "").split(path.delimiter),
-  ].filter(Boolean).map(canonicalPath),
-)];
-
-// The home directory itself is never a workspace: a single session started from ~ would
-// index every repository, download and credential file on the machine. Descendants of the
-// home directory stay indexable — only ~ as the root is refused.
+const DENIED_TREES = [...new Set([
+  process.env.OMP_HOME || path.join(homedir(), ".omp"),
+  process.env.ZVEC_GREP_HOME || path.join(homedir(), ".zvec-grep"),
+  ...(process.env.LAZY_INTEL_DENY_ROOTS ?? "").split(path.delimiter),
+].filter(Boolean).map(canonicalPath))];
 const DENIED_EXACT = new Set([canonicalPath(homedir())]);
-
 let maintenanceTimer;
 
 function canonicalPath(entry) {
   try { return realpathSync(entry); } catch { return path.resolve(entry); }
 }
-
 export function isDeniedRoot(root) {
   const canonical = canonicalPath(root);
   if (DENIED_EXACT.has(canonical)) return true;
   for (const denied of DENIED_TREES) {
     if (containsPath(denied, canonical)) return true;
-    // A deny entry that did not exist at import time — a fresh agent home, or a symlinked
-    // tmpdir such as macOS /var -> /private/var — only resolves once it is created.
     try { if (containsPath(realpathSync(denied), canonical)) return true; } catch {}
   }
   return false;
 }
-
 export async function bootstrapRoot(root) {
   root = await canonicalDirectory(root);
-  // cwd is frequently the OMP home itself; that is an ordinary skip, not a failure.
   if (isDeniedRoot(root)) {
-    log("info", "skipping automatic indexing of agent private state", { root: path.resolve(root) });
+    log("info", "skipping automatic indexing of agent private state", { root });
     return null;
   }
   const state = await ensureState(root);
-  // Never block MCP startup on a first-time index.
-  queueMicrotask(() => {
-    ensureBackends(state, INDEX_BACKENDS, { freshness: "auto", timeoutMs: DEFAULT_TIMEOUT_MS })
-      .catch((error) => log("warn", "background bootstrap failed", { root: state.root, error: error.message }));
-  });
+  queueMicrotask(() => runPublication(state, INDEX_BACKENDS, { freshness: "auto", timeoutMs: DEFAULT_TIMEOUT_MS }, "ensure")
+    .catch((error) => log("warn", "background bootstrap failed", { root, error: error.message })));
   startMaintenanceLoop();
   return state;
 }
-
 export function observeIndexState(root) {
   const state = roots.get(canonicalPath(root));
   if (!state) return null;
   const applied = INDEX_BACKENDS.map((backend) => state.backends[backend].applied).filter((generation) => generation > 0);
-  return {
-    processEpoch,
-    generation: state.generation,
-    appliedGeneration: applied.length ? Math.min(...applied) : null,
-    watcher: state.watcherState,
-    baseline: applied.length ? "applied" : "unverified",
-  };
+  return { processEpoch, generation: state.generation, appliedGeneration: applied.length ? Math.min(...applied) : null,
+    watcher: state.watcherState, baseline: applied.length ? "applied" : "unverified" };
 }
-
 export async function ensureIndexes(root, backends, options = {}) {
   const state = await ensureState(root);
   startMaintenanceLoop();
-  return ensureBackends(state, indexBackends(backends), options);
+  return runPublication(state, indexBackends(backends), options, "ensure");
 }
-
 export async function syncIndexes(root, backends = INDEX_BACKENDS, options = {}) {
-  const state = await ensureState(root);
-  return serialPerBackend(state, indexBackends(backends), async (backend) => {
-    const created = await ensureCreated(state, backend, options);
-    if (created?.action === "building") return created;
-    return refreshBackend(state, backend, options);
-  }, options.signal);
+  return runPublication(await ensureState(root), indexBackends(backends), options, "sync");
 }
-
 export async function reindexIndexes(root, backends = INDEX_BACKENDS, options = {}) {
-  const state = await ensureState(root);
-  return serialPerBackend(state, indexBackends(backends), (backend) => rebuildBackend(state, backend, options), options.signal);
+  return runPublication(await ensureState(root), indexBackends(backends), options, "rebuild");
 }
-
 export async function repairIndexes(root, backends = INDEX_BACKENDS, options = {}) {
-  const state = await ensureState(root);
-  return serialPerBackend(state, indexBackends(backends), async (backend) => {
-    try {
-      const created = await ensureCreated(state, backend, options);
-      if (created?.action === "building") return created;
-      return await refreshBackend(state, backend, options);
-    } catch (first) {
-      options.signal?.throwIfAborted();
-      log("warn", "index repair escalating to rebuild", { root: state.root, backend, error: first.message });
-      return rebuildBackend(state, backend, options);
-    }
-  }, options.signal);
+  return runPublication(await ensureState(root), indexBackends(backends), options, "repair");
 }
-
-export async function indexStatus(root, options = {}) {
+export async function indexStatus(root) {
   const state = await ensureState(root);
-  const result = {
-    root: state.root,
-    generation: state.generation,
-    watcher: state.watcherActive,
-    embedding: EXPLICIT_EMBEDDING ?? `inherited from zvec-grep configuration (${await (await import("./lifecycle.js")).configuredEmbedding() ?? "unset"})`,
+  const published = await (await import("./unified.js")).unifiedIndexStatus(state.root);
+  return { ...published, generation: state.generation, watcher: state.watcherActive,
+    embedding: EXPLICIT_EMBEDDING ?? `inherited from zvec-grep configuration (${await configuredEmbedding() ?? "unset"})`,
     freshnessSource: state.watcherActive ? "filesystem watcher" : `periodic fallback (${MAX_STALE_MS}ms)`,
-    backends: {},
+    backends: Object.fromEntries(INDEX_BACKENDS.map((backend) => {
+      const b = state.backends[backend];
+      return [backend, { ...published.backends[backend], dirty: hasBaseline(b) ? b.applied < state.generation : null,
+        baseline: hasBaseline(b) ? "applied" : "unverified", appliedGeneration: b.applied, lastSyncAt: b.lastSyncAt || null,
+        consecutiveFailures: b.consecutiveFailures, lastError: b.lastError, busy: b.pending > 0 }];
+    })),
   };
-  for (const backend of INDEX_BACKENDS) {
-    const b = state.backends[backend];
-    const probe = await probeBackend(state, backend, { ...options, force: true }).catch((error) => ({
-      present: false, ready: false, building: false, detail: error.message,
-    }));
-    result.backends[backend] = {
-      present: probe.present,
-      ready: probe.ready,
-      building: probe.building,
-      detail: probe.detail,
-      // null = this process has not synced yet, so "changed since last sync" is unknowable.
-      dirty: hasBaseline(b) ? b.applied < state.generation : null,
-      baseline: hasBaseline(b) ? "applied" : "unverified",
-      appliedGeneration: b.applied,
-      lastSyncAt: b.lastSyncAt || null,
-      consecutiveFailures: b.consecutiveFailures,
-      lastError: b.lastError ?? null,
-      busy: Boolean(b.queue),
-    };
-  }
-  return result;
 }
 
 async function ensureState(root) {
   const absolute = await canonicalDirectory(root);
-  if (isDeniedRoot(absolute)) {
-    throw new Error(`root is agent private state, not a source workspace: ${absolute} `
-      + "(run from the project directory, or set LAZY_INTEL_DENY_ROOTS to change the deny list)");
-  }
+  if (isDeniedRoot(absolute)) throw new Error(`root is agent private state, not a source workspace: ${absolute}`);
   const existing = roots.get(absolute);
   if (existing) return existing;
   if (roots.size >= MAX_ROOTS) throw new Error(`workspace limit reached (${MAX_ROOTS}); restart lazy-intel to release watchers`);
-  const state = {
-    root: absolute,
-    generation: 1,
-    watcher: null,
-    watcherActive: false,
-    watcherState: "unknown",
-    backends: { zvec: backendState(), codegraph: backendState() },
-  };
+  const state = { root: absolute, generation: 1, watcher: null, watcherActive: false, watcherState: "unknown", closed: false,
+    publicationQueue: Promise.resolve(), queueDepth: 0, ensures: new Map(), backends: { zvec: backendState(), codegraph: backendState() } };
   roots.set(absolute, state);
   attachWatcher(state);
   return state;
 }
 function backendState() {
-  return {
-    applied: 0, lastSyncAt: 0, consecutiveFailures: 0, lastError: null,
-    queue: null, ready: false, nextAttemptAt: 0,
-  };
+  return { applied: 0, lastSyncAt: 0, consecutiveFailures: 0, lastError: null, pending: 0, ready: false, nextAttemptAt: 0, readFailed: false };
 }
-
-// A baseline exists only after this process created or synced the index itself.
-function hasBaseline(b) {
-  return b.applied > 0;
-}
-
-// With a live watcher, dirtiness is authoritative and time means nothing. Without one,
-// fall back to periodic freshness so changes are not missed forever.
+function hasBaseline(b) { return b.applied > 0; }
 function isStale(state, b, options = {}) {
-  if (state.watcherActive || !hasBaseline(b)) return false;
-  const maxStaleMs = options.maxStaleMs ?? MAX_STALE_MS;
-  return Date.now() - b.lastSyncAt >= maxStaleMs;
+  return !state.watcherActive && hasBaseline(b) && Date.now() - b.lastSyncAt >= (options.maxStaleMs ?? MAX_STALE_MS);
 }
-
-// A backend that keeps failing must not be hammered: 30s, 1m, 2m, … capped at 15m.
-function failureBackoffMs(failures) {
-  return Math.min(30_000 * 2 ** Math.max(0, failures - 1), 900_000);
-}
-
 function attachWatcher(state) {
+  const failed = (error) => {
+    state.generation += 1; state.watcherActive = false; state.watcherState = "unavailable";
+    log("warn", "filesystem watcher unavailable; periodic freshness checks remain active", { root: state.root, error: error.message });
+  };
   try {
     state.watcher = watch(state.root, { recursive: true, persistent: false }, (_event, filename) => {
-      if (!filename) {
-        state.generation += 1;
-        return;
-      }
-      if (shouldIgnore(String(filename))) return;
-      state.generation += 1;
+      if (!filename || !shouldIgnore(String(filename))) state.generation += 1;
     });
-    state.watcher.on("error", (error) => {
-      state.watcherActive = false;
-      state.watcherState = "unavailable";
-      log("warn", "filesystem watcher failed; explicit sync still available", { root: state.root, error: error.message });
-    });
-    state.watcherActive = true;
-    state.watcherState = "active";
-  } catch (error) {
-    state.watcherState = "unavailable";
-    log("warn", "filesystem watcher unavailable; explicit sync still available", { root: state.root, error: error.message });
-  }
+    state.watcher.on("error", failed);
+    state.watcherActive = true; state.watcherState = "active";
+  } catch (error) { failed(error); }
 }
-
 function shouldIgnore(filename) {
   const normalized = filename.replaceAll("\\", "/").replace(/^\.\//, "");
-  if (normalized.endsWith(".swp") || normalized.endsWith("~") || normalized.endsWith(".tmp")) return true;
-  // Every segment is checked so nested vendor/derived directories cannot create sync feedback loops.
-  return normalized.split("/").some((segment) => segment === ".DS_Store" || IGNORED_SEGMENTS.has(segment));
+  return normalized.endsWith(".swp") || normalized.endsWith("~") || normalized.endsWith(".tmp") ||
+    normalized.split("/").some((segment) => segment === ".DS_Store" || IGNORED_SEGMENTS.has(segment));
 }
-
-async function ensureBackends(state, backends, options) {
-  return serialPerBackend(state, backends, async (backend) => {
-    const b = state.backends[backend];
-    if (!options.force && b.nextAttemptAt > Date.now()) {
-      return row(backend, false, "failed", {
-        error: b.lastError ?? "index retry is backed off",
-        retryAfterMs: b.nextAttemptAt - Date.now(),
-      });
-    }
-    try {
-      const created = await ensureCreated(state, backend, options);
-      if (created?.action === "building") return created;
-      const freshness = options.freshness ?? "auto";
-      // Without a baseline from this process, changes made while it was down are unknown:
-      // reconcile exactly once, then stay change-driven.
-      const needsReconcile = !hasBaseline(b);
-      const dirty = hasBaseline(b) && b.applied < state.generation;
-      const stale = isStale(state, b, options);
-      if (freshness === "strict" || (freshness === "auto" && (dirty || needsReconcile || stale))) {
-        return await refreshBackend(state, backend, options);
-      }
-      return row(backend, true, "ready", { dirty });
-    } catch (error) {
-      options.signal?.throwIfAborted();
-      b.ready = false;
-      b.consecutiveFailures += 1;
-      b.lastError = error.message;
-      b.nextAttemptAt = Date.now() + failureBackoffMs(b.consecutiveFailures);
-      // Escalate to a rebuild exactly once per failure streak; a broken backend must not
-      // trigger a full re-index on every later attempt.
-      if (AUTO_REPAIR && b.consecutiveFailures === 2) {
-        try {
-          log("warn", "automatic index repair", { root: state.root, backend, failures: b.consecutiveFailures });
-          return await rebuildBackend(state, backend, options);
-        } catch (repairError) {
-          b.lastError = repairError.message;
-          b.nextAttemptAt = Date.now() + failureBackoffMs(b.consecutiveFailures);
-        }
-      }
-      return row(backend, false, "failed", { error: b.lastError, retryAfterMs: Math.max(0, b.nextAttemptAt - Date.now()) });
-    }
-  }, options.signal);
-}
-
-async function ensureCreated(state, backend, options = {}) {
-  const b = state.backends[backend];
-  if (b.ready) return null;
-  const probe = await probeBackend(state, backend, options);
-  if (probe.building) return row(backend, false, "building", { detail: probe.detail });
-  if (probe.ready) {
-    b.ready = true;
-    if (!b.lastSyncAt) b.lastSyncAt = Date.now();
-    return null;
-  }
-  const startedGeneration = state.generation;
-  const driver = await lifecycleDriver(backend);
-  await driver.create(state.root, { signal: options.signal, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, embedding: options.embedding });
-  markApplied(b, startedGeneration);
-  log("info", "index initialized", { root: state.root, backend });
-  return null;
-}
-
-async function refreshBackend(state, backend, options = {}) {
-  const startedGeneration = state.generation;
-  const driver = await lifecycleDriver(backend);
-  await driver.refresh(state.root, { signal: options.signal, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS });
-  markApplied(state.backends[backend], startedGeneration);
-  return row(backend, true, "synced", { generation: startedGeneration });
-}
-
-async function rebuildBackend(state, backend, options = {}) {
-  const startedGeneration = state.generation;
-  const driver = await lifecycleDriver(backend);
-  await driver.rebuild(state.root, { signal: options.signal, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, embedding: options.embedding });
-  markApplied(state.backends[backend], startedGeneration);
-  return row(backend, true, "rebuilt", { generation: startedGeneration });
-}
-
-async function probeBackend(state, backend, options = {}) {
-  const driver = await lifecycleDriver(backend);
-  return driver.probe(state.root, { signal: options.signal, timeoutMs: options.probeTimeoutMs ?? PROBE_TIMEOUT_MS });
-}
-
 function markApplied(b, generation) {
-  b.applied = generation;
-  b.lastSyncAt = Date.now();
-  b.consecutiveFailures = 0;
-  b.lastError = null;
-  b.nextAttemptAt = 0;
-  b.ready = true;
+  b.applied = generation; b.lastSyncAt = Date.now(); b.consecutiveFailures = 0; b.lastError = null;
+  b.nextAttemptAt = 0; b.ready = true; b.readFailed = false;
 }
-
-// FIFO per backend: a queued reindex/repair runs after the in-flight job instead of
-// silently inheriting its result.
-function serialPerBackend(state, backends, fn, signal) {
-  return Promise.all(backends.map((backend) => {
-    const b = state.backends[backend];
-    const previous = b.queue ?? Promise.resolve();
-    const run = () => {
-      if (signal?.aborted) signal.throwIfAborted();
-      return fn(backend);
-    };
-    const result = previous.then(run, run);
-    const settled = result.then(ignore, ignore);
-    b.queue = settled;
-    settled.then(() => {
-      if (b.queue === settled) b.queue = null;
-    });
-    return result;
-  }));
+export function noteIndexReadFailure(root, backend, message) {
+  const b = roots.get(canonicalPath(root))?.backends[backend];
+  if (b) { b.ready = false; b.readFailed = true; b.lastError = message; }
 }
-
+function join(job, signal) {
+  if (!signal) return job;
+  signal.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const cleanup = () => signal.removeEventListener("abort", abort);
+    const abort = () => { cleanup(); reject(signal.reason ?? new Error("cancelled")); };
+    signal.addEventListener("abort", abort, { once: true });
+    job.then((value) => { cleanup(); resolve(value); }, (error) => { cleanup(); reject(error); });
+  });
+}
+/** The watcher schedules work; only a published durable view grants readiness. */
+function runPublication(state, backends, options, action) {
+  options.signal?.throwIfAborted();
+  const key = action === "ensure" ? [...backends].sort().join(",") + ":" + (options.freshness ?? "auto") : null;
+  const existing = key && state.ensures.get(key);
+  if (existing) return join(existing, options.signal);
+  if (state.queueDepth >= 32) return Promise.reject(new Error("workspace publication queue is full"));
+  const run = async () => {
+    if (state.closed) throw new Error("workspace is closing");
+    const { synchronizeWorkspace, unifiedIndexStatus } = await import("./unified.js");
+    const status = await unifiedIndexStatus(state.root);
+    const freshness = options.freshness ?? "auto";
+    const readFailed = backends.some((backend) => state.backends[backend].readFailed);
+    const canRead = !readFailed && !status.needsRecovery && backends.every((backend) => status.backends[backend].ready);
+    const coherent = new Set(backends.map((backend) => status.backends[backend].view?.appliedManifestId)).size <= 1;
+    const fresh = backends.every((backend) => hasBaseline(state.backends[backend]) && state.backends[backend].applied === state.generation && !isStale(state, state.backends[backend], options));
+    if (action === "ensure" && canRead && coherent && (freshness === "fast" || (freshness === "auto" && fresh))) {
+      return backends.map((backend) => ({ backend, ok: true, ready: true, building: false, action: "ready", view: status.backends[backend].view, dirty: !fresh }));
+    }
+    const generation = state.generation;
+    try {
+      // Watcher hints can arrive while capture/publication is in flight. Reconcile a
+      // bounded number of generations, but never claim a generation captured later.
+      let rows;
+      let firstRows;
+      let publishedGeneration = generation;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const observedGeneration = state.generation;
+        rows = await synchronizeWorkspace(state.root, backends, { ...options, signal: undefined,
+          rebuild: attempt === 0 && (action === "rebuild" || action === "repair" || (readFailed && AUTO_REPAIR)) });
+        firstRows ??= rows;
+        publishedGeneration = observedGeneration;
+        if (state.generation === observedGeneration) break;
+      }
+      for (const backend of backends) markApplied(state.backends[backend], publishedGeneration);
+      return firstRows;
+    } catch (error) {
+      for (const backend of backends) {
+        const b = state.backends[backend];
+        b.ready = false; b.lastError = error.message; b.consecutiveFailures += 1;
+        b.nextAttemptAt = Date.now() + Math.min(30_000 * 2 ** Math.max(0, b.consecutiveFailures - 1), 900_000);
+      }
+      return backends.map((backend) => ({ backend, ok: false, ready: false, building: false, action: "failed", error: error.message }));
+    }
+  };
+  state.queueDepth += 1;
+  for (const backend of backends) state.backends[backend].pending += 1;
+  const job = state.publicationQueue.then(run, run);
+  const settled = job.then(() => undefined, () => undefined).finally(() => {
+    state.queueDepth -= 1;
+    for (const backend of backends) state.backends[backend].pending -= 1;
+    if (key && state.ensures.get(key) === job) state.ensures.delete(key);
+  });
+  state.publicationQueue = settled;
+  if (key) state.ensures.set(key, job);
+  return join(job, options.signal);
+}
 function startMaintenanceLoop() {
   if (maintenanceTimer || MAINTENANCE_MS <= 0) return;
   maintenanceTimer = setInterval(() => {
     const now = Date.now();
     for (const state of roots.values()) {
-      // Change-driven, deduplicated, backoff-aware: a quiet or broken workspace costs
-      // zero subprocesses and never accumulates a queue backlog.
       const due = INDEX_BACKENDS.filter((backend) => {
         const b = state.backends[backend];
-        if (b.queue || now < b.nextAttemptAt) return false;
-        return b.applied < state.generation || b.consecutiveFailures > 0 || !b.ready || isStale(state, b);
+        return b.pending === 0 && now >= b.nextAttemptAt && (b.applied < state.generation || b.consecutiveFailures > 0 || !b.ready || isStale(state, b));
       });
-      if (!due.length) continue;
-      ensureBackends(state, due, { freshness: "auto", timeoutMs: DEFAULT_TIMEOUT_MS })
+      if (due.length) runPublication(state, due, { freshness: "auto", timeoutMs: DEFAULT_TIMEOUT_MS }, "ensure")
         .catch((error) => log("warn", "background index maintenance failed", { root: state.root, error: error.message }));
     }
   }, MAINTENANCE_MS);
   maintenanceTimer.unref();
 }
-
 function indexBackends(backends) {
   const list = Array.isArray(backends) ? backends : [backends];
-  const filtered = [...new Set(list.filter((x) => INDEX_BACKENDS.includes(x)))];
+  const filtered = [...new Set(list.filter((value) => INDEX_BACKENDS.includes(value)))];
   if (!filtered.length) throw new Error(`no derived-index backend selected from: ${JSON.stringify(list)}`);
   return filtered;
 }
-
-function ignore() {}
-
-function row(backend, ok, action, detail = {}) {
-  const building = detail.building ?? action === "building";
-  const ready = building ? false : (detail.ready ?? (ok && action !== "failed"));
-  const { building: _building, ready: _ready, ...extra } = detail;
-  return { backend, ok: building ? false : Boolean(ok), ready: Boolean(ready), building: Boolean(building), action, ...extra };
-}
-
 function intEnv(name, fallback, min, max) {
   const raw = process.env[name];
   if (raw == null || raw === "") return fallback;
-  const n = Number(raw);
-  if (!Number.isFinite(n)) return fallback;
-  return Math.max(min, Math.min(max, Math.trunc(n)));
+  const value = Number(raw);
+  return Number.isFinite(value) ? Math.max(min, Math.min(max, Math.trunc(value))) : fallback;
 }
-
 export function closeIndexManager() {
-  clearInterval(maintenanceTimer);
-  maintenanceTimer = undefined;
-  for (const state of roots.values()) state.watcher?.close();
+  clearInterval(maintenanceTimer); maintenanceTimer = undefined;
+  for (const state of roots.values()) { state.closed = true; state.watcher?.close(); }
   roots.clear();
 }

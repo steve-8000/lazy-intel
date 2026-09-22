@@ -1,7 +1,10 @@
 {
   "unit": "U09",
   "title": "Real integration, activation and rollback",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "newPaths": [
     "scripts/verify-release.mjs",
     "docs/unified/release-evidence.json",

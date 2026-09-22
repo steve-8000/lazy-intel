@@ -1,7 +1,10 @@
 {
   "unit": "U03",
   "title": "Typed embedded adapters in supervised workers",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "newPaths": [
     "packages/core/src/runtime/protocol.ts",
     "packages/core/src/runtime/supervisor.ts",

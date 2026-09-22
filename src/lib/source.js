@@ -64,6 +64,17 @@ function rangeText(text, range) {
   lines[lines.length - 1] = columnSlice(lines.at(-1), 0, end, encoding);
   return lines.join("\n");
 }
+
+export function lineRangeForSpan(bytes, span) {
+  const start = Math.max(0, Math.min(span.startByte, bytes.length));
+  const end = Math.max(start, Math.min(span.endByte, bytes.length));
+  let startLine = 0;
+  for (let index = 0; index < start; index += 1) if (bytes[index] === 10) startLine += 1;
+  let endLine = startLine;
+  for (let index = start; index < end; index += 1) if (bytes[index] === 10) endLine += 1;
+  if (end > start && bytes[end - 1] === 10) endLine -= 1;
+  return { startLine, endLineExclusive: endLine + 1 };
+}
 function sameStat(before, after) {
   return before.dev === after.dev && before.ino === after.ino && before.size === after.size &&
     before.mtimeMs === after.mtimeMs;
@@ -78,11 +89,11 @@ export function createSourceVerifier(root, options = {}) {
   let filesRead = 0;
   let bytesRead = 0;
 
-  async function verify(locator, expectedText) {
+  async function verify(locator, expectedText, expectedHash, expectedSpan, textKind = "source") {
     if (!locator || typeof expectedText !== "string") return { status: "unchecked", reason: "invalid verification input" };
     const key = `${locator.rootKey}\0${locator.relativePath}`;
     const cached = cache.get(key);
-    if (cached) return check(locator, expectedText, cached);
+    if (cached) return check(locator, expectedText, cached, expectedHash, expectedSpan, textKind);
     if (filesRead >= budget.maxFiles) return { status: "unchecked", reason: "source file budget exhausted" };
     let resolved;
     try {
@@ -94,7 +105,7 @@ export function createSourceVerifier(root, options = {}) {
     }
     const resolvedKey = `${resolved.rootKey}\0${resolved.relativePath}`;
     const existing = cache.get(resolvedKey);
-    if (existing) return check(locator, expectedText, existing);
+    if (existing) return check(locator, expectedText, existing, expectedHash, expectedSpan, textKind);
     let before;
     try {
       const absolute = path.join(resolved.rootKey, ...resolved.relativePath.split("/"));
@@ -110,15 +121,32 @@ export function createSourceVerifier(root, options = {}) {
       if (!sameStat(before, after) || bytes.byteLength !== before.size) {
         return { status: "unchecked", reason: "source changed during read" };
       }
-      const entry = { text: bytes.toString("utf8"), hash: createHash("sha256").update(bytes).digest("hex") };
+      const entry = { bytes, text: bytes.toString("utf8"), hash: createHash("sha256").update(bytes).digest("hex") };
       cache.set(resolvedKey, entry);
-      return check(locator, expectedText, entry);
+      return check(locator, expectedText, entry, expectedHash, expectedSpan, textKind);
     } catch (error) {
       return { status: "unchecked", reason: `source read failed: ${error.message}` };
     }
   }
 
-  function check(locator, expectedText, entry) {
+  function check(locator, expectedText, entry, expectedHash, expectedSpan, textKind) {
+    if (expectedHash && expectedHash !== "unknown" && entry.hash !== expectedHash) {
+      return { status: "mismatch", reason: "source revision differs from the captured anchor" };
+    }
+    if (expectedSpan) {
+      const { startByte, endByte, coordinateSystem } = expectedSpan;
+      if (coordinateSystem !== "utf8-bytes" || !Number.isSafeInteger(startByte) || !Number.isSafeInteger(endByte) || startByte < 0 || endByte < startByte || endByte > entry.bytes.length) return { status: "mismatch", reason: "invalid canonical byte span" };
+      const range = lineRangeForSpan(entry.bytes, expectedSpan);
+      if (locator.range && (locator.range.startLine !== range.startLine || locator.range.endLineExclusive !== range.endLineExclusive)) return { status: "mismatch", reason: "locator differs from canonical byte span" };
+      // Descriptions are semantic claims, not quotations. Only their source anchor is checked.
+      if (textKind === "description") return expectedHash && expectedHash !== "unknown"
+        ? { status: "matched", sha256: entry.hash }
+        : { status: "unchecked", reason: "description has no captured source revision" };
+      return entry.bytes.subarray(startByte, endByte).toString("utf8") === expectedText
+        ? { status: "matched", sha256: entry.hash }
+        : { status: "mismatch", reason: "source excerpt differs from canonical byte span" };
+    }
+    if (textKind === "description") return { status: "unchecked", reason: "description has no canonical source span" };
     const actual = rangeText(entry.text, locator.range);
     if (actual !== expectedText) return { status: "mismatch", reason: "source text does not match locator" };
     return { status: "matched", sha256: entry.hash };

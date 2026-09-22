@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "criteria": {
+    "IR-05": {
+      "status": "PASS",
+      "observations": {
+        "contract": "Captured CodeGraph snapshots preserve framework, conformance, deferred and negative graph behavior against stock disk indexing",
+        "framework_route": {"name": "/", "filePath": "src/pages/index.astro"},
+        "conformance_edge": {"target": "Base::draw", "source": "Caller::run", "kind": "calls"},
+        "deferred_edge": {"target": "Base::baseMethod", "source": "App::run", "kind": "calls"},
+        "negative": {"target": "Decoy::draw", "incomingCalls": 0},
+        "graph_state_equal": true
+      }
+    },
+    "IR-06": {
+      "status": "PASS",
+      "observations": {
+        "contract": "Existing-store public syncSnapshots edits preserve untouched graph state and equal a fresh indexed build",
+        "untouched_node": "stable",
+        "untouched_edge": {"kind": "calls", "source": "call", "target": "stable"},
+        "incremental_added_node": "added",
+        "fresh_build_parity": true
+      }
+    },
+    "IR-07": {
+      "status": "PASS",
+      "observations": {
+        "contract": "Authoritative captured source and metadata remain pure when live tsconfig, go.mod, and workspace package files are mutated or deleted",
+        "captured_metadata": ["tsconfig.json", "go.mod", "packages/dep/package.json"],
+        "live_mutations": ["changed tsconfig alias", "deleted lib/lib.go", "changed go.mod module", "changed and deleted workspace package files"],
+        "changed_captured_source": "src/app.ts",
+        "fresh_build_equivalence": true,
+        "stock_sdk_without_captured_map": "normal CodeGraph indexed initialization still sees stockSdk"
+      }
+    },
+    "IR-08": {
+      "status": "PASS",
+      "observations": {
+        "contract": "Public unified graph sync/query handles a multipart source publication and late framework manifest",
+        "multipart_fixture_bytes": 838880,
+        "framework_manifest": "package.json added after the large source set and after the warm publication",
+        "public_query_anchor": "src/pages/index.astro",
+        "fresh_framework_route": {"name": "/", "filePath": "src/pages/index.astro"},
+        "empty_after_delete_last": {"status": "empty", "evidence": [], "issues": [], "view_state": "clean"}
+      }
+    }
+  },
+  "commands": [
+    {"command": "node --test test/contracts/graph-publication.test.js", "cwd": "/Users/steve/lazy-project/lazy-intel", "exit_code": 0, "tests": 4, "pass": 4}
+  ],
+  "sourceidentity": {
+    "upstream_vendor": "vendor/codegraph",
+    "upstream_commit": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
+    "source_hashes": {
+      "test/contracts/graph-publication.test.js": {"sha256": "28cd5621ccaaa302d5af7fe589feb1f64e9df3aa99cc98c0b612df285f740501", "bytes": 15030},
+      "test/parity/graph.test.js": {"sha256": "23dee78872b1bc2feb3555cc9c23edd65081ec0fd5dcd2f3732cd0118a8586b4", "bytes": 9330},
+      "vendor/codegraph/src/extraction/index.ts": {"sha256": "937642d556a0fd5025665d0504c2c8e6361745d4f2638565d6a5053920f91964", "bytes": 135669},
+      "vendor/codegraph/src/resolution/index.ts": {"sha256": "e0445ad8d36930a03579b1c50c1da91537099e2497ae102b10192d5316dc310a", "bytes": 113993},
+      "vendor/codegraph/src/index.ts": {"sha256": "d4079560d3bad68fd588b76d83f7a288bc7d02d3d66d4046302ceee7eefb1b86", "bytes": 81790},
+      "vendor/codegraph/UPSTREAM.json": {"sha256": "55f3f840c833bc55c2c3028bb2b765e12b7e683dd4133a4d0f00195c828af7f7", "bytes": 111080}
+    }
+  },
+  "review_fix": {
+    "status": "implemented_and_proven",
+    "empty_snapshot": "Defined empty source snapshots reach the graph worker and public graph query returns a clean empty result after deleting the last source.",
+    "multipart": "Prepared graph parts are staged until the final marker; a late package.json framework marker is observed in the complete multipart publication.",
+    "snapshot_purity": "Resolver source reads, directory enumeration, file existence, aliases, go.mod, and workspace package metadata use the authoritative captured map.",
+    "directory_import": "A captured src/mod/index.js import remains resolved to the captured module despite a live-only src/mod.js competitor, with the expected import/call edge matching a fresh captured graph.",
+    "stock_compatibility": "A normal CodeGraph indexed initialization without captured snapshots remains filesystem-backed."
+  },
+  "repository_changes": [
+    "vendor/codegraph/src/resolution/index.ts",
+    "vendor/codegraph/UPSTREAM.json",
+    "test/contracts/graph-publication.test.js",
+    "docs/unified/graph-contract-evidence.json"
+  ]
+}

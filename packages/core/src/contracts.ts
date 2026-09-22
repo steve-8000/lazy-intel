@@ -91,20 +91,14 @@ export interface ProjectionView {
   readonly appliedManifestId: ManifestId;
   readonly profileDigest: string;
   readonly state: "clean" | "applying" | "needs_recovery";
+  /** Owned store generation; never the source root or a backend-global cache. */
+  readonly storeRoot?: string;
 }
 
 export interface CanonicalAnchor {
   readonly workspaceId: WorkspaceId;
   readonly fileId: FileId;
-  /**
-   * Workspace-relative path of the anchored file.
-   *
-   * `fileId` is a stable identity and is deliberately not a path: adapters mint
-   * it per engine so two backends never collide. A live read has no
-   * `CapturedManifest` to resolve an id back to a path, yet every consumer —
-   * the renderer, the source verifier, the product's locator — needs one. So the
-   * path travels with the anchor rather than being reconstructed from the id.
-   */
+  /** Display path bound to this occurrence's captured source bytes. */
   readonly relativePath: string;
   readonly contentHash: ContentHash;
   readonly span: SourceSpan;
@@ -124,10 +118,13 @@ export interface SemanticObservation {
   readonly sessionEpoch: string;
   readonly serverProfileDigest: string;
   readonly fileHash: ContentHash | null;
+  readonly bufferHash: ContentHash | null;
   readonly documentVersion: number | null;
   readonly buildContextDigest: string | null;
   readonly positionEncoding: "utf-8" | "utf-16" | "utf-32";
   readonly scope: "own-buffer" | "disk-observed" | "unknown";
+  readonly relativePath?: string;
+  readonly diagnosticsStatus?: "not_reported" | "complete" | "unsupported";
 }
 
 export interface Coverage {
@@ -149,7 +146,10 @@ export interface Evidence {
   readonly semanticObservation: SemanticObservation | null;
   readonly relevanceScore: number | null;
   readonly text: string | null;
+  /** Only source text claims verbatim correspondence with the anchored bytes. */
+  readonly textKind?: "source" | "description";
   readonly coverage: Coverage;
+  readonly relatedAnchors?: readonly { readonly role: "containing-symbol" | "reference" | "target"; readonly anchor: CanonicalAnchor }[];
 }
 
 export interface EngineIssue {
@@ -167,15 +167,21 @@ export interface ReadResult {
   readonly issues: readonly EngineIssue[];
   readonly coverage: Coverage;
   readonly consistency: "captured-manifest" | "mixed-views" | "live-observation" | "unknown";
+  /** Observations also survive successful empty reports, which have no evidence. */
+  readonly semanticObservations?: readonly SemanticObservation[];
+  readonly views?: readonly ProjectionView[];
 }
 
-export interface SearchRequest {
+interface SearchInput {
   readonly query: string;
-  readonly mode: "hybrid" | "lexical" | "semantic" | "exact";
   readonly scope: WorkspaceScope;
-  readonly view: ProjectionView | null;
+  readonly sources?: readonly SourceSnapshot[];
   readonly limit: number;
 }
+export type SearchRequest = SearchInput & (
+  | { readonly mode: "exact"; readonly view: null }
+  | { readonly mode: "hybrid" | "lexical" | "semantic"; readonly view: ProjectionView }
+);
 
 export interface SymbolSubject {
   /** User-facing name_path retained for compatibility. Not a canonical identity. */
@@ -191,6 +197,7 @@ export interface GraphRequest {
   readonly subject: SymbolSubject | null;
   readonly depth: number;
   readonly view: ProjectionView;
+  readonly sources?: readonly SourceSnapshot[];
 }
 
 export interface SemanticRequest {
@@ -198,6 +205,11 @@ export interface SemanticRequest {
   readonly subject: SymbolSubject | null;
   readonly relativePath: string | null;
   readonly includeBody: boolean;
+  readonly depth?: number;
+  readonly substringMatching?: boolean;
+  readonly maxMatches?: number;
+  readonly includeKinds?: readonly number[];
+  readonly excludeKinds?: readonly number[];
 }
 
 export interface ApplyAck {
@@ -206,6 +218,7 @@ export interface ApplyAck {
   readonly state: "applied" | "needs_recovery";
   readonly manifestId: ManifestId;
   readonly durableBoundary: string;
+  readonly storeRoot?: string;
 }
 
 /** These are NEW internal ports. No upstream module currently exports them. */

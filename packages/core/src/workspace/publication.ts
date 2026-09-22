@@ -1,287 +1,149 @@
-import { mkdir, open, readFile, rename, rm, stat } from "node:fs/promises";
+import { mkdir, open, readFile, rename } from "node:fs/promises";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
-import type { Projection, ProjectionView } from "../contracts.js";
+import type { ApplyAck, CapturedManifest, Projection, ProjectionView, SourceSnapshot } from "../contracts.js";
 import { openWorkspaceJournal, type WorkspaceJournal } from "./journal.js";
 
-export type PublicationFailurePoint =
-  | "before-component-write"
-  | "after-component-write-before-ack"
-  | "after-ack-before-catalog-publication"
-  | "before-catalog-publication"
-  | "after-catalog-publication";
-
-export interface PublicationOptions {
-  readonly manifestId: string;
-  readonly profileDigest: string;
-  readonly components: Readonly<Partial<Record<Projection, unknown>>>;
-  readonly failureAt?: PublicationFailurePoint;
-}
-
-export interface PublicationStatus {
-  readonly views: Readonly<Partial<Record<Projection, ProjectionView>>>;
-  readonly mixedViews: boolean;
-  readonly applying: boolean;
-  readonly needsRecovery: boolean;
-}
-
-export interface ProjectionRead<T = unknown> {
-  readonly projection: Projection;
-  readonly view: ProjectionView;
-  readonly data: T;
-}
-
-interface StoredTransaction {
-  readonly id: string;
+export type PublicationFailurePoint = "before-component-write" | "after-component-write-before-ack" | "after-ack-before-catalog-publication" | "before-catalog-publication" | "after-catalog-publication";
+export interface PublicationBatch {
+  readonly batchId: string;
   readonly manifestId: string;
   readonly profileDigest: string;
   readonly projections: readonly Projection[];
-  readonly candidates: Readonly<Partial<Record<Projection, string>>>;
-  readonly oldViews: Readonly<Partial<Record<Projection, ProjectionView>>>;
+  readonly sources: readonly SourceSnapshot[];
+  readonly deletedPaths: readonly string[];
+  readonly full: boolean;
+  readonly embedding?: string;
+  readonly manifest?: CapturedManifest;
+  readonly storeRoot?: string;
 }
+export interface PublicationOptions { readonly failureAt?: PublicationFailurePoint; readonly signal?: AbortSignal; }
+export type ApplyProjection = (projection: Projection, batch: PublicationBatch) => Promise<ApplyAck> | ApplyAck;
+export interface PublicationStatus { readonly views: Readonly<Partial<Record<Projection, ProjectionView>>>; readonly mixedViews: boolean; readonly applying: boolean; readonly needsRecovery: boolean; readonly pendingBatches: readonly PublicationBatch[]; }
+export interface ProjectionRead<T = unknown> { readonly projection: Projection; readonly view: ProjectionView; readonly data: T | undefined; }
+export interface PublicationReadLease { readonly views: Readonly<Partial<Record<Projection, ProjectionView>>>; readonly released: boolean; release(): void; }
+interface StoredTransaction { readonly batch: PublicationBatch; readonly oldViews: Readonly<Partial<Record<Projection, ProjectionView>>>; readonly operationId: string; readonly acknowledged: readonly Projection[]; }
+interface PublicationCatalog { readonly version: 3; readonly views: Partial<Record<Projection, ProjectionView>>; readonly activeBatches: Partial<Record<Projection, PublicationBatch>>; readonly transactions: Partial<Record<string, StoredTransaction>>; readonly completed: Readonly<Record<string, true>>; }
+interface PublicationJournalPayload { readonly kind: "publication"; readonly transaction: StoredTransaction; }
+interface AckPayload { readonly projection?: unknown; readonly durableBoundary?: unknown; }
+ type OperationId = `${string}-${string}-${string}-${string}-${string}`;
 
-interface PublicationCatalog {
-  readonly version: 1;
-  readonly views: Partial<Record<Projection, ProjectionView>>;
-  readonly transactions: Partial<Record<string, StoredTransaction>>;
-}
-
-interface PublicationJournalPayload {
-  readonly kind: "publication";
-  readonly transaction: StoredTransaction;
-}
-
-function digest(value: unknown): string {
-  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
-}
-
-function projectionList(components: Readonly<Partial<Record<Projection, unknown>>>): Projection[] {
-  return (["retrieval", "graph"] as const).filter((projection) => Object.prototype.hasOwnProperty.call(components, projection));
-}
-
-function emptyCatalog(): PublicationCatalog {
-  return { version: 1, views: {}, transactions: {} };
-}
-
+function digest(value: unknown): string { return createHash("sha256").update(JSON.stringify(value)).digest("hex"); }
+function emptyCatalog(): PublicationCatalog { return { version: 3, views: {}, activeBatches: {}, transactions: {}, completed: {} }; }
+function cloneView(view: ProjectionView): ProjectionView { return Object.freeze({ ...view }); }
+function cloneBatch(batch: PublicationBatch): PublicationBatch { return Object.freeze({ ...batch, projections: Object.freeze([...batch.projections]), sources: Object.freeze(batch.sources.map((source) => Object.freeze({ ...source }))), deletedPaths: Object.freeze([...batch.deletedPaths]) }); }
+function mixedViews(views: Readonly<Partial<Record<Projection, ProjectionView>>>): boolean { const ids = Object.values(views).filter((view): view is ProjectionView => view?.state === "clean").map((view) => view.appliedManifestId); return new Set(ids).size > 1; }
+function abortIfNeeded(signal: AbortSignal | undefined): void { if (signal?.aborted) throw signal.reason instanceof Error ? signal.reason : new Error("publication cancelled"); }
 async function durableJson(filePath: string, value: unknown): Promise<void> {
-  const temporary = `${filePath}.${process.pid}.${randomUUID()}`;
-  const handle = await open(temporary, "w", 0o600);
-  try {
-    await handle.writeFile(`${JSON.stringify(value)}\n`, "utf8");
-    await handle.sync();
-  } finally { await handle.close(); }
-  await rename(temporary, filePath);
-  const directory = await open(path.dirname(filePath), "r");
-  try { await directory.sync(); } finally { await directory.close(); }
+  await mkdir(path.dirname(filePath), { recursive: true }); const temporary = `${filePath}.${process.pid}.${randomUUID()}`; const handle = await open(temporary, "w", 0o600);
+  try { await handle.writeFile(`${JSON.stringify(value)}\n`, "utf8"); await handle.sync(); } finally { await handle.close(); }
+  await rename(temporary, filePath); const directory = await open(path.dirname(filePath), "r"); try { await directory.sync(); } finally { await directory.close(); }
 }
-
 async function readCatalog(filePath: string): Promise<PublicationCatalog> {
-  try {
-    const parsed = JSON.parse(await readFile(filePath, "utf8")) as PublicationCatalog;
-    if (parsed.version !== 1 || !parsed.views || !parsed.transactions) throw new Error("invalid publication catalog");
-    return parsed;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return emptyCatalog();
-    throw error;
+  try { const parsed = JSON.parse(await readFile(filePath, "utf8")) as PublicationCatalog; if (parsed.version !== 3 || !parsed.views || !parsed.transactions || !parsed.activeBatches || !parsed.completed) throw new Error("invalid publication catalog"); return parsed; }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return emptyCatalog(); throw error; }
+}
+
+class ReadWriteLease {
+  private readers = 0; private writer = false; private waitingWriters = 0;
+  private readWaiters: Array<{ resolve: () => void; reject: (error: unknown) => void; signal: AbortSignal | undefined; onAbort: (() => void) | undefined }> = [];
+  private writeWaiters: Array<{ resolve: () => void; reject: (error: unknown) => void; signal: AbortSignal | undefined; onAbort: (() => void) | undefined }> = [];
+  async read(signal?: AbortSignal): Promise<() => void> { abortIfNeeded(signal); if (!this.writer && this.waitingWriters === 0) { this.readers += 1; return () => this.releaseRead(); } await this.wait(false, signal); return () => this.releaseRead(); }
+  async write(signal?: AbortSignal): Promise<() => void> { abortIfNeeded(signal); if (!this.writer && this.readers === 0) { this.writer = true; return () => this.releaseWrite(); } this.waitingWriters += 1; try { await this.wait(true, signal); return () => this.releaseWrite(); } finally { this.waitingWriters -= 1; this.wake(); } }
+  private wait(writer: boolean, signal?: AbortSignal): Promise<void> {
+    let resolvePromise!: () => void; let rejectPromise!: (error: unknown) => void; const promise = new Promise<void>((resolve, reject) => { resolvePromise = resolve; rejectPromise = reject; });
+    const entry = { resolve: resolvePromise, reject: rejectPromise, signal, onAbort: undefined as (() => void) | undefined };
+    entry.onAbort = () => { const queue = writer ? this.writeWaiters : this.readWaiters; const index = queue.indexOf(entry); if (index >= 0) queue.splice(index, 1); entry.reject(signal?.reason instanceof Error ? signal.reason : new Error("publication cancelled")); this.wake(); };
+    if (signal) signal.addEventListener("abort", entry.onAbort, { once: true }); (writer ? this.writeWaiters : this.readWaiters).push(entry); return promise;
+  }
+  private releaseRead(): void { this.readers -= 1; this.wake(); }
+  private releaseWrite(): void { this.writer = false; this.wake(); }
+  private wake(): void {
+    if (this.writer || this.readers > 0) return;
+    const writer = this.writeWaiters.shift();
+    if (writer) { this.writer = true; if (writer.signal && writer.onAbort) writer.signal.removeEventListener("abort", writer.onAbort); writer.resolve(); return; }
+    const readers = this.readWaiters.splice(0); this.readers += readers.length;
+    for (const reader of readers) { if (reader.signal && reader.onAbort) reader.signal.removeEventListener("abort", reader.onAbort); reader.resolve(); }
   }
 }
 
-
-function mixedViews(views: Readonly<Partial<Record<Projection, ProjectionView>>>): boolean {
-  const applied = Object.values(views).filter((view): view is ProjectionView => view !== undefined && view.state === "clean").map((view) => view.appliedManifestId);
-  return new Set(applied).size > 1;
-}
-
-export class PublicationCrash extends Error {
-  readonly failurePoint: PublicationFailurePoint;
-  constructor(failurePoint: PublicationFailurePoint) {
-    super(`injected publication crash at ${failurePoint}`);
-    this.name = "PublicationCrash";
-    this.failurePoint = failurePoint;
-  }
-}
-
-export class PublicationNotReadable extends Error {
-  readonly code: "applying" | "needs_recovery" | "unavailable" | "mixed-views";
-  constructor(code: "applying" | "needs_recovery" | "unavailable" | "mixed-views", message: string) {
-    super(message);
-    this.name = "PublicationNotReadable";
-    this.code = code;
-  }
-}
+export class PublicationCrash extends Error { readonly failurePoint: PublicationFailurePoint; constructor(failurePoint: PublicationFailurePoint) { super(`injected publication crash at ${failurePoint}`); this.name = "PublicationCrash"; this.failurePoint = failurePoint; } }
+export class PublicationNotReadable extends Error { readonly code: "applying" | "needs_recovery" | "unavailable" | "mixed-views"; constructor(code: "applying" | "needs_recovery" | "unavailable" | "mixed-views", message: string) { super(message); this.name = "PublicationNotReadable"; this.code = code; } }
 
 export class PublicationCoordinator {
-  readonly stateRoot: string;
-  readonly catalogPath: string;
-  readonly journalPath: string;
-  readonly projectionsRoot: string;
-  private catalog: PublicationCatalog = emptyCatalog();
-  private journal!: WorkspaceJournal;
-  private opened = false;
-
-  private constructor(stateRoot: string) {
-    this.stateRoot = stateRoot;
-    this.catalogPath = path.join(stateRoot, "runtime", "publication-catalog.json");
-    this.journalPath = path.join(stateRoot, "runtime", "publication.journal");
-    this.projectionsRoot = path.join(stateRoot, "projections");
-  }
-
-  static async open(stateRoot: string): Promise<PublicationCoordinator> {
-    const coordinator = new PublicationCoordinator(stateRoot);
-    await mkdir(path.join(stateRoot, "runtime"), { recursive: true });
-    await mkdir(coordinator.projectionsRoot, { recursive: true });
-    coordinator.catalog = await readCatalog(coordinator.catalogPath);
-    coordinator.journal = await openWorkspaceJournal(coordinator.journalPath);
-    coordinator.opened = true;
-    await coordinator.recover();
-    return coordinator;
-  }
-
-  private async saveCatalog(): Promise<void> {
-    await durableJson(this.catalogPath, this.catalog);
-  }
-
-  private fail(point: PublicationFailurePoint, requested: PublicationFailurePoint | undefined): void {
-    if (point === requested) throw new PublicationCrash(point);
-  }
-
-  private async writeCandidate(candidate: string, data: unknown): Promise<void> {
-    await mkdir(candidate, { recursive: true });
-    await durableJson(path.join(candidate, "payload.json"), data);
-  }
-
-  private async candidateExists(candidate: string): Promise<boolean> {
-    try { return (await stat(path.join(candidate, "payload.json"))).isFile(); } catch { return false; }
-  }
-
-  private async publicationEntries(): Promise<{ readonly intents: Map<string, PublicationJournalPayload>; readonly acknowledgements: Set<string> }> {
-    const intents = new Map<string, PublicationJournalPayload>();
-    const acknowledgements = new Set<string>();
+  readonly stateRoot: string; readonly catalogPath: string; readonly journalPath: string; readonly projectionsRoot: string;
+  private catalog: PublicationCatalog = emptyCatalog(); private journal!: WorkspaceJournal; private opened = false; private readonly rw = new ReadWriteLease(); private recoveryApply: ApplyProjection | undefined;
+  private constructor(stateRoot: string) { this.stateRoot = stateRoot; this.catalogPath = path.join(stateRoot, "runtime", "publication-catalog.json"); this.journalPath = path.join(stateRoot, "runtime", "publication.journal"); this.projectionsRoot = path.join(stateRoot, "projections"); }
+  static async open(stateRoot: string): Promise<PublicationCoordinator> { const coordinator = new PublicationCoordinator(stateRoot); await mkdir(path.join(stateRoot, "runtime"), { recursive: true }); coordinator.catalog = await readCatalog(coordinator.catalogPath); coordinator.journal = await openWorkspaceJournal(coordinator.journalPath); coordinator.opened = true; await coordinator.recover(); return coordinator; }
+  private async save(): Promise<void> { await durableJson(this.catalogPath, this.catalog); }
+  private fail(point: PublicationFailurePoint, requested?: PublicationFailurePoint): void { if (point === requested) throw new PublicationCrash(point); }
+  private async publicationEntries(): Promise<Map<string, StoredTransaction>> {
+    const pending = new Map<string, StoredTransaction>();
     for (const record of this.journal.entries) {
-      if (record.type === "intent" && record.operation === "replace" && (record.payload as PublicationJournalPayload)?.kind === "publication") intents.set(record.operationId, record.payload as PublicationJournalPayload);
-      if (record.type === "ack") acknowledgements.add(record.operationId);
+      if (record.type === "intent" && record.operation === "replace" && (record.payload as PublicationJournalPayload)?.kind === "publication") { pending.set(record.operationId, (record.payload as PublicationJournalPayload).transaction); continue; }
+      if (record.type === "ack") { const transaction = pending.get(record.operationId); const projection = (record.payload as AckPayload | undefined)?.projection; if (transaction && (projection === "retrieval" || projection === "graph") && !transaction.acknowledged.includes(projection)) pending.set(record.operationId, { ...transaction, acknowledged: [...transaction.acknowledged, projection] }); }
     }
-    return { intents, acknowledgements };
+    return pending;
   }
-
-  async recover(): Promise<void> {
-    if (!this.opened) throw new Error("publication coordinator is not open");
-    const { intents, acknowledgements } = await this.publicationEntries();
-    const transactions = { ...this.catalog.transactions };
-    for (const [operationId, payload] of intents) {
-      const transaction = payload.transaction;
-      if (acknowledgements.has(operationId) && !this.catalog.transactions[transaction.id]) continue;
-      if (!transactions[transaction.id]) transactions[transaction.id] = transaction;
-    }
-    this.catalog = { ...this.catalog, transactions };
-    for (const transaction of Object.values(this.catalog.transactions)) {
-      if (!transaction) continue;
-      const candidateChecks = await Promise.all(transaction.projections.map(async (projection) => {
-        const candidate = transaction.candidates[projection];
-        if (typeof candidate !== "string") return false;
-        return this.candidateExists(candidate);
-      }));
-      const ackFiles = await Promise.all(transaction.projections.map(async (projection) => {
-        const candidate = transaction.candidates[projection];
-        if (typeof candidate !== "string") return false;
-        try { await stat(path.join(candidate, "ack")); return true; } catch { return false; }
-      }));
-      const complete = candidateChecks.every(Boolean) && ackFiles.every(Boolean);
-      if (complete) {
-        const views = { ...this.catalog.views };
-        for (const projection of transaction.projections) {
-          const candidate = transaction.candidates[projection] as string;
-          views[projection] = { projection, viewId: digest({ transaction: transaction.id, projection }).slice(0, 32), appliedManifestId: transaction.manifestId, profileDigest: transaction.profileDigest, state: "clean" };
-          const viewDirectory = path.join(this.projectionsRoot, projection);
-          await mkdir(viewDirectory, { recursive: true });
-          await durableJson(path.join(viewDirectory, "active"), { candidate });
-        }
-        this.catalog = { version: 1, views, transactions: Object.fromEntries(Object.entries(this.catalog.transactions).filter(([id]) => id !== transaction.id)) };
-        await this.saveCatalog();
-      } else {
-        const views = { ...this.catalog.views };
-        for (const projection of transaction.projections) {
-          const oldView = transaction.oldViews[projection];
-          if (oldView) views[projection] = { ...oldView, state: "clean" };
-        }
-        this.catalog = { version: 1, views, transactions: Object.fromEntries(Object.entries(this.catalog.transactions).filter(([id]) => id !== transaction.id)) };
-        await this.saveCatalog();
-        await Promise.all(Object.values(transaction.candidates).filter((candidate): candidate is string => typeof candidate === "string").map((candidate) => rm(candidate, { recursive: true, force: true })));
-      }
-    }
-    this.catalog = await readCatalog(this.catalogPath);
+  private markPending(transaction: StoredTransaction, state: "applying" | "needs_recovery"): void {
+    const views = { ...this.catalog.views }; for (const projection of transaction.batch.projections) { const old = views[projection]; views[projection] = old ? { ...old, state } : { projection, viewId: "", appliedManifestId: "", profileDigest: transaction.batch.profileDigest, state }; }
+    this.catalog = { ...this.catalog, views, transactions: { ...this.catalog.transactions, [transaction.batch.batchId]: transaction } };
   }
-
-  async publish(options: PublicationOptions): Promise<readonly ProjectionView[]> {
-    const projections = projectionList(options.components);
-    if (projections.length === 0) throw new Error("publication requires at least one component");
-    const transactionId = randomUUID();
-    const candidates: Partial<Record<Projection, string>> = {};
-    for (const projection of projections) candidates[projection] = path.join(this.projectionsRoot, projection, `.candidate-${transactionId}`);
-    const transaction: StoredTransaction = { id: transactionId, manifestId: options.manifestId, profileDigest: options.profileDigest, projections, candidates, oldViews: this.catalog.views };
-    const intent = await this.journal.appendIntent("replace", { kind: "publication", transaction });
-    this.catalog = { ...this.catalog, transactions: { ...this.catalog.transactions, [transactionId]: transaction }, views: { ...this.catalog.views } };
-    for (const projection of projections) {
-      const old = this.catalog.views[projection];
-      this.catalog.views[projection] = old ? { ...old, state: "applying" } : { projection, viewId: "", appliedManifestId: "", profileDigest: options.profileDigest, state: "applying" };
+  private async finish(transaction: StoredTransaction, acks: readonly ApplyAck[]): Promise<void> {
+    const views = { ...this.catalog.views }; const activeBatches = { ...this.catalog.activeBatches };
+    for (const projection of transaction.batch.projections) {
+      const ack = acks.find((candidate) => candidate.projection === projection); const storeRoot = ack?.storeRoot ?? transaction.batch.storeRoot; const view: ProjectionView = { projection, viewId: digest({ batch: transaction.batch.batchId, projection }).slice(0, 32), appliedManifestId: transaction.batch.manifestId, profileDigest: transaction.batch.profileDigest, state: "clean", ...(storeRoot ? { storeRoot } : {}) };
+      views[projection] = view; activeBatches[projection] = cloneBatch(transaction.batch);
     }
-    await this.saveCatalog();
-    for (const projection of projections) {
-      this.fail("before-component-write", options.failureAt);
-      const candidate = candidates[projection] as string;
-      await this.writeCandidate(candidate, options.components[projection]);
-      this.fail("after-component-write-before-ack", options.failureAt);
-      await durableJson(path.join(candidate, "ack"), { transactionId, projection });
-      await this.journal.appendAck({ operationId: `${intent.operationId}:${projection}`, operation: "replace" }, { transactionId, projection });
-      this.fail("after-ack-before-catalog-publication", options.failureAt);
+    const transactions = { ...this.catalog.transactions }; delete transactions[transaction.batch.batchId];
+    this.catalog = { ...this.catalog, views, activeBatches, transactions, completed: { ...this.catalog.completed, [transaction.batch.batchId]: true } }; await this.save();
+  }
+  registerRecovery(apply: ApplyProjection): void { this.recoveryApply = apply; }
+  currentBatch(projection?: Projection): PublicationBatch | null {
+    if (projection) return this.catalog.activeBatches[projection] ? cloneBatch(this.catalog.activeBatches[projection]!) : null;
+    const active = Object.values(this.catalog.activeBatches).find((batch): batch is PublicationBatch => !!batch); return active ? cloneBatch(active) : null;
+  }
+  capturedSources(projection?: Projection): readonly SourceSnapshot[] { return this.currentBatch(projection)?.sources ?? []; }
+  async recover(apply: ApplyProjection | undefined = this.recoveryApply): Promise<void> {
+    if (!this.opened) throw new Error("publication coordinator is not open"); const release = await this.rw.write();
+    try {
+      const journalTransactions = await this.publicationEntries(); const transactions = { ...this.catalog.transactions };
+      for (const transaction of journalTransactions.values()) { if (this.catalog.completed[transaction.batch.batchId]) continue; transactions[transaction.batch.batchId] = transaction; }
+      this.catalog = { ...this.catalog, transactions };
+      for (const transaction of Object.values(transactions)) { if (!transaction) continue; this.markPending(transaction, apply ? "applying" : "needs_recovery"); await this.save(); if (!apply) continue; try { await this.applyTransaction(transaction, apply); } catch (error) { this.markPending(transaction, "needs_recovery"); await this.save(); throw error; } }
+    } finally { release(); }
+  }
+  private async applyTransaction(transaction: StoredTransaction, apply: ApplyProjection, options: PublicationOptions = {}): Promise<readonly ApplyAck[]> {
+    const acks: ApplyAck[] = []; const acknowledged = new Set(transaction.acknowledged);
+    for (const projection of transaction.batch.projections) {
+      abortIfNeeded(options.signal); if (acknowledged.has(projection)) continue; this.fail("before-component-write", options.failureAt);
+      const ack = await apply(projection, cloneBatch(transaction.batch)); if (!ack || ack.batchId !== transaction.batch.batchId || ack.projection !== projection || ack.manifestId !== transaction.batch.manifestId || typeof ack.durableBoundary !== "string" || !ack.durableBoundary || ack.state !== "applied") throw new Error(`invalid apply acknowledgement for ${projection}`);
+      this.fail("after-component-write-before-ack", options.failureAt); await this.journal.appendAck({ operationId: transaction.operationId, operation: "replace" }, { projection, batchId: transaction.batch.batchId, durableBoundary: ack.durableBoundary }); acknowledged.add(projection); acks.push(ack); this.fail("after-ack-before-catalog-publication", options.failureAt);
     }
+    if (!transaction.batch.projections.every((projection) => acknowledged.has(projection))) return acks;
     this.fail("before-catalog-publication", options.failureAt);
-    const views = { ...this.catalog.views };
-    for (const projection of projections) views[projection] = { projection, viewId: digest({ transactionId, projection }).slice(0, 32), appliedManifestId: options.manifestId, profileDigest: options.profileDigest, state: "clean" };
-    for (const projection of projections) {
-      const candidate = candidates[projection] as string;
-      const viewDirectory = path.join(this.projectionsRoot, projection);
-      await mkdir(viewDirectory, { recursive: true });
-      await durableJson(path.join(viewDirectory, "active"), { candidate });
+    const finalAcks = transaction.batch.projections.map((projection) => acks.find((ack) => ack.projection === projection) ?? { batchId: transaction.batch.batchId, projection, state: "applied", manifestId: transaction.batch.manifestId, durableBoundary: "recovered", storeRoot: transaction.batch.storeRoot } as ApplyAck);
+    await this.finish(transaction, finalAcks); this.fail("after-catalog-publication", options.failureAt); return acks;
+  }
+  async publishBatch(batch: PublicationBatch, apply: ApplyProjection, options: PublicationOptions = {}): Promise<readonly ProjectionView[]> {
+    if (!this.opened) throw new Error("publication coordinator is not open"); if (!batch.batchId || !batch.manifestId || !batch.profileDigest || batch.projections.length === 0) throw new Error("invalid publication batch"); const projections = [...new Set(batch.projections)]; if (projections.length !== batch.projections.length) throw new Error("publication batch contains duplicate projections"); abortIfNeeded(options.signal);
+    const release = await this.rw.write(options.signal);
+    try { if (Object.keys(this.catalog.transactions).length > 0) throw new PublicationNotReadable("needs_recovery", "publication has an unresolved transaction"); const operationId = randomUUID() as OperationId; const transaction: StoredTransaction = { batch: cloneBatch({ ...batch, projections }), oldViews: { ...this.catalog.views }, operationId, acknowledged: [] }; await this.journal.appendIntent("replace", { kind: "publication", transaction }, operationId); this.markPending(transaction, "applying"); await this.save(); try { await this.applyTransaction(transaction, apply, options); } catch (error) { if (!this.catalog.completed[batch.batchId]) { this.markPending(transaction, "needs_recovery"); await this.save(); } throw error; } return projections.map((projection) => this.catalog.views[projection]).filter((view): view is ProjectionView => !!view).map(cloneView); }
+    finally { release(); }
     }
-    this.catalog = { version: 1, views, transactions: Object.fromEntries(Object.entries(this.catalog.transactions).filter(([id]) => id !== transactionId)) };
-    await this.saveCatalog();
-    this.fail("after-catalog-publication", options.failureAt);
-    await this.journal.appendAck({ operationId: intent.operationId, operation: "replace" }, { transactionId });
-    return projections.map((projection) => views[projection] as ProjectionView);
+  async publish(batch: PublicationBatch, apply: ApplyProjection, options?: PublicationOptions): Promise<readonly ProjectionView[]> { return this.publishBatch(batch, apply, options); }
+  async read<T>(projection: Projection, options: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal } | undefined, callback: (views: Readonly<Partial<Record<Projection, ProjectionView>>>, lease: PublicationReadLease) => Promise<T> | T): Promise<T>;
+  async read<T>(projections: readonly Projection[], options: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal }, callback: (views: Readonly<Partial<Record<Projection, ProjectionView>>>, lease: PublicationReadLease) => Promise<T> | T): Promise<T>;
+  async read(projection: Projection, options?: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal }): Promise<ProjectionRead>;
+  async read(projections: readonly Projection[], options?: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal }): Promise<Readonly<Record<Projection, ProjectionRead>>>;
+  async read<T>(input: Projection | readonly Projection[], options: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal } = {}, callback?: (views: Readonly<Partial<Record<Projection, ProjectionView>>>, lease: PublicationReadLease) => Promise<T> | T): Promise<T | ProjectionRead | Readonly<Record<Projection, ProjectionRead>>> {
+    const wanted = typeof input === "string" ? [input] : [...input]; const release = await this.rw.read(options.signal); const views = Object.freeze(Object.fromEntries(wanted.map((projection) => [projection, this.catalog.views[projection] ? cloneView(this.catalog.views[projection]!) : undefined])) as Partial<Record<Projection, ProjectionView>>); let lease: PublicationReadLease | undefined;
+    try { const selected = wanted.map((projection) => views[projection]).filter((view): view is ProjectionView => !!view); if (selected.some((view) => view.state === "applying")) throw new PublicationNotReadable("applying", "publication is applying"); if (selected.some((view) => view.state === "needs_recovery")) throw new PublicationNotReadable("needs_recovery", "publication needs recovery"); if (selected.length !== wanted.length) throw new PublicationNotReadable("unavailable", "projection has no published view"); if ((options.requireCoherent ?? true) && mixedViews(views)) throw new PublicationNotReadable("mixed-views", "published views are from different manifests"); let released = false; lease = { views, get released() { return released; }, release: () => { if (!released) { released = true; release(); } } }; if (callback) { try { return await callback(views, lease); } finally { lease.release(); } } lease.release(); if (typeof input === "string") return { projection: input, view: views[input]!, data: undefined }; return Object.fromEntries(wanted.map((projection) => [projection, { projection, view: views[projection]!, data: undefined }])) as Readonly<Record<Projection, ProjectionRead>>; }
+    catch (error) { if (lease) lease.release(); else release(); throw error; }
   }
-
-  status(): PublicationStatus {
-    const views = this.catalog.views;
-    const values = Object.values(views).filter((view): view is ProjectionView => view !== undefined);
-    return { views, mixedViews: mixedViews(views), applying: values.some((view) => view.state === "applying"), needsRecovery: values.some((view) => view.state === "needs_recovery") };
-  }
-
-  view(projection: Projection): ProjectionView | null {
-    return this.catalog.views[projection] ?? null;
-  }
-
-  async read<T = unknown>(projection: Projection, options: { readonly requireCoherent?: boolean } = {}): Promise<ProjectionRead<T>> {
-    this.catalog = await readCatalog(this.catalogPath);
-    const view = this.catalog.views[projection];
-    if (!view) throw new PublicationNotReadable("unavailable", `no published ${projection} view`);
-    if (view.state === "applying") throw new PublicationNotReadable("applying", `${projection} projection is applying`);
-    if (view.state === "needs_recovery") throw new PublicationNotReadable("needs_recovery", `${projection} projection needs recovery`);
-    if (options.requireCoherent && mixedViews(this.catalog.views)) throw new PublicationNotReadable("mixed-views", "projections have mixed applied manifests");
-    const active = JSON.parse(await readFile(path.join(this.projectionsRoot, projection, "active"), "utf8")) as { candidate: string };
-    const data = JSON.parse(await readFile(path.join(active.candidate, "payload.json"), "utf8")) as T;
-    return { projection, view, data };
-  }
-
-  async close(): Promise<void> {
-    this.opened = false;
-  }
+  status(): PublicationStatus { const pendingBatches = Object.values(this.catalog.transactions).map((transaction) => transaction?.batch).filter((batch): batch is PublicationBatch => !!batch).map(cloneBatch); const values = Object.values(this.catalog.views); return { views: Object.freeze(Object.fromEntries(Object.entries(this.catalog.views).map(([key, value]) => [key, cloneView(value!)]))), mixedViews: mixedViews(this.catalog.views), applying: values.some((view) => view?.state === "applying"), needsRecovery: values.some((view) => view?.state === "needs_recovery") || pendingBatches.length > 0, pendingBatches }; }
+  view(projection: Projection): ProjectionView | null { const view = this.catalog.views[projection]; return view ? cloneView(view) : null; }
+  async close(): Promise<void> { this.opened = false; }
 }
-
-export async function openPublicationCoordinator(stateRoot: string): Promise<PublicationCoordinator> {
-  return PublicationCoordinator.open(stateRoot);
-}
-
-export async function recoverPublication(stateRoot: string): Promise<PublicationCoordinator> {
-  return PublicationCoordinator.open(stateRoot);
-}
+export async function openPublicationCoordinator(stateRoot: string): Promise<PublicationCoordinator> { return PublicationCoordinator.open(stateRoot); }
+export async function recoverPublication(stateRoot: string, apply?: ApplyProjection): Promise<PublicationCoordinator> { const coordinator = await PublicationCoordinator.open(stateRoot); if (apply) await coordinator.recover(apply); return coordinator; }

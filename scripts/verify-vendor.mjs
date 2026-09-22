@@ -57,7 +57,7 @@ async function verify(name) {
   const ledger = await readLedger(name);
   const dir = path.join(VENDOR_ROOT, name);
   const patched = new Map((ledger.local_patches ?? []).map((p) => [p.path, p]));
-  const result = { vendor: name, commit: ledger.upstream.commit, files: ledger.manifest.length, verbatim: 0, patched: [], drift: [], missing: [], untracked: [] };
+  const result = { vendor: name, commit: ledger.upstream.commit, files: ledger.manifest.length, verbatim: 0, patched: [], added: [], drift: [], missing: [], untracked: [] };
 
   for (const { path: rel, blob } of ledger.manifest) {
     const abs = path.join(dir, rel);
@@ -99,6 +99,29 @@ async function verify(name) {
     result.untracked.push(rel);
   }
   result.untracked.sort();
+
+  // Added files are ours, not upstream's, so no manifest blob covers them. Their
+  // declared SHA-256 is the only record of what we shipped: an unchecked
+  // declaration would let an added file drift silently, which is exactly the
+  // class of change this tool exists to catch.
+  const declaredDigests = ledger.added_files_sha256 ?? {};
+  for (const rel of ledger.added_files ?? []) {
+    let buffer;
+    try {
+      buffer = await readFile(path.join(dir, rel));
+    } catch {
+      result.missing.push(rel);
+      continue;
+    }
+    const declared = declaredDigests[rel];
+    if (!declared) {
+      result.drift.push({ path: rel, reason: "added file has no added_files_sha256 declaration" });
+      continue;
+    }
+    const actual = createHash("sha256").update(buffer).digest("hex");
+    if (actual !== declared) result.drift.push({ path: rel, reason: "added file no longer matches added_files_sha256", declared, actual });
+    else result.added.push(rel);
+  }
   return result;
 }
 
@@ -125,8 +148,9 @@ async function main(argv) {
   }
 
   for (const r of results) {
-    process.stdout.write(`${r.vendor} @ ${r.commit.slice(0, 12)}  ${r.verbatim}/${r.files} verbatim, ${r.patched.length} declared patches\n`);
+    process.stdout.write(`${r.vendor} @ ${r.commit.slice(0, 12)}  ${r.verbatim}/${r.files} verbatim, ${r.patched.length} declared patches, ${r.added.length} declared additions\n`);
     for (const rel of r.patched) process.stdout.write(`  patched   ${rel}\n`);
+    for (const rel of r.added) process.stdout.write(`  added     ${rel}\n`);
     for (const rel of r.missing) process.stdout.write(`  MISSING   ${rel}\n`);
     for (const d of r.drift) process.stdout.write(`  DRIFT     ${d.path}: ${d.reason}\n`);
     for (const rel of r.untracked) process.stdout.write(`  UNTRACKED ${rel}\n`);

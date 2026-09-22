@@ -1,99 +1,202 @@
 {
   "languages": {
     "javascript": {
-      "converged": true,
-      "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
-      "reason": null
+      "converged": false,
+      "evidence": "test/parity/graph.test.js; test/parity/extraction.test.js — separate stock disk and captured-source paths",
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": "test/parity/graph.test.js; test/parity/extraction.test.js",
+      "measurement_status": "snapshot_parity_only",
+      "claim": "no_single_parse_claim",
+      "language": "javascript",
+      "snapshot_parity": "measured"
     },
     "typescript": {
-      "converged": true,
-      "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
-      "reason": null
+      "converged": false,
+      "evidence": "test/parity/graph.test.js; test/parity/extraction.test.js — separate stock disk and captured-source paths",
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": "test/parity/graph.test.js; test/parity/extraction.test.js",
+      "measurement_status": "snapshot_parity_only",
+      "claim": "no_single_parse_claim",
+      "language": "typescript",
+      "snapshot_parity": "measured"
     },
     "python": {
-      "converged": true,
-      "evidence": "test/parity/extraction.test.js: snapshot extraction equals stock disk extraction for nodes, edges, and definition-bearing structures",
-      "reason": null
+      "converged": false,
+      "evidence": "test/parity/graph.test.js; test/parity/extraction.test.js — separate stock disk and captured-source paths",
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": "test/parity/graph.test.js; test/parity/extraction.test.js",
+      "measurement_status": "snapshot_parity_only",
+      "claim": "no_single_parse_claim",
+      "language": "python",
+      "snapshot_parity": "measured"
     },
     "tsx": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "tsx",
+      "snapshot_parity": "not_measured"
     },
     "jsx": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "jsx",
+      "snapshot_parity": "not_measured"
     },
     "go": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "go",
+      "snapshot_parity": "not_measured"
     },
     "rust": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "rust",
+      "snapshot_parity": "not_measured"
     },
     "java": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "java",
+      "snapshot_parity": "not_measured"
     },
     "c": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "c",
+      "snapshot_parity": "not_measured"
     },
     "cpp": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "cpp",
+      "snapshot_parity": "not_measured"
     },
     "csharp": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "csharp",
+      "snapshot_parity": "not_measured"
     },
     "php": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "php",
+      "snapshot_parity": "not_measured"
     },
     "ruby": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "ruby",
+      "snapshot_parity": "not_measured"
     },
     "swift": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "swift",
+      "snapshot_parity": "not_measured"
     },
     "kotlin": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "kotlin",
+      "snapshot_parity": "not_measured"
     },
     "dart": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "dart",
+      "snapshot_parity": "not_measured"
     },
     "svelte": {
       "converged": false,
       "evidence": null,
-      "reason": "Not attempted in this corpus; remains on its existing extractor."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "svelte",
+      "snapshot_parity": "not_measured"
     },
     "markdown": {
       "converged": false,
       "evidence": null,
-      "reason": "Retrieval-only content; no CodeGraph parser convergence claim."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "markdown",
+      "snapshot_parity": "not_measured"
     },
     "text": {
       "converged": false,
       "evidence": null,
-      "reason": "Retrieval-only content; no CodeGraph parser convergence claim."
+      "reason": "Both workers consume the same captured bytes but retain their own parser/extractor; no shared parse result is used in the default path.",
+      "evidence_producer": null,
+      "measurement_status": "not_measured",
+      "claim": "no_single_parse_claim",
+      "language": "text",
+      "snapshot_parity": "not_measured"
     }
+  },
+  "schema_version": 3,
+  "generated_at": "2026-09-21T23:08:20.359Z",
+  "producer": "Current worker paths plus test/parity/graph.test.js and test/parity/extraction.test.js",
+  "claim_policy": {
+    "shared_source_bytes": true,
+    "single_parse_claimed": false,
+    "parity_is_not_parse_convergence": true
   }
 }

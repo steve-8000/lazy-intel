@@ -546,7 +546,7 @@ class SolidLanguageServer(ABC):
         self._published_diagnostics_generation_by_uri: dict[str, int] = {}
         self._published_diagnostics_generation = 0
         self._published_diagnostics_condition = threading.Condition()
-
+        self._last_diagnostics_status = "not_reported"
         # initialise symbol caches
         self.cache_dir = Path(self._solidlsp_settings.project_data_path) / self.CACHE_FOLDER_NAME / self.language_id
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -922,14 +922,14 @@ class SolidLanguageServer(ABC):
         """
         Determines whether a published diagnostics payload should satisfy the current wait.
         """
-        return bool(diagnostics)
+        return True
 
     def _wait_for_relevant_published_diagnostics(
         self,
         uri: str,
         after_generation: int,
         timeout: float,
-        allow_cached: bool = True,
+        allow_cached: bool = False
     ) -> list[ls_types.Diagnostic] | None:
         """
         Waits for a published diagnostics payload that is relevant for the current request.
@@ -984,7 +984,7 @@ class SolidLanguageServer(ABC):
         diagnostics_before_request = self._get_published_diagnostics_generation(published_uri)
         ret: list[ls_types.Diagnostic] | None = None
         pull_diagnostics_failed = False
-
+        self._last_diagnostics_status = "not_reported"
         with self.open_file(relative_file_path):
             response: Any = None
             # only send pull diagnostics when the server actually supports it; some servers
@@ -1013,6 +1013,7 @@ class SolidLanguageServer(ABC):
                     f"Unexpected response from Language Server (expected list, got {type(response)}): {response}"
                 )
                 ret = []
+                self._last_diagnostics_status = "complete"
                 for item in response["items"]:  # type: ignore
                     new_item: ls_types.Diagnostic = {
                         "uri": uri,
@@ -1025,14 +1026,16 @@ class SolidLanguageServer(ABC):
                         new_item["source"] = item["source"]
                     ret.append(ls_types.Diagnostic(**new_item))
 
-            if not ret:
+            if ret is None:
                 published_diagnostics = self._wait_for_relevant_published_diagnostics(
                     uri=published_uri,
                     after_generation=diagnostics_before_request,
                     timeout=self._get_published_diagnostics_wait_timeout(pull_diagnostics_failed),
+                    allow_cached=False,
                 )
                 if published_diagnostics is not None:
                     ret = published_diagnostics
+                    self._last_diagnostics_status = "complete"
 
         if ret is None:
             return []

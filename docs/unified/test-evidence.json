@@ -1,0 +1,592 @@
+{
+  "generated_at": "2026-09-22T03:17:15.162Z",
+  "command": "npm test --silent",
+  "node": "v22.22.3",
+  "exit_code": 0,
+  "status": "PASS",
+  "counts": {
+    "tests": 144,
+    "pass": 143,
+    "fail": 0,
+    "skipped": 1
+  },
+  "scenarios": [
+    {
+      "name": "aborting an in-flight owned-worker MCP request leaves the connection usable",
+      "status": "pass"
+    },
+    {
+      "name": "a pre-aborted MCP request is rejected before dispatch",
+      "status": "pass"
+    },
+    {
+      "name": "resolveLocator rejects traversal and symlink escapes",
+      "status": "pass"
+    },
+    {
+      "name": "source budget reports skipped files as unchecked",
+      "status": "pass"
+    },
+    {
+      "name": "observation span distinguishes concurrent and unverified observations",
+      "status": "pass"
+    },
+    {
+      "name": "context pack stays within character budget and emits valid metadata",
+      "status": "pass"
+    },
+    {
+      "name": "unknown totals report null omitted count",
+      "status": "pass"
+    },
+    {
+      "name": "public context preserves indexed and semantic observation boundaries",
+      "status": "pass"
+    },
+    {
+      "name": "matching revision alone cannot verify a wrong source excerpt",
+      "status": "pass"
+    },
+    {
+      "name": "empty diagnostics retain completion observations within the response budget",
+      "status": "pass"
+    },
+    {
+      "name": "bounded output keeps headers, warnings, and metadata while reporting honest truncation",
+      "status": "pass"
+    },
+    {
+      "name": "canonical span verifies exact UTF-8 bytes and detects a later source revision",
+      "status": "pass"
+    },
+    {
+      "name": "descriptions verify anchors without claiming verbatim source text",
+      "status": "pass"
+    },
+    {
+      "name": "the embedded runtime publishes and queries a graph with no external CLI reachable",
+      "status": "pass"
+    },
+    {
+      "name": "typed context data retains graph facts and renders the same call path section",
+      "status": "pass"
+    },
+    {
+      "name": "graph adapter returns anchored native-id evidence and reuses worker handle",
+      "status": "pass"
+    },
+    {
+      "name": "graph adapter requires a clean published view and captured source snapshots",
+      "status": "pass"
+    },
+    {
+      "name": "authoritative captured metadata is stable when live source files are changed or deleted",
+      "status": "pass"
+    },
+    {
+      "name": "captured directory imports do not resolve through uncaptured disk files",
+      "status": "pass"
+    },
+    {
+      "name": "public graph sync handles a late framework manifest across multipart publication",
+      "status": "pass"
+    },
+    {
+      "name": "public graph sync yields a valid empty graph after deleting the last source",
+      "status": "pass"
+    },
+    {
+      "name": "the zvec fork entry cannot reach the CLI, MCP server or daemon",
+      "status": "pass"
+    },
+    {
+      "name": "the CodeGraph fork entry cannot reach the CLI, installer, upgrade, telemetry, UI or the MCP server",
+      "status": "pass"
+    },
+    {
+      "name": "importing either fork entry starts no server, watcher, worker or timer",
+      "status": "pass"
+    },
+    {
+      "name": "the fork entries expose the surface the workers are typed against",
+      "status": "pass"
+    },
+    {
+      "name": "every vendored tree matches its UPSTREAM.json ledger",
+      "status": "pass"
+    },
+    {
+      "name": "retrieval maps real zvec context items to anchored evidence and empty results",
+      "status": "pass"
+    },
+    {
+      "name": "indexed retrieval requires clean publication and captured sources",
+      "status": "pass"
+    },
+    {
+      "name": "aborting a retrieval caller rejects as cancelled without killing the worker",
+      "status": "pass"
+    },
+    {
+      "name": "retrieval anchors UTF8 bytes from multibyte CRLF lexical columns",
+      "status": "pass"
+    },
+    {
+      "name": "semantic worker frames a real child and reports a dead interpreter as retryable",
+      "status": "pass"
+    },
+    {
+      "name": "semantic worker enforces the parent budget around a real framed child",
+      "status": "pass"
+    },
+    {
+      "name": "a byte span renders as exactly the lines it covers",
+      "status": "pass"
+    },
+    {
+      "name": "multi-byte characters do not shift the reported line",
+      "status": "pass"
+    },
+    {
+      "name": "control-plane methods narrow onto the product enum without inventing a stronger claim",
+      "status": "pass"
+    },
+    {
+      "name": "the unified engine serves a real search through the vendored library",
+      "status": "pass"
+    },
+    {
+      "name": "public unified retrieval returns a valid empty result after deleting the last indexed file",
+      "status": "pass"
+    },
+    {
+      "name": "an unconfigured language server is refused with the reason, not a silent unavailable",
+      "status": "pass"
+    },
+    {
+      "name": "a configured language server serves anchored semantic evidence",
+      "status": "pass"
+    },
+    {
+      "name": "close during startup rejects the call and reaps the starting worker",
+      "status": "pass"
+    },
+    {
+      "name": "malformed hello and ready handshakes fail immediately",
+      "status": "pass"
+    },
+    {
+      "name": "a cancelled caller is released while the worker keeps serving everyone else",
+      "status": "pass"
+    },
+    {
+      "name": "an immediate abort on a ready worker prevents dispatch",
+      "status": "pass"
+    },
+    {
+      "name": "concurrent close callers both await the owned process exit",
+      "status": "pass"
+    },
+    {
+      "name": "an abandoned job's late answer is discarded, never served to a later caller",
+      "status": "pass"
+    },
+    {
+      "name": "a worker crash is a typed retryable failure and the next call gets a fresh process",
+      "status": "pass"
+    },
+    {
+      "name": "an oversized response is reported as a bound, never silently truncated",
+      "status": "pass"
+    },
+    {
+      "name": "worker stdout is diagnostics, never protocol",
+      "status": "pass"
+    },
+    {
+      "name": "an unsupported operation is rejected without killing the worker",
+      "status": "pass"
+    },
+    {
+      "name": "a malformed typed worker payload is not a valid empty success",
+      "status": "pass"
+    },
+    {
+      "name": "a call with no budget left never reaches the worker",
+      "status": "pass"
+    },
+    {
+      "name": "completed abandoned jobs do not accumulate toward recycling",
+      "status": "pass"
+    },
+    {
+      "name": "simultaneous abandoned jobs recycle the worker at the threshold",
+      "status": "pass"
+    },
+    {
+      "name": "deadline abandonment counts toward the recycle threshold while work is busy",
+      "status": "pass"
+    },
+    {
+      "name": "a stale epoch reply is dropped so the valid current reply settles the request",
+      "status": "pass"
+    },
+    {
+      "name": "an idle owned worker exits cleanly on SIGTERM",
+      "status": "pass"
+    },
+    {
+      "name": "workspace scope separates source and state and canonical aliases share one owner",
+      "status": "pass"
+    },
+    {
+      "name": "a lock whose holder is dead is reclaimed",
+      "status": "pass"
+    },
+    {
+      "name": "non-git nested ignore policy excludes files and invalidates the captured scope",
+      "status": "pass"
+    },
+    {
+      "name": "nested TypeScript and JavaScript resolver configs invalidate captured scope",
+      "status": "pass"
+    },
+    {
+      "name": "default state and runtime metadata reject symlink escape",
+      "status": "pass"
+    },
+    {
+      "name": "prepared source transport rejects escaped directories and altered bytes",
+      "status": "pass"
+    },
+    {
+      "name": "codeIntel serves unified retrieval and graph evidence with bounded output",
+      "status": "pass"
+    },
+    {
+      "name": "unified engine preserves valid empty, required-obligation failure, and ambiguity gating",
+      "status": "pass"
+    },
+    {
+      "name": "aborting a unified request reports the owned worker cancellation cause",
+      "status": "pass"
+    },
+    {
+      "name": "dedupe preserves overloads, modules, claims, and merges only true duplicates",
+      "status": "pass"
+    },
+    {
+      "name": "sortEvidence is deterministic and independent of input order",
+      "status": "pass"
+    },
+    {
+      "name": "captured revisions cannot deduplicate after a later source check matches",
+      "status": "pass"
+    },
+    {
+      "name": "live unified publication recovers at before-component-write",
+      "status": "pass"
+    },
+    {
+      "name": "live unified publication recovers at after-component-write-before-ack",
+      "status": "pass"
+    },
+    {
+      "name": "live unified publication recovers at after-ack-before-catalog-publication",
+      "status": "pass"
+    },
+    {
+      "name": "live unified publication recovers at after-catalog-publication",
+      "status": "pass"
+    },
+    {
+      "name": "a staged rebuild publishes into a distinct store and leaves the old store intact",
+      "status": "pass"
+    },
+    {
+      "name": "a failed staged rebuild restores the operator backup and serves the old generation",
+      "status": "pass"
+    },
+    {
+      "name": "strict staged read rejects a source changed after its read lease was pinned",
+      "status": "pass"
+    },
+    {
+      "name": "mixed graph and retrieval publication recovers a real multipart retrieval partial write",
+      "status": "pass"
+    },
+    {
+      "name": "recovers callback-owned stores at before-component-write",
+      "status": "pass"
+    },
+    {
+      "name": "recovers callback-owned stores at after-component-write-before-ack",
+      "status": "pass"
+    },
+    {
+      "name": "recovers callback-owned stores at after-ack-before-catalog-publication",
+      "status": "pass"
+    },
+    {
+      "name": "recovers callback-owned stores at before-catalog-publication",
+      "status": "pass"
+    },
+    {
+      "name": "recovers callback-owned stores at after-catalog-publication",
+      "status": "pass"
+    },
+    {
+      "name": "mixed applied manifests refuse a coherent multi-projection callback",
+      "status": "pass"
+    },
+    {
+      "name": "a read lease blocks publication until released and exposes immutable views",
+      "status": "pass"
+    },
+    {
+      "name": "failed recovery blocks the next publication until the pending transaction recovers",
+      "status": "pass"
+    },
+    {
+      "name": "an answer to an abandoned job never settles the next caller",
+      "status": "pass"
+    },
+    {
+      "name": "a partial response from a recycled bridge cannot poison the next generation",
+      "status": "pass"
+    },
+    {
+      "name": "a response whose id matches no caller is discarded, not handed to whoever is waiting",
+      "status": "pass"
+    },
+    {
+      "name": "a symbol request without a source path is refused instead of assuming TypeScript",
+      "status": "pass"
+    },
+    {
+      "name": "publication catalog is the readiness oracle for an embedded graph worker",
+      "status": "pass"
+    },
+    {
+      "name": "an unchanged workspace reuses the published graph view",
+      "status": "pass"
+    },
+    {
+      "name": "cancelling one ensure waiter does not cancel the shared publication",
+      "status": "pass"
+    },
+    {
+      "name": "a queued explicit reindex publishes after sync into a distinct store",
+      "status": "pass"
+    },
+    {
+      "name": "dirtiness is unknown until publication establishes a baseline",
+      "status": "pass"
+    },
+    {
+      "name": "compiler and build configuration changes invalidate the published graph projection",
+      "status": "pass"
+    },
+    {
+      "name": "new directories and deletions advance freshness while derived writes stay ignored",
+      "status": "pass"
+    },
+    {
+      "name": "an aborted index request does not publish or advance its baseline",
+      "status": "pass"
+    },
+    {
+      "name": "Serena is not a derived-index target",
+      "status": "pass"
+    },
+    {
+      "name": "the agent home and every repository nested inside it are refused as roots",
+      "status": "pass"
+    },
+    {
+      "name": "the home directory itself is never a workspace, but its children are",
+      "status": "pass"
+    },
+    {
+      "name": "observeIndexState does not create an untracked root",
+      "status": "pass"
+    },
+    {
+      "name": "a null-filename watcher event marks the generation dirty",
+      "status": "pass"
+    },
+    {
+      "name": "recursive watcher attach noise does not dirty the initial publication",
+      "status": "pass"
+    },
+    {
+      "name": "MCP negotiates, frames, validates, and preserves stdio protocol behavior",
+      "status": "pass"
+    },
+    {
+      "name": "MCP tool output preserves the engine response budget as valid JSON text",
+      "status": "pass"
+    },
+    {
+      "name": "MCP admits four active requests, queues thirty-two, then reports busy",
+      "status": "pass"
+    },
+    {
+      "name": "stdio MCP exposes exactly one tool",
+      "status": "pass"
+    },
+    {
+      "name": "a deleted or relative allowed root does not stop the server from serving",
+      "status": "pass"
+    },
+    {
+      "name": "snapshot extraction preserves complete structures for enabled languages",
+      "status": "pass"
+    },
+    {
+      "name": "snapshot bytes win when disk content differs",
+      "status": "pass"
+    },
+    {
+      "name": "snapshot extraction retains symbols and the full hash above one MiB",
+      "status": "pass"
+    },
+    {
+      "name": "snapshot graph updates match stock deletion, rename, and definition rebind",
+      "status": "pass"
+    },
+    {
+      "name": "captured snapshots run framework, conformance, and deferred passes like stock disk",
+      "status": "pass"
+    },
+    {
+      "name": "existing-store snapshot edits preserve untouched graph state and match a fresh build",
+      "status": "pass"
+    },
+    {
+      "name": "prepared snapshots preserve stock extraction and indexed results across formats",
+      "status": "pass"
+    },
+    {
+      "name": "two real stores sharing a borrowed model survive close order and retain caller ownership",
+      "status": "pass"
+    },
+    {
+      "name": "prepared apply rejects an embedding schema mismatch",
+      "status": "pass"
+    },
+    {
+      "name": "prepared rename and delete remove stale vector metadata",
+      "status": "pass"
+    },
+    {
+      "name": "oversized unicode code chunks preserve UTF16 native and UTF8 source boundaries",
+      "status": "pass"
+    },
+    {
+      "name": "diagnostics intent with a path does not need a symbol",
+      "status": "pass"
+    },
+    {
+      "name": "an explicit primitive performs exactly one semantic read",
+      "status": "pass"
+    },
+    {
+      "name": "auto stays within two logical reads and one dependent stage",
+      "status": "pass"
+    },
+    {
+      "name": "a dependent reference lookup requires a validated unique subject",
+      "status": "pass"
+    },
+    {
+      "name": "a reference question with no subject degrades to discovery instead of an unmeetable obligation",
+      "status": "pass"
+    },
+    {
+      "name": "context is a declared composite with a gated second stage",
+      "status": "pass"
+    },
+    {
+      "name": "control operations produce no plan",
+      "status": "pass"
+    },
+    {
+      "name": "run decodes UTF-8 code points split across byte chunks",
+      "status": "pass"
+    },
+    {
+      "name": "run preserves raw stdout indentation and trailing newline",
+      "status": "pass"
+    },
+    {
+      "name": "abort escalates through SIGKILL and reaps a SIGTERM-resistant child",
+      "status": "pass"
+    },
+    {
+      "name": "deadline timeout escalates through SIGKILL and reaps a SIGTERM-resistant child",
+      "status": "pass"
+    },
+    {
+      "name": "output overflow stops capture at the byte cap and terminates the child",
+      "status": "pass"
+    },
+    {
+      "name": "semantic discovery routes only to zvec",
+      "status": "pass"
+    },
+    {
+      "name": "architecture routes graph plus retrieval",
+      "status": "pass"
+    },
+    {
+      "name": "known references use Serena",
+      "status": "pass"
+    },
+    {
+      "name": "impact of known symbol is bounded to two backends",
+      "status": "pass"
+    },
+    {
+      "name": "control operations bypass intelligence routing",
+      "status": "pass"
+    },
+    {
+      "name": "source and state identities cannot be confused across workspaces",
+      "status": "pass"
+    },
+    {
+      "name": "request roots reject sibling prefixes and symlink escapes before indexing",
+      "status": "pass"
+    },
+    {
+      "name": "source paths cannot escape a permitted root through traversal or symlinks",
+      "status": "pass"
+    },
+    {
+      "name": "engine rejects incomplete semantic contracts before starting a backend",
+      "status": "pass"
+    },
+    {
+      "name": "canonical root aliases share watcher capacity and excess roots are refused",
+      "status": "pass"
+    },
+    {
+      "name": "installer refuses malformed or unreadable configuration without replacing it",
+      "status": "pass"
+    },
+    {
+      "name": "installer refuses to record an unsupported runtime # SKIP runtime is inside the supported range",
+      "status": "skipped"
+    },
+    {
+      "name": "installer atomically preserves other servers and settings with mode 0600",
+      "status": "pass"
+    },
+    {
+      "name": "semantic adapter refuses malformed, unknown-scope, and escaping anchors",
+      "status": "pass"
+    }
+  ],
+  "output_sha256": "d5c646265423281bbb793dd0e08175d3e2385d57dcfbec270d62a2b930685438"
+}

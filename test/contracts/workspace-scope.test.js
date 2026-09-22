@@ -5,6 +5,7 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import test from "node:test";
 import { openWorkspaceRuntime } from "../../packages/core/dist/workspace/runtime.js";
+import { captureWorkspaceSnapshot, discoverWorkspaceFiles } from "../../packages/core/dist/workspace/snapshots.js";
 
 function childHoldingRoot(root) {
   const runtimePath = path.resolve("packages/core/dist/workspace/runtime.js");
@@ -57,4 +58,74 @@ test("a lock whose holder is dead is reclaimed", async () => {
   assert.equal(runtime.canonicalSourceRoot, await realpath(root));
   await runtime.release();
   await rm(root, { recursive: true, force: true });
+});
+
+test("non-git nested ignore policy excludes files and invalidates the captured scope", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-ignore-"));
+  await mkdir(path.join(root, "nested"));
+  await writeFile(path.join(root, ".gitignore"), "ignored.txt\n");
+  await writeFile(path.join(root, "nested", ".gitignore"), "drop.ts\n");
+  await writeFile(path.join(root, "ignored.txt"), "ignored\n");
+  await writeFile(path.join(root, "kept.ts"), "kept\n");
+  await writeFile(path.join(root, "nested", "drop.ts"), "drop\n");
+  await writeFile(path.join(root, "nested", "keep.ts"), "keep\n");
+  const files = await discoverWorkspaceFiles(root);
+  assert.equal(files.includes("ignored.txt"), false);
+  assert.equal(files.includes("nested/drop.ts"), false);
+  assert.equal(files.includes("nested/keep.ts"), true);
+  const before = await captureWorkspaceSnapshot({ workspaceId: "workspace", sourceRoot: root, observedSeq: "1", parserProfileDigest: "parser", resolverProfileDigest: "resolver" });
+  await rm(path.join(root, "nested", ".gitignore"));
+  const after = await captureWorkspaceSnapshot({ workspaceId: "workspace", sourceRoot: root, observedSeq: "1", parserProfileDigest: "parser", resolverProfileDigest: "resolver" });
+  assert.notEqual(before.manifest.id, after.manifest.id);
+  assert.equal(after.sources.some((source) => source.relativePath === "nested/drop.ts"), true);
+  await rm(root, { recursive: true, force: true });
+});
+
+test("nested TypeScript and JavaScript resolver configs invalidate captured scope", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-config-scope-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, "nested"));
+  await writeFile(path.join(root, "nested", "tsconfig.base.json"), '{"compilerOptions":{"baseUrl":"."}}');
+  const options = { workspaceId: "workspace", sourceRoot: root, observedSeq: "1", parserProfileDigest: "parser", resolverProfileDigest: "resolver" };
+  const initial = await captureWorkspaceSnapshot(options);
+  await writeFile(path.join(root, "nested", "tsconfig.base.json"), '{"compilerOptions":{"baseUrl":"src"}}');
+  const changed = await captureWorkspaceSnapshot(options);
+  assert.notEqual(changed.manifest.scopeDigest, initial.manifest.scopeDigest);
+  await writeFile(path.join(root, "nested", "jsconfig.json"), '{"compilerOptions":{"checkJs":true}}');
+  const added = await captureWorkspaceSnapshot(options);
+  assert.notEqual(added.manifest.scopeDigest, changed.manifest.scopeDigest);
+  await rm(path.join(root, "nested", "jsconfig.json"));
+  const deleted = await captureWorkspaceSnapshot(options);
+  assert.equal(deleted.manifest.scopeDigest, changed.manifest.scopeDigest);
+});
+
+test("default state and runtime metadata reject symlink escape", async (t) => {
+  const base = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-state-escape-"));
+  t.after(() => rm(base, { recursive: true, force: true }));
+  const root = path.join(base, "source");
+  const outside = path.join(base, "outside");
+  await mkdir(root); await mkdir(outside);
+  await symlink(outside, path.join(root, ".lazy-intel"));
+  await assert.rejects(openWorkspaceRuntime({ sourceRoot: root }), /state.*symlink|state.*outside/);
+  await rm(path.join(root, ".lazy-intel"));
+  await mkdir(path.join(root, ".lazy-intel"));
+  await symlink(outside, path.join(root, ".lazy-intel", "runtime"));
+  await assert.rejects(openWorkspaceRuntime({ sourceRoot: root }), /runtime.*symlink|runtime.*outside/);
+});
+
+test("prepared source transport rejects escaped directories and altered bytes", async (t) => {
+  const { stagePreparedBatch, readPreparedBatch } = await import("../../packages/core/dist/runtime/prepared.js");
+  const base = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-prepared-escape-"));
+  t.after(() => rm(base, { recursive: true, force: true }));
+  const state = path.join(base, "state");
+  const outside = path.join(base, "outside");
+  await mkdir(state); await mkdir(outside);
+  const batch = { batchId: "batch", part: 0, final: true, manifestId: "manifest", sources: [], deletedPaths: [], full: true };
+  await symlink(outside, path.join(state, ".prepared"));
+  await assert.rejects(stagePreparedBatch(state, batch), /prepared.*symlink|prepared.*outside/);
+  await rm(path.join(state, ".prepared"));
+  const staged = await stagePreparedBatch(state, batch);
+  await writeFile(staged.reference.path, JSON.stringify({ ...batch, full: false }));
+  await assert.rejects(readPreparedBatch(state, staged.reference), /changed/);
+  await staged.release();
 });

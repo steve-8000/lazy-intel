@@ -23,6 +23,7 @@ export interface PreparedSnapshot {
 export interface PreparedSnapshotBatch {
   readonly upserts: readonly PreparedSnapshot[];
   readonly deletedFileIds?: readonly string[];
+  readonly deletedPaths?: readonly string[];
 }
 
 export interface PreparedSnapshotFile {
@@ -81,8 +82,17 @@ export async function ingestPreparedSnapshots(
   embeddingModel: EmbeddingModel,
   batch: PreparedSnapshotBatch,
 ): Promise<PreparedSnapshotResult> {
+  let filesDeleted = 0;
   for (const fileId of batch.deletedFileIds ?? []) {
     storage.deleteFile(fileId);
+    filesDeleted += 1;
+  }
+  for (const absolutePath of batch.deletedPaths ?? []) {
+    const existing = storage.getFileByPath(absolutePath);
+    if (existing) {
+      storage.deleteFile(existing.id);
+      filesDeleted += 1;
+    }
   }
 
   const prepared: PreparedSnapshotFile[] = [];
@@ -116,7 +126,7 @@ export async function ingestPreparedSnapshots(
   return {
     filesIndexed: prepared.length,
     fragmentsIndexed: prepared.reduce((total, file) => total + file.fragments.length, 0),
-    filesDeleted: (batch.deletedFileIds ?? []).length,
+    filesDeleted,
     files: prepared,
   };
 }

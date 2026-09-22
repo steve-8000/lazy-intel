@@ -1,33 +1,26 @@
 import test, { after, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { access, chmod, mkdir, mkdtemp, open, readFile, readdir, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, open, readFile, readdir, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { StdioMcpClient } from "../src/mcp/client.js";
+import { openWorkspaceRuntime } from "../packages/core/dist/workspace/runtime.js";
 
 const base = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-security-"));
 const workspace = path.join(base, "workspace");
 const outside = path.join(base, "workspace-outside");
 const approved = path.join(base, "approved");
-const home = path.join(base, "home");
-for (const directory of [workspace, outside, approved, path.join(home, ".local/bin")]) await mkdir(directory, { recursive: true });
+for (const directory of [workspace, outside, approved]) await mkdir(directory, { recursive: true });
 process.env.LAZY_INTEL_ROOT = workspace;
 process.env.LAZY_INTEL_ALLOWED_ROOTS = approved;
 process.env.LAZY_INTEL_MAINTENANCE_MS = "0";
 process.env.LAZY_INTEL_MAX_ROOTS = "2";
 process.env.ZVEC_GREP_HOME = path.join(base, "zvec-home");
-const trusted = path.join(home, ".local/bin/serena");
-await writeFile(trusted, `#!${process.execPath}\nconsole.log("trusted 1 symbols ready");\n`, { mode: 0o755 });
-process.env.LAZY_INTEL_SERENA_BIN = trusted;
-process.env.LAZY_INTEL_ZG_BIN = trusted;
-process.env.LAZY_INTEL_CODEGRAPH_BIN = trusted;
 const { codeIntel } = await import("../src/engine.js");
 const { installOmp } = await import("../src/admin.js");
-const { resolveBin, run } = await import("../src/lib/process.js");
+const { closeUnified } = await import("../src/unified.js");
 const { indexStatus, closeIndexManager } = await import("../src/index-manager.js");
-afterEach(() => closeIndexManager());
-after(async () => { closeIndexManager(); await rm(base, { recursive: true, force: true }); });
+afterEach(async () => { closeIndexManager(); await closeUnified(); });
+after(async () => { closeIndexManager(); await closeUnified(); await rm(base, { recursive: true, force: true }); });
 
 async function directory(name) {
   const root = path.join(workspace, name);
@@ -35,30 +28,22 @@ async function directory(name) {
   return root;
 }
 
-test("repo cwd and PATH cannot select Serena; explicit absolute overrides are canonical", async () => {
-  const root = await directory("malicious");
-  const bin = path.join(root, "node_modules/.bin");
-  await mkdir(bin, { recursive: true });
-  await writeFile(path.join(bin, "serena"), `#!${process.execPath}\nconsole.log("hijacked");\n`, { mode: 0o755 });
-  const previous = { cwd: process.cwd(), HOME: process.env.HOME, PATH: process.env.PATH };
+test("source and state identities cannot be confused across workspaces", async () => {
+  const first = await directory("state-first");
+  const second = await directory("state-second");
+  const stateRoot = path.join(base, "shared-state");
+  const runtime = await openWorkspaceRuntime({ sourceRoot: first, stateRoot });
   try {
-    process.chdir(root); process.env.HOME = home; process.env.PATH = `${bin}${path.delimiter}${previous.PATH}`;
-    delete process.env.LAZY_INTEL_SERENA_BIN;
-    const executable = await resolveBin("serena");
-    // run() preserves raw bytes now: the transport no longer trims source-significant whitespace.
-    assert.equal((await run(executable)).stdout, "trusted 1 symbols ready\n");
-    process.env.LAZY_INTEL_SERENA_BIN = "node_modules/.bin/serena";
-    await assert.rejects(resolveBin("serena"), /absolute executable/);
-    const alias = path.join(base, "installed-serena");
-    await symlink(trusted, alias);
-    process.env.LAZY_INTEL_SERENA_BIN = alias;
-    assert.equal(await resolveBin("serena"), await realpath(trusted));
+    assert.equal(runtime.canonicalSourceRoot, await realpath(first));
+    assert.equal(runtime.canonicalStateRoot, await realpath(stateRoot));
+    assert.notEqual(runtime.canonicalSourceRoot, runtime.canonicalStateRoot);
   } finally {
-    process.chdir(previous.cwd);
-    if (previous.HOME == null) delete process.env.HOME; else process.env.HOME = previous.HOME;
-    process.env.PATH = previous.PATH;
-    process.env.LAZY_INTEL_SERENA_BIN = trusted;
+    await runtime.release();
   }
+  await assert.rejects(
+    () => openWorkspaceRuntime({ sourceRoot: second, stateRoot }),
+    /workspace identity mismatch/,
+  );
 });
 
 test("request roots reject sibling prefixes and symlink escapes before indexing", async () => {
@@ -67,7 +52,7 @@ test("request roots reject sibling prefixes and symlink escapes before indexing"
   for (const root of [outside, alias]) {
     await assert.rejects(codeIntel({ operation: "reindex", root, backend: "codegraph" }), /outside allowed workspaces/);
   }
-  await assert.rejects(access(path.join(outside, ".codegraph")), { code: "ENOENT" });
+  await assert.rejects(stat(path.join(outside, ".codegraph")), { code: "ENOENT" });
   const nested = await directory("nested");
   const inTree = path.join(workspace, "inside-link");
   await symlink(nested, inTree);
@@ -101,19 +86,6 @@ test("canonical root aliases share watcher capacity and excess roots are refused
   assert.equal((await indexStatus(third)).root, await realpath(third));
 });
 
-test("a partial repair failure is an MCP error, not a successful derived effect", async t => {
-  const root = await directory("partial-repair");
-  const cli = fileURLToPath(new URL("../src/cli.js", import.meta.url));
-  const client = new StdioMcpClient(process.execPath, [cli, "serve"], {
-    cwd: root, env: { LAZY_INTEL_ROOT: root, LAZY_INTEL_AUTO_INDEX: "false", LAZY_INTEL_SERENA_BIN: path.join(base, "missing-serena") },
-  });
-  t.after(() => client.close());
-  await client.start();
-  const result = await client.callTool("code_intel", { operation: "repair", backend: "all", root });
-  assert.equal(result.isError, true);
-  assert.deepEqual(result.structuredContent.backends.map(row => [row.backend, row.ok]), [["zvec", true], ["codegraph", true], ["serena", false]]);
-});
-
 test("installer refuses malformed or unreadable configuration without replacing it", async () => {
   const root = await directory("invalid-config");
   const configDir = path.join(root, ".omp"); await mkdir(configDir);
@@ -128,9 +100,6 @@ test("installer refuses malformed or unreadable configuration without replacing 
   assert.equal((await stat(configPath)).isDirectory(), true);
 });
 
-// The installer deliberately refuses to write an unsupported runtime into OMP configuration,
-// so the atomic-write property can only be observed on a runtime inside the declared engine
-// range. On any other runtime the refusal itself is the behaviour under test.
 const [nodeMajor, nodeMinor] = process.versions.node.split(".").map(Number);
 const supportedRuntime = (nodeMajor > 22 || (nodeMajor === 22 && nodeMinor >= 5)) && nodeMajor < 25;
 
@@ -143,7 +112,7 @@ test("installer atomically preserves other servers and settings with mode 0600",
   const root = await directory("atomic-config");
   const configDir = path.join(root, ".omp"); await mkdir(configDir);
   const configPath = path.join(configDir, "mcp.json");
-  const original = { mcpServers: { unrelated: { command: "trusted-server" }, serena: { command: "standalone-serena" }, "zvec-grep": { command: "standalone-zvec" }, "lazy-intel": { env: { LAZY_INTEL_ALLOWED_ROOTS: approved } } }, disabledServers: ["unrelated"] };
+  const original = { mcpServers: { unrelated: { command: "trusted-server" }, serena: { command: "standalone-serena" }, "zvec-grep": { command: "standalone-zvec" }, lazy: { env: { LAZY_INTEL_ALLOWED_ROOTS: approved } } }, disabledServers: ["unrelated"] };
   const text = JSON.stringify(original);
   await writeFile(configPath, text); await chmod(configPath, 0o644);
   const oldHandle = await open(configPath, "r");
@@ -153,11 +122,13 @@ test("installer atomically preserves other servers and settings with mode 0600",
     const installed = JSON.parse(await readFile(configPath, "utf8"));
     assert.deepEqual(installed.mcpServers.unrelated, original.mcpServers.unrelated);
     assert.ok(installed.disabledServers.includes("unrelated"));
-    assert.deepEqual(Object.keys(installed.mcpServers).sort(), ["lazy-intel", "unrelated"]);
-    assert.ok(["zvec-grep", "codegraph", "serena"].every(name => installed.disabledServers.includes(name)));
-    assert.equal(installed.mcpServers["lazy-intel"].env.LAZY_INTEL_ALLOWED_ROOTS, approved);
-    assert.equal(installed.mcpServers["lazy-intel"].env.LAZY_INTEL_SERENA_BIN, await realpath(trusted));
+    assert.deepEqual(Object.keys(installed.mcpServers).sort(), ["lazy", "lazy-intel", "unrelated"]);
+    assert.ok(["zvec-grep", "codegraph", "serena"].every((name) => installed.disabledServers.includes(name)));
+    assert.equal(installed.mcpServers.lazy["env"].LAZY_INTEL_ALLOWED_ROOTS, approved);
+    assert.equal(Object.hasOwn(installed.mcpServers["lazy-intel"].env, "LAZY_INTEL_ZVEC_MODE"), false);
+    assert.equal(Object.hasOwn(installed.mcpServers["lazy-intel"].env, "LAZY_INTEL_SERENA_CONTEXT"), false);
+    assert.equal(Object.hasOwn(installed.mcpServers["lazy-intel"].env, "LAZY_INTEL_SERENA_BIN"), false);
     assert.equal((await stat(configPath)).mode & 0o777, 0o600);
-    assert.deepEqual(await readdir(configDir), ["mcp.json"]);
+    assert.deepEqual((await readdir(configDir)).sort(), ["mcp.json"]);
   } finally { await oldHandle.close(); }
 });

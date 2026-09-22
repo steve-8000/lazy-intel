@@ -60,6 +60,13 @@ export type {
   ZvecGrepStructureEnrichmentDiagnostics,
 } from "./engine/service/index.js";
 
+export type {
+  PreparedSnapshot,
+  PreparedSnapshotBatch,
+  PreparedSnapshotFile,
+  PreparedSnapshotResult,
+} from "./engine/pipeline/indexing/prepared.js";
+
 export { createEmbeddingModel, EmbeddingPurpose } from "./engine/models/index.js";
 export type {
   CreateEmbeddingModelOptions,

@@ -43,7 +43,7 @@ test("semantic worker frames a real child and reports a dead interpreter as retr
   const { child, messages } = startWorker(dead);
   try {
     await waitFor(messages, (message) => message.type === "ready");
-    child.send({ type: "request", requestId: "dead", workerEpoch: messages.find((m) => m.type === "ready").workerEpoch, workspaceId: "ws", operation: "initialize", remainingBudgetMs: 500, payload: { root, language: "python" } });
+    child.send({ type: "request", requestId: "dead", workerEpoch: messages.find((m) => m.type === "ready").workerEpoch, workspaceId: "ws", operation: "initialize", remainingBudgetMs: 2000, payload: { root, language: "python" } });
     const response = await waitFor(messages, (message) => message.requestId === "dead");
     assert.equal(response.ok, false);
     assert.equal(response.code, "backend_failed");

@@ -15,6 +15,7 @@ import {
   MAX_MESSAGE_BYTES,
   PROTOCOL_VERSION,
   isParentMessage,
+  isWorkerMessage,
   messageBytes,
   type ParentRequest,
   type WorkerErrorCode,
@@ -86,7 +87,9 @@ export async function serveWorker(options: ServeOptions): Promise<void> {
   let queue: Promise<void> = Promise.resolve();
 
   const respond = (requestId: string, result: HandlerResult<unknown>, workMs: number): void => {
+    if (typeof result !== "object" || result === null) throw new WorkerError("backend_failed", "worker handler returned a malformed result", false);
     const message: WorkerMessage = { type: "response", requestId, workerEpoch, ok: true, outcome: result.outcome, payload: result.payload, workMs };
+    if (!isWorkerMessage(message)) throw new WorkerError("backend_failed", "worker handler returned a malformed result: a valid outcome and explicit payload are required", false);
     const size = messageBytes(message);
     if (size > MAX_MESSAGE_BYTES) {
       // Truncating the payload here would silently change the answer. Reporting
@@ -163,4 +166,6 @@ export async function serveWorker(options: ServeOptions): Promise<void> {
       process.stderr.write(`lazy-intel ${options.kind} worker dispose failed: ${error instanceof Error ? error.message : String(error)}\n`);
     }
   }
+  // The message listener otherwise keeps this owned IPC channel alive after disposal.
+  if (process.connected) process.disconnect();
 }

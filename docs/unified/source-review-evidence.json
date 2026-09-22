@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "requirement": "SRC-04",
+  "source_inventory": "docs/unified/source-checks.json",
+  "scope": "The 19 paths graded inventory in the immutable source inventory. Unchanged paths are not retroactively relabeled as fully read.",
+  "inventory_count": 19,
+  "edited_inventory": [
+    {
+      "id": "Z20",
+      "path": "vendor/zvec-grep/src/engine/service/root.ts",
+      "original_blob": "e0844e0b2cb3a679ff3436a97fb30d04838fe449",
+      "resulting_blob": "2667bb156af80c4dd5e044a3e9f6f3cda0e23655",
+      "read_at": "2026-09-21T21:50:22.948Z",
+      "first_successful_edit_at": "2026-09-21T21:51:43.008Z",
+      "source_line_count": 90,
+      "read_line_count": 90,
+      "read_message_id": "744a31aa",
+      "first_successful_edit_message_id": "a11ed5c4",
+      "history": "history://implement-retrieval",
+      "observation": "Main parsed the original tool-result transcript: all 90 source lines were displayed before the first successful edit. Earlier failed edit syntax attempts occurred after that read."
+    }
+  ],
+  "unchanged_inventory": [
+    {
+      "id": "Z08",
+      "path": "vendor/zvec-grep/src/engine/storage/zvec.ts",
+      "original_blob": "c1040e6a5555224e9dc57e7bda554039d1e71a5d",
+      "current_blob": "c1040e6a5555224e9dc57e7bda554039d1e71a5d"
+    },
+    {
+      "id": "Z10",
+      "path": "vendor/zvec-grep/src/engine/extraction/vector-content.ts",
+      "original_blob": "67e55497a82e1776a5004325000cc4f6ed531be9",
+      "current_blob": "67e55497a82e1776a5004325000cc4f6ed531be9"
+    },
+    {
+      "id": "Z11",
+      "path": "vendor/zvec-grep/src/engine/pipeline/search/index.ts",
+      "original_blob": "ce47a8f16d1e1f467c3bc7c6fa7532a16498504a",
+      "current_blob": "ce47a8f16d1e1f467c3bc7c6fa7532a16498504a"
+    },
+    {
+      "id": "Z12",
+      "path": "vendor/zvec-grep/src/engine/extraction/code/tree-sitter/grammar.ts",
+      "original_blob": "390ee1ed0044267ee89cec909453047fbb4c2106",
+      "current_blob": "390ee1ed0044267ee89cec909453047fbb4c2106"
+    },
+    {
+      "id": "Z13",
+      "path": "vendor/zvec-grep/src/engine/models/index.ts",
+      "original_blob": "3e78469247a414c1df68a4cdd12f6a6d774551d2",
+      "current_blob": "3e78469247a414c1df68a4cdd12f6a6d774551d2"
+    },
+    {
+      "id": "Z14",
+      "path": "vendor/zvec-grep/src/engine/utils/daemon-lease.ts",
+      "original_blob": "4e05299dec81e0af0874710ae5040a4e9fa04cf5",
+      "current_blob": "4e05299dec81e0af0874710ae5040a4e9fa04cf5"
+    },
+    {
+      "id": "Z15",
+      "path": "vendor/zvec-grep/src/authorization/operation.ts",
+      "original_blob": "4d8c07ed59d3f6bf5fd1baadeaeb2e45a15cc7f7",
+      "current_blob": "4d8c07ed59d3f6bf5fd1baadeaeb2e45a15cc7f7"
+    },
+    {
+      "id": "Z18",
+      "path": "vendor/zvec-grep/package-lock.json",
+      "original_blob": "3d3776db80b82f7ce791d0e6564a0f4df4cec848",
+      "current_blob": "3d3776db80b82f7ce791d0e6564a0f4df4cec848"
+    },
+    {
+      "id": "Z19",
+      "path": "vendor/zvec-grep/LICENSE",
+      "original_blob": "f49a4e16e68b128803cc2dcea614603632b04eac",
+      "current_blob": "f49a4e16e68b128803cc2dcea614603632b04eac"
+    },
+    {
+      "id": "Z21",
+      "path": "vendor/zvec-grep/test/integration/service.test.mjs",
+      "original_blob": "e5f1d472f288dc915688ad48cb4ae0452276ca0f",
+      "current_blob": "e5f1d472f288dc915688ad48cb4ae0452276ca0f"
+    },
+    {
+      "id": "Z22",
+      "path": "vendor/zvec-grep/test/path-indexing.test.mjs",
+      "original_blob": "a67d217167f877718dbea912e3c9e744727c701e",
+      "current_blob": "a67d217167f877718dbea912e3c9e744727c701e"
+    },
+    {
+      "id": "Z23",
+      "path": "vendor/zvec-grep/test/service-model-cache.test.mjs",
+      "original_blob": "557969b6eb8d71acb7c5c0850126e32f3362ea3f",
+      "current_blob": "557969b6eb8d71acb7c5c0850126e32f3362ea3f"
+    },
+    {
+      "id": "Z24",
+      "path": "vendor/zvec-grep/test/root-lease.test.mjs",
+      "original_blob": "922c9019e6d2707dff5153a72741e1f0c897d9ee",
+      "current_blob": "922c9019e6d2707dff5153a72741e1f0c897d9ee"
+    },
+    {
+      "id": "S06",
+      "path": "vendor/serena/src/solidlsp/ls_config.py",
+      "original_blob": "67d77b02e5c9bde0cce7365f813ece7950194dfe",
+      "current_blob": "67d77b02e5c9bde0cce7365f813ece7950194dfe"
+    },
+    {
+      "id": "S07",
+      "path": "vendor/serena/src/solidlsp/ls_process.py",
+      "original_blob": "e231d967cf2cd4e5d374cb5990a188f93466841c",
+      "current_blob": "e231d967cf2cd4e5d374cb5990a188f93466841c"
+    },
+    {
+      "id": "S08",
+      "path": "vendor/serena/src/solidlsp/ls_request.py",
+      "original_blob": "e2a42ced5af8f90d570f8222cb407dcbb2de05d9",
+      "current_blob": "e2a42ced5af8f90d570f8222cb407dcbb2de05d9"
+    },
+    {
+      "id": "S09",
+      "path": "vendor/serena/src/solidlsp/ls_types.py",
+      "original_blob": "24d512663a9a88195d517492bf5d28644f0d4592",
+      "current_blob": "24d512663a9a88195d517492bf5d28644f0d4592"
+    },
+    {
+      "id": "S11",
+      "path": "vendor/serena/src/solidlsp/dependency_provider.py",
+      "original_blob": "21dccb4eead46d877aba3cfd5a65016526b3d45b",
+      "current_blob": "21dccb4eead46d877aba3cfd5a65016526b3d45b"
+    }
+  ]
+}

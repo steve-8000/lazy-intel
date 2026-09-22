@@ -1,277 +1,168 @@
 # lazy-intel
 
-`lazy-intel` is an autonomous local code-intelligence MCP for OMP.
+Local code intelligence for OMP, exposed as exactly one MCP tool: `code_intel`.
 
-OMP sees exactly **one MCP tool**: `code_intel`.
+The default and only implementation uses pinned local forks of zvec-grep, CodeGraph and Serena. There is no internal LLM. Embeddings remain part of retrieval; existing model/device configuration is preserved. OMP Sharpshooter remains the durable memory owner.
 
-Internally, lazy-intel owns zvec-grep and CodeGraph derived-index lifecycle and uses Serena as live LSP semantics. OMP Sharpshooter remains the durable memory owner.
-
-```text
-OMP / Sharpshooter(memory)
-          |
-          | one stdio MCP
-          v
-     lazy-intel
-   autonomous control plane
-      /      |       \
-   zvec   CodeGraph  Serena
- retrieval   graph     LSP
-      \      |       /
-        fused evidence
-```
-
-## Design contract
-
-| Concern | Owner |
-|---|---|
-| durable project memory | OMP Sharpshooter |
-| semantic/hybrid workspace retrieval | zvec-grep |
-| architecture, call path, blast radius | CodeGraph |
-| exact symbol/reference/implementation semantics | Serena / LSP |
-| derived index create/sync/rebuild/repair | **lazy-intel autonomous control plane** |
-| source edits, build, tests, final correctness | OMP native tools |
-
-There is no manual index lifecycle in the normal path.
-
-## Two engines, one tool
-
-lazy-intel now **vendors** the source of its three backends under `vendor/`, at pinned commits, and can run them as embedded libraries in private worker processes. The old path — `zg` and `codegraph` CLI subprocesses plus an external Serena MCP server — is still there, and is still the default.
-
-| | `legacy` (default) | `unified` |
-|---|---|---|
-| selector | `LAZY_INTEL_ENGINE` unset | `LAZY_INTEL_ENGINE=unified` |
-| transport | CLI subprocess per query; Serena over MCP stdio | long-lived private workers over a Node IPC channel |
-| evidence | formatted text, preserved as opaque blocks | canonical anchors with UTF-8 byte spans plus the backend's own native id |
-| index lifecycle | `zg index`, `codegraph sync` and their `status` prose, parsed by regex | `service.index()` and `graph.sync()` in the same private workers, with structured readiness |
-| external installs on the query path | `zg`, `codegraph`, `serena` must be installed | none |
-
-The last row is measured, not asserted: `test/contracts/embedded-lifecycle.test.js` builds both indexes and answers a query with `PATH` cut down to the Node binary's own directory, and runs `legacy` in that same environment as a control to prove the executables really were out of reach.
-
-Both engines still share one index-manager, which keeps all lifecycle *policy* — root denial, generations, the filesystem watcher, staleness, failure backoff, per-backend serialization. What changed is who performs the work: `src/lifecycle.js` selects a CLI driver or an embedded-worker driver from the same `LAZY_INTEL_ENGINE` switch.
-
-Rolling back is unsetting one environment variable. It migrates nothing: the derived indexes under `.zvec-grep/` and `.codegraph/` keep the same layout and the same owner. `node src/cli.js doctor` reports the active mode and the vendored pins.
-
-```bash
-PATH="$(brew --prefix node@22)/bin:$PATH" npm run build          # build the vendored forks and the control plane
-npm run verify:vendor                                            # every vendored file still matches its UPSTREAM.json ledger
-npm run verify:release                                           # the release gate; writes docs/unified/release-evidence.json
-```
-
-### Why the source is vendored rather than depended on
-
-The published `@colbymchenry/codegraph` package contains no executable JavaScript. It is a thin installer around a per-platform bundle that carries its own Node runtime and can download a release archive from GitHub when that bundle is missing — a network install reachable from an ordinary invocation. Vendoring the pinned Git source removes that from the query path entirely.
-
-Both Node distributions were checked against their pinned commits rather than trusted: building each pinned tree locally reproduces the shipped output byte for byte (zvec-grep 390/390 files; CodeGraph 742/742 files in the platform bundle, including all 29 tree-sitter grammars and `db/schema.sql`). The method is recorded in `docs/unified/distribution-provenance.json`.
-
-Every vendored file is hashed in `vendor/<name>/UPSTREAM.json`. A file may differ from upstream only if the ledger declares the patch with its original and resulting blob hashes, the reason, and the test that covers it. `npm run verify:vendor` fails on anything else, including an undeclared new file.
-
-### What the unified engine does not claim
-
-- Single-parse convergence is enabled only for the languages marked `converged: true` in `docs/unified/parser-convergence.json`. Every other language keeps its existing extractor.
-- Semantic reads cover `symbol` and `references`. `implementations` and `diagnostics` return `unsupported_capability` rather than a substituted answer from a file overview.
-- A retrieval read cannot be cancelled cooperatively: the upstream `context()` API takes no `AbortSignal`. A cancelled caller is released immediately, its job is abandoned, and its eventual answer is discarded — the supervisor recycles the worker when too many jobs pile up. Nothing pretends the call aborted.
-- Python is still part of the product. It is the semantic worker's runtime, owned internally rather than provisioned by the user.
-
-## Autonomous indexing
-
-With the default configuration:
-
-1. MCP startup registers the project (`LAZY_INTEL_ROOT` or process cwd) and starts a background bootstrap.
-2. Readiness comes from the backends themselves, never from a directory guess, so a half-built or aborted index is detected instead of trusted. In `legacy` that means `zg status --check-ready` and `codegraph status`; in `unified` it is `service.info({ includeStatus: true })` and the graph's own statistics, which report readiness as data instead of prose to be regex-matched.
-3. A missing index is created on first use; an index that is currently building is reported as `building` rather than rebuilt underneath itself.
-4. A recursive filesystem watcher bumps a generation counter on real source changes. Every path segment is filtered, so nested `node_modules`, `dist`, `.build`, `.venv`, `__pycache__`, and the derived index directories cannot create feedback loops.
-5. Freshness is **change-driven**: each backend reconciles once when the process has no baseline for it (changes made while lazy-intel was down are unknowable), then syncs only when its applied generation falls behind the watcher generation. A quiet workspace costs zero subprocesses; there is no wall-clock re-index timer. `status` reports `dirty: null` with `baseline: "unverified"` instead of guessing.
-6. Authoritative zvec freshness comes from lazy-intel's own dirty sync (`zg index`); queries additionally carry `--refresh` (`background` for `auto`, `wait` for `strict`, `off` for `fast`) so the shared zvec-grep daemon can also refresh anything the watcher missed.
-7. Index work is serialized per backend in FIFO order. An explicit `reindex`/`repair` queued behind an in-flight sync still executes; it never inherits the other job's result.
-8. Repeated index failures escalate to a rebuild when `LAZY_INTEL_AUTO_REPAIR=true`.
-9. The agent can call `status`, `sync`, `reindex`, or `repair` through the same `code_intel` tool. No separate admin MCP is exposed.
-
-### Freshness modes
-
-| mode | behavior |
-|---|---|
-| `auto` | **default**; create when missing, sync when the watcher saw changes, daemon refresh in background |
-| `strict` | force a pre-query sync and a blocking daemon refresh |
-| `fast` | create when missing, otherwise use the built index as-is |
-
-`auto` is the normal production mode. `fast` exists only for explicitly latency-biased calls.
-
-### Embedding integration
-
-lazy-intel defines **no** embedding default. A new zvec index inherits the shared zvec-grep configuration (global default model, device, and model cache), so a machine that already runs zvec-grep keeps exactly one vector space and one model download. `--embedding` is passed only when `LAZY_INTEL_EMBEDDING` is set or the agent explicitly provides `embedding` with `operation=reindex`; existing indexes keep their stored schema during automatic repair.
-
-## Agent control plane
-
-Still only one tool:
+## Runtime architecture
 
 ```text
-code_intel(...)
+OMP / Sharpshooter
+        |
+   code_intel
+        |
+workspace + publication coordinator
+        |
+ immutable captured source bytes
+       / \
+ retrieval  graph       semantic / owned LSP session
+  worker    worker       Python bridge + language server
+       \      |          /
+    typed, bounded evidence
 ```
 
-Intelligence operations:
+- `src/unified.js` is the product entry into the owned workers. The old `src/backends/*` CLI/MCP wrappers and engine selector are gone.
+- `src/index-manager.js` owns scheduling, watcher generations, caller isolation and repair policy. Readiness comes from the publication catalog, not directory existence, CLI prose or a worker's row count.
+- `packages/core/src/workspace` owns canonical scope, cross-process ownership, source capture, durable intent/ack/publication state and read/write leases.
+- Retrieval and graph workers receive the same captured bytes. They cannot independently discover a different source revision or publish readiness.
+- Large source batches use hashed files beneath the owned generation's `.prepared` directory; bounded IPC carries references, not unbounded source bodies. Graph parts are staged until the complete publication is available; only the final part acknowledges durable application.
+- The workers retain their native parsers/extractors and dependency locks. Shared source bytes are **not** a claim of single parsing, one process, a universal parser, or removal of Python. `docs/unified/parser-convergence.json` distinguishes snapshot parity from parser convergence.
 
-- `auto`
-- `search`
-- `architecture`
-- `impact`
-- `symbol`
-- `references`
-- `implementations`
-- `diagnostics`
+## State and consistency
 
-Control operations available to the agent:
+The source root is never replaced by the state root. The product stores its control plane and derived generations under `<source>/.lazy-intel/`; the core API also supports an explicitly supplied separate state directory. `LAZY_INTEL_STATE_ROOT` is not a product configuration setting.
 
-- `status`
-- `sync`
-- `reindex` (optionally set `embedding` to intentionally change zvec vector space)
-- `repair`
+A write records its intent before mutating either backend. Each projection acknowledges its real durable boundary before the coordinator publishes a clean view. A failed or interrupted write remains `needs_recovery`; an unresolved transaction blocks a newer publication. Recovery replays captured inputs rather than recapturing unrelated disk bytes.
 
-`backend=all|zvec|codegraph|serena` scopes control operations. Serena has no derived index: `repair` restarts/warm-checks its live LSP process.
+Readers lease published views. Partly replaced vectors, uncommitted graph writes and incompatible graph/retrieval manifests cannot be presented as a coherent old clean result. Rebuilds use a fresh generation and retain the old physical store rather than migrating it in place.
 
-Examples:
+| Freshness | Behavior |
+|---|---|
+| `auto` | Create when absent; reconcile startup/dirty/policy state, then read a clean published view |
+| `strict` | Capture and synchronize before reading; recapture after the read and report `source_changed` if the source changed |
+| `fast` | Use an available clean captured view; this does not promise current disk contents |
+
+A recursive watcher tracks source changes, including newly created directories and deletions. Nested ignore policy and relevant build configuration affect capture identity. Derived state, dependency/build directories and private agent roots are excluded. A lost/unavailable watcher falls back to bounded reconciliation rather than silently declaring freshness.
+
+A caller's cancellation does not cancel shared index work or another waiter. Native work that lacks cooperative cancellation remains physically owned until it completes or its worker is reaped. Worker epochs fence late responses from previous processes. The MCP permits four active requests and thirty-two queued requests; input and output wire caps are enforced.
+
+## Evidence contract
+
+Indexed evidence carries its `CanonicalAnchor` and `ProjectionView`: canonical file identity, captured content hash, UTF-8 byte span, manifest, generation and publication state. Semantic evidence carries a separate `SemanticObservation`: owned session epoch, observed hash, document version, position encoding and diagnostic completion state. A live LSP observation is not relabeled as an indexed manifest.
+
+`textKind` distinguishes verbatim `source` from a semantic `description` such as a diagnostic message or graph label. Current-file verification checks the captured hash and canonical span; a `source` item additionally requires an exact byte excerpt match. A matched description means its **source anchor** was verified, not that its wording appears in the file or that its semantic claim was independently proven.
+
+Coverage remains explicit: ranked retrieval is not exhaustive search, bounded graph evidence is not a complete program graph, and unsupported semantics are not successful empty results. Fresh empty diagnostic publications and valid empty pull replies clear prior errors; silence remains `not_reported`, not completed empty. Empty diagnostics retain the completion observation even when there are no evidence items. Output budgeting includes headers, warnings, evidence descriptors, views and observations.
+
+Truth order remains current source/compiler/tests, live language semantics, indexed structure, then retrieval relevance. Derived indexes accelerate discovery; they do not replace source verification.
+
+## Operations
+
+Intelligence: `auto`, `context`, `search`, `architecture`, `impact`, `symbol`, `references`, `implementations`, `diagnostics`.
+
+Control: `status`, `sync`, `reindex`, `repair`. `backend=all|zvec|codegraph|serena` scopes control operations. Serena has no derived index; semantic repair closes its owned session for a fresh launch on the next read.
+
+Explicit operations are not silently replaced. `auto` has a bounded dependent stage, not an agent loop. `context` uses a fixed composite plan. Auxiliary evidence cannot disguise failure of a required operation.
 
 ```json
-{
-  "operation": "architecture",
-  "query": "trace the call flow from index commit to search result refresh",
-  "root": "/src/folio"
-}
+{"operation":"architecture","query":"invoiceTotal calls applyDiscount","root":"/src/project"}
 ```
 
 ```json
-{
-  "operation": "reindex",
-  "backend": "codegraph",
-  "root": "/src/folio"
-}
+{"operation":"references","symbol":"applyDiscount","relativePath":"src/discount.ts","root":"/src/project"}
 ```
 
 ```json
-{
-  "operation": "status",
-  "root": "/src/folio"
-}
+{"operation":"reindex","backend":"zvec","root":"/src/project","embedding":"local/qwen3-embedding-0.6b"}
 ```
 
-## Install into an OMP project
+### Embeddings
+
+A new index inherits the existing zvec-grep configuration, including model and device. An existing index keeps its stored embedding schema during automatic synchronization/repair. An explicit model change requires rebuilding that projection. This repository does not change the user's model configuration or download a different model during a normal query.
+
+### Language servers
+
+Semantic reads require an explicitly trusted, installed language server. Set `LAZY_INTEL_LSP` to a JSON mapping of language names to absolute executable paths, for example:
+
+```text
+LAZY_INTEL_LSP={"python":"/absolute/path/to/pyright-langserver","typescript":"/absolute/path/to/typescript-language-server"}
+```
+
+Executables are canonicalized and checked before launch. The requesting repository's `PATH` or `node_modules/.bin` cannot select them. Missing toolchain/build context and missing LSP capabilities produce honest unavailable/partial results, not a file-overview substitute. `symbol`, `references`, `implementations` and `diagnostics` are forwarded through the read-only semantic API; actual availability depends on the configured server. For example, a server rejecting `textDocument/implementation` is reported as unsupported.
+
+UTF-16/UTF-8 positions, CRLF and multibyte text are converted against the observed source revision. Native retrieval offsets are explicitly UTF-16 code units; public anchors are UTF-8 bytes. Invalid coordinates, unknown semantic scope and source paths outside the canonical workspace cannot become complete anchored evidence. The product does not claim access to another editor's unsaved buffer.
+
+## Setup and OMP registration
+
+Requirements: Node `>=22.5 <25`, npm, `uv` and the owned semantic worker's declared Python runtime. Native dependencies/grammars and local model caches must be provisioned before offline use. Language-server installation is explicit setup, not a side effect of a query.
 
 ```bash
-# Node >=22.5 <25 must be the active runtime for install and for the MCP entry.
 PATH="$(brew --prefix node@22)/bin:$PATH" ./scripts/install.sh --global
 ```
 
-This installs the pinned backends project-locally (`node_modules/.bin/zg`, `node_modules/.bin/codegraph`), installs the pinned `serena-agent` with `uv`, runs `doctor`, and merges `lazy-intel` into `~/.omp/agent/mcp.json` (`--global`) or `<project>/.omp/mcp.json`.
+Setup builds the local forks/core and provisions the project-owned semantic environment. OMP registration remains a separate CLI operation that can also be invoked directly:
 
-The install also adds `zvec-grep` and `codegraph` to OMP's `disabledServers`: **exactly one code-intelligence MCP stays connected**, so there is one embedding runtime, one model cache, and one derived-index owner.
+```bash
+node src/cli.js install-omp /src/project
+node src/cli.js install-omp /src/project --global
+```
 
-**It does not run a manual `lazy-intel init`.** Index creation starts automatically when OMP starts lazy-intel and is guaranteed on first use. After that, index maintenance requires no user action.
-
-## Default OMP runtime settings
+Project registration records its cwd; global registration follows the OMP session cwd. Installation preserves unrelated MCP configuration and explicit settings, removes superseded standalone code-intelligence registrations, and writes atomically with mode `0600`. No manual index initialization is required for normal use.
 
 ```text
 LAZY_INTEL_AUTO_INDEX=true
 LAZY_INTEL_AUTO_REPAIR=true
-LAZY_INTEL_MAINTENANCE_MS=5000     # dirty-only maintenance tick; 0 disables it
+LAZY_INTEL_MAINTENANCE_MS=5000
 LAZY_INTEL_INDEX_TIMEOUT_MS=600000
 LAZY_INTEL_TIMEOUT_MS=30000
-LAZY_INTEL_ZVEC_MODE=auto          # zvec transport: direct | server | auto
-LAZY_INTEL_SERENA_CONTEXT=agent    # Serena 1.7 context name
 SERENA_USAGE_REPORTING=false
 DO_NOT_TRACK=1
 ```
 
-Optional: `LAZY_INTEL_ROOT` pins the bootstrap root, `LAZY_INTEL_EMBEDDING` overrides the inherited zvec model for *new* indexes, `LAZY_INTEL_PROBE_TIMEOUT_MS` bounds readiness probes, and `LAZY_INTEL_ZG_BIN` / `LAZY_INTEL_CODEGRAPH_BIN` / `LAZY_INTEL_SERENA_BIN` override binary resolution.
+`LAZY_INTEL_ROOT` fixes the bootstrap root. `LAZY_INTEL_ALLOWED_ROOTS` and `LAZY_INTEL_DENY_ROOTS` use the platform path delimiter. `LAZY_INTEL_MAX_ROOTS` bounds managed workspaces. `LAZY_INTEL_EMBEDDING` supplies an explicit embedding selection; otherwise the shared configuration is inherited. There is no daemon transport selector or external Serena MCP executable setting in the new query path.
 
 ### Trust boundaries
 
-- Executables never resolve through the requesting project's `node_modules/.bin` or `PATH`. zvec/CodeGraph use this installation's pinned dependencies; Serena uses the installed `~/.local/bin/serena`. Overrides must be absolute, executable files and are canonicalized with `realpath`. The installer records Serena's canonical absolute path.
-- MCP request roots are canonicalized before containment checks. They must be the process boot root (`LAZY_INTEL_ROOT` or cwd), a descendant, or inside an explicit `LAZY_INTEL_ALLOWED_ROOTS` entry (platform path delimiter). A sibling prefix or symlink escaping the allowlist is refused. `relativePath` cannot escape the requested root either. These are routing boundaries, not an OS sandbox against a concurrently hostile filesystem or a compromised backend.
-- Managed index roots/watchers are capped by `LAZY_INTEL_MAX_ROOTS` (default 8, maximum 64). Canonical aliases share one slot. On exhaustion, requests fail without creating another watcher; restart the MCP to release slots. In-flight work is never evicted to make room.
-- `impact` requires `symbol`; no implicit `explore` fallback. References and implementations require both `symbol` and `relativePath`.
-- OMP abort/timeout notifications propagate to Serena calls. A cancelled caller does not retry/restart a shared backend or cancel another caller's startup.
-- OMP configuration parsing/permission failures stop installation. Writes use a same-directory exclusive temporary file, `fsync`, atomic rename and mode `0600`; unrelated server entries and explicit lazy-intel environment settings are preserved. MCP request timeout covers index creation plus query execution.
-- Runtime observes `sync`/`reindex`/`repair` as derived-state effects. `status` and intelligence queries remain reads; no additional MCP tools or approval owner are introduced.
+- Request roots and source locators are canonicalized and contained. The home directory itself, the OMP home tree and zvec-grep's private home tree are not indexable roots.
+- Canonical aliases share one workspace owner. A second writer cannot independently open the same root. Recreated source identities and mismatched persisted scope are rejected.
+- Default state/runtime directories, generation roots and prepared transport files cannot use symlinks to escape their owned directory.
+- Semantic operations do not expose source edits, arbitrary commands or an additional MCP tool. Trusted language servers still execute code: routing/trust checks are not an OS sandbox for a compromised tool or concurrently hostile filesystem.
+- The product does not restart a machine-wide zvec daemon or borrow its writable index. Its generations are separate from old `.zvec-grep/` and `.codegraph/` state.
 
-### Denied roots
+## Build, verification and rollback
 
-The agent home (`OMP_HOME`, default `~/.omp`) and the zvec-grep home (`ZVEC_GREP_HOME`, default `~/.zvec-grep`) are never indexed. They are agent private state — session transcripts, blobs, logs, SQLite WALs — that the running harness rewrites continuously, so a watcher rooted there never settles and every sync re-embeds files that are still being appended to.
-
-The deny covers the **whole tree**, not just the exact directory. The harness keeps a real git repository at `~/.omp/agent` holding rules, memories, skills and session databases; an exact-match deny indexed it like any other project and embedded precisely the private state this rule exists to protect. The home directory itself is refused as a root as well, so a session started from `~` cannot index every repository and credential file on the machine — its descendants stay indexable. Automatic bootstrap skips a denied root silently; an explicit `code_intel` call against one fails with the reason instead of quietly indexing it. `LAZY_INTEL_DENY_ROOTS` adds further trees, separated by the platform path delimiter.
-
-## Pinned upstreams (2026-09-08)
-
-- `@zvec/zvec-grep` **0.2.1**
-- `@colbymchenry/codegraph` **1.6.0**
-- `serena-agent` **1.7.0**
-
-See `upstreams.lock.json` and `THIRD_PARTY_NOTICES.md`.
-
-## Requirements
-
-- macOS/Linux
-- Node >=22.5 and <25 (a newer default `node` on the machine must be overridden for install *and* for the MCP `command`; `install-omp` writes the runtime it was executed with)
-- npm
-- Python 3.13 + `uv` for Serena
-
-### Operational traps
-
-- **zvec daemon lease.** When a zvec-grep daemon is running it owns index writes for a root; `--mode direct` then fails with `ZVEC_GREP.ENGINE.DAEMON_LEASE_ACTIVE`. Keep `LAZY_INTEL_ZVEC_MODE=auto`. If indexing hangs with no output, the daemon itself is stuck — `zg server off && zg server on` restores it (verified: a stuck daemon hung `zg index` past 300s; after restart the same index finished in ~4s). That daemon is machine-wide: `zg install` may have wired it into other agents too, so restart it only when no other client is mid-operation.
-- **Freshness without a watcher.** If the recursive watcher cannot attach (container mounts, exotic filesystems), `status.freshnessSource` reports `periodic fallback` and `LAZY_INTEL_MAX_STALE_MS` (default 60000) drives periodic syncs. With a live watcher, time plays no role.
-- **Serena contexts.** Serena 1.7 has no `ide-assistant` context. Valid names include `agent` (default here), `ide`, and `codex`.
-- **Cross-file JS/TS semantics.** Serena's language server needs a declared project scope; this repo ships `jsconfig.json` so `references`/`implementations` resolve across files instead of returning an empty result.
-
-## Truth hierarchy
-
-```text
-current source + compiler/tests
-              >
-live language semantics (Serena/LSP)
-              >
-indexed structure (CodeGraph)
-              >
-retrieval relevance (zvec-grep)
+```bash
+npm run build
+npm run verify:vendor
+npm run check:integration
+npm test
+npm run test:compatibility
+npm run verify:release
 ```
 
-The indexes are fully autonomous, but they remain derived acceleration state, not correctness truth.
+Each vendored tree retains its pinned commit, patch ledger, dependency lock and runtime assets. No forced cross-backend grammar/runtime hoisting is required. See `upstreams.lock.json`, `THIRD_PARTY_NOTICES.md` and `docs/unified/dependency-audit.json`.
 
-## Failure behavior
+The original **68** acceptance items remain in `docs/unified/acceptance.json` as the baseline assessment. Current per-item evidence belongs in `docs/unified/acceptance-evidence.json`; a passing build or a smaller aggregate gate list does not replace those criteria. `docs/unified/units/` retains superseded historical checkpoints, not current acceptance verdicts. Read-before-edit provenance comes from chronological tool records, not a retrospective current-hash assertion.
 
-A backend failure does not take down the MCP. Intelligence queries return whatever selected backend evidence is healthy, and a call where every selected backend failed is reported as an MCP tool error instead of an empty success.
+Release producers:
 
-Retries are bounded: a failing backend backs off 30s, 1m, 2m, … up to 15m, the maintenance tick skips a backend that is already busy or not yet due, and the automatic rebuild escalation fires once per failure streak. A failed semantic call restarts Serena once; cancellation does not. Explicit maintenance reports an MCP error if any targeted backend fails, so a partial repair cannot be journaled as a successful effect.
+- `scripts/verify-install.mjs`: isolated HOME/project install, upgrade, real MCP reads, cancellation, multiple roots and an old-binary/actual-state restore.
+- `scripts/verify-performance.mjs`: immutable preregistration, separately measured cold/restart/warm/dirty lifecycles, process-tree RSS and source-anchor checks.
+- `scripts/verify-semantic.mjs`: actual trusted language servers, own-buffer hash/version, CRLF/UTF-16 coordinates, diagnostics and public source-span verification.
+- `scripts/verify-backend-parity.mjs`: stock disk-index/query versus public MCP using identical copied source and configured embeddings; anchor coverage and exact-span equality are reported separately.
+- `scripts/verify-offline.mjs`: scoped runtime network instrumentation and its explicit platform/coverage limitations.
+- `scripts/verify-release.mjs`: executed build, contracts and release evidence, without turning unverified/blocked criteria into passes.
 
-The agent can force recovery with:
+The measured small corpus is not a broad benchmark. Current evidence retains the preregistered 2 GB process-tree RSS guardrail as a separate release failure; successful source-anchor checks and the 68 original contracts do not waive it. Embedding model and device configuration were not changed to meet that limit.
 
-```json
-{ "operation": "repair", "backend": "all" }
-```
+Rollback is **not** an environment-variable switch. Stop the candidate, restore the archived old executable and its matching old state, then exercise that binary against the restored state. Never point the old binary at a new generation or downgrade a migrated store in place. `docs/unified/install-evidence.json` records the exercised disposable rollback and physical database digests; it does not claim a live deployment was changed.
 
-No user-operated `doctor -> init -> reindex` loop is required.
-
-## CLI
-
-The install does **not** create a global `lazy-intel` bin (no `npm link`); OMP launches `src/cli.js` by absolute path and humans run it the same way:
+CLI diagnostics remain available:
 
 ```bash
 node src/cli.js serve
-node src/cli.js doctor [root]                   # pinned-version + backend + index diagnostics
-node src/cli.js init [root] [--rebuild]         # optional/manual compatibility path
-node src/cli.js install-omp [root] [--global]   # --global writes ~/.omp/agent/mcp.json
+node src/cli.js doctor /src/project
+node src/cli.js init /src/project --rebuild
 ```
 
-Run these with a supported runtime (`PATH="$(brew --prefix node@22)/bin:$PATH"`); `install-omp` refuses to write an out-of-range Node into OMP configuration. `doctor` fails when a resolved backend does not match `upstreams.lock.json`, so version drift is visible instead of silent. Add `npm link` yourself if a global `lazy-intel` command is wanted.
-
-The CLI control commands are diagnostics/compatibility only. Normal lifecycle ownership lives inside the MCP runtime.
-
-## Tests
-
-```bash
-npm run check:integration
-npm run test:integration
-npm run test:compatibility   # real pinned backends, scratch workspace; no model calls
-```
-
-PR CI covers the executable/root/installer/cancellation boundaries on Node 22 and 24. Scheduled/manual compatibility runs install exact backend pins and use a local Qwen embedding model. They exercise search, architecture, impact, references and symbol lookup, then measure one restart-first and warm search sample. They do not measure general relevance or model performance.
-
-Local verification (2026-09-09, macOS arm64, Node 22.22.3): real zvec-grep 0.2.1, CodeGraph 1.6.0 and Serena 1.7.0 passed that compatibility exercise. First search including index creation: 7,236 ms; first search after MCP restart: 2,556 ms; warm search: 1,797 ms. Keep the existing restart reconciliation policy; these are single samples, not latency percentiles.
-
+`doctor` reports the supported runtime, vendored pins/build and index state. Normal ownership and recovery remain inside the MCP runtime.

@@ -20,15 +20,18 @@
     "manifest_sha256": "d4231cacd6c782a745f31be7665929917a0cc8e0296f71110c53ee1eaf861351",
     "verified_identical_to_upstream_blobs": true
   },
-  "local_patches": [],
-  "patch_revision": 0,
+  "local_patches": [
+    {"path": "src/solidlsp/ls.py", "original_blob": "cba90723dcdec4083093133e6fe89c6f70949df5", "resulting_blob": "c957f7922fe5d63296d239c2c7f57794628e5813", "unit": "U02", "reason": "Track diagnostics completion through LSP pull/publish protocol, including complete-empty publications, without stale cached fallback; semantic boundary patch also rejects external source reads before serialization.", "test_evidence": "python3 -m py_compile vendor/serena/src/serena/lazy_read_api.py vendor/serena/src/solidlsp/ls.py; npm --prefix packages/core run build; node scripts/verify-semantic.mjs (producer awaits main captured-map integration)."}
+  ],
+  "patch_revision": 3,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
     "Distribution artefacts (npm tarball, PyPI wheel) are never a substitute for this source."
   ],
   "added_files": ["src/serena/lazy_read_api.py"],
-  "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
+  "added_files_sha256": {"src/serena/lazy_read_api.py": "641e21e33a618c3786173d68c08f88528d62a83c6a01a1656f6bfd1068271b88"},
+  "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. lazy_read_api.py is the typed, read-only semantic boundary (symbols, references, diagnostics), including explicit truncation metadata, and is tracked here as an intentional addition; verify-vendor.mjs accepts exactly these as non-drift.",
   "manifest": [
     {
       "path": ".devcontainer/devcontainer.json",

@@ -29,7 +29,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { logDebug } from '../errors';
 
-/** A single alias pattern from `compilerOptions.paths`. */
+/** Filesystem view used by snapshot-aware metadata loading. */
+export interface CapturedFileAccess {
+  readFile(filePath: string): string | null;
+  isFile(filePath: string): boolean;
+  listDirectories(relativePath: string): string[];
+}
 export interface AliasPattern {
   /** The literal prefix before `*` (or the whole pattern if no `*`). */
   prefix: string;
@@ -135,18 +140,12 @@ const MAX_EXTENDS_DEPTH = 32;
  * `.json` extension is implied, and a bare package name means its
  * `tsconfig.json`.
  */
-function resolveExtendsTarget(spec: string, fromDir: string): string | null {
-  const isFile = (p: string): boolean => {
-    try {
-      return fs.statSync(p).isFile();
-    } catch {
-      return false;
-    }
-  };
+function resolveExtendsTarget(spec: string, fromDir: string, access: CapturedFileAccess): string | null {
+  const isFile = (p: string): boolean => access.isFile(p);
 
   if (spec.startsWith('./') || spec.startsWith('../') || path.isAbsolute(spec)) {
     const base = path.resolve(fromDir, spec);
-    for (const cand of [base, `${base}.json`, path.join(base, 'tsconfig.json')]) {
+    for (const cand of [base, base + '.json', path.join(base, 'tsconfig.json')]) {
       if (isFile(cand)) return cand;
     }
     return null;
@@ -155,7 +154,7 @@ function resolveExtendsTarget(spec: string, fromDir: string): string | null {
   let dir = fromDir;
   for (;;) {
     const base = path.join(dir, 'node_modules', spec);
-    for (const cand of [base, `${base}.json`, path.join(base, 'tsconfig.json')]) {
+    for (const cand of [base, base + '.json', path.join(base, 'tsconfig.json')]) {
       if (isFile(cand)) return cand;
     }
     const parent = path.dirname(dir);
@@ -175,14 +174,15 @@ function resolveExtendsTarget(spec: string, fromDir: string): string | null {
 function loadEffectiveOptions(
   filePath: string,
   stack: Set<string>,
-  depth: number
+  depth: number,
+  access: CapturedFileAccess
 ): EffectiveOptions | null {
   const abs = path.resolve(filePath);
   if (stack.has(abs) || depth > MAX_EXTENDS_DEPTH) {
     logDebug('path-aliases: extends chain cycle or too deep', { filePath: abs, depth });
     return null;
   }
-  const raw = readTsconfigLike(abs);
+  const raw = readTsconfigLike(abs, access);
   if (!raw) return null;
 
   stack.add(abs);
@@ -192,12 +192,12 @@ function loadEffectiveOptions(
   const parents = typeof raw.extends === 'string' ? [raw.extends] : (raw.extends ?? []);
   for (const spec of parents) {
     if (typeof spec !== 'string') continue;
-    const target = resolveExtendsTarget(spec, dir);
+    const target = resolveExtendsTarget(spec, dir, access);
     if (!target) {
       logDebug('path-aliases: unresolved extends', { from: abs, spec });
       continue;
     }
-    const inherited = loadEffectiveOptions(target, stack, depth + 1);
+    const inherited = loadEffectiveOptions(target, stack, depth + 1, access);
     if (!inherited) continue;
     if (inherited.baseUrl !== undefined) effective.baseUrl = inherited.baseUrl;
     if (inherited.paths !== undefined) {
@@ -218,9 +218,10 @@ function loadEffectiveOptions(
   return effective;
 }
 
-function readTsconfigLike(filePath: string): RawTsconfig | null {
+function readTsconfigLike(filePath: string, access: CapturedFileAccess): RawTsconfig | null {
   try {
-    const raw = fs.readFileSync(filePath, 'utf-8');
+    const raw = access.readFile(filePath);
+    if (raw === null) return null;
     const parsed = JSON.parse(stripJsonc(raw)) as RawTsconfig;
     return parsed && typeof parsed === 'object' ? parsed : null;
   } catch (err) {
@@ -250,7 +251,12 @@ function splitWildcard(pattern: string): {
  * Cheap to call repeatedly — caching is the caller's job (the
  * resolver does it via {@link aliasCache}).
  */
-export function loadProjectAliases(projectRoot: string): AliasMap | null {
+export function loadProjectAliases(projectRoot: string, access?: CapturedFileAccess): AliasMap | null {
+  const view: CapturedFileAccess = access ?? {
+    readFile: (filePath) => { try { return fs.readFileSync(filePath, 'utf-8'); } catch { return null; } },
+    isFile: (filePath) => { try { return fs.statSync(filePath).isFile(); } catch { return false; } },
+    listDirectories: () => [],
+  };
   // `tsconfig.base.json` comes last on purpose: when a root `tsconfig.json`
   // exists it stays authoritative and reaches the base through `extends`.
   // The fallback is for the Nx layouts where that never happens — a
@@ -261,8 +267,8 @@ export function loadProjectAliases(projectRoot: string): AliasMap | null {
   let usedFile: string | null = null;
   for (const name of candidates) {
     const p = path.join(projectRoot, name);
-    if (!fs.existsSync(p)) continue;
-    const opts = loadEffectiveOptions(p, new Set(), 0);
+    if (!view.isFile(p)) continue;
+    const opts = loadEffectiveOptions(p, new Set(), 0, view);
     if (!opts) continue;
     // Remember the first readable config so a `paths`-less project still
     // logs the file it was judged on, but keep looking: a config that

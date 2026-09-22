@@ -1,0 +1,1385 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "immutable selected sources only; no implementation tests",
+  "verified": [
+    {
+      "id": "L01",
+      "source_path": "src/engine.js",
+      "blob_sha": "b4f7f22e58b7b46aa3cb7129b518d6c3f6638375",
+      "byte_length": 7331,
+      "line_count": 148,
+      "anchors": [
+        {
+          "anchor": "export async function codeIntel(",
+          "lines": [
+            14
+          ]
+        },
+        {
+          "anchor": "async function normalizeInput(",
+          "lines": [
+            85
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L02",
+      "source_path": "src/router.js",
+      "blob_sha": "409da960fb4219618a83aa25ad04d3697655e86d",
+      "byte_length": 2432,
+      "line_count": 40,
+      "anchors": [
+        {
+          "anchor": "export function route(",
+          "lines": [
+            9
+          ]
+        },
+        {
+          "anchor": "function explicitRoute(",
+          "lines": [
+            29
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L03",
+      "source_path": "src/fusion.js",
+      "blob_sha": "b59435d130e06bd0c94c014c36bb9cfcc206a0e4",
+      "byte_length": 1633,
+      "line_count": 31,
+      "anchors": [
+        {
+          "anchor": "export function fuse(",
+          "lines": [
+            3
+          ]
+        },
+        {
+          "anchor": "function truncate(",
+          "lines": [
+            27
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L04",
+      "source_path": "src/index-manager.js",
+      "blob_sha": "6f1b35c5c5642737a19c91b9a0856d1f2f145208",
+      "byte_length": 18318,
+      "line_count": 428,
+      "anchors": [
+        {
+          "anchor": "export async function ensureIndexes(",
+          "lines": [
+            73
+          ]
+        },
+        {
+          "anchor": "async function ensureCreated(",
+          "lines": [
+            249
+          ]
+        },
+        {
+          "anchor": "function serialPerBackend(",
+          "lines": [
+            359
+          ]
+        },
+        {
+          "anchor": "function attachWatcher(",
+          "lines": [
+            188
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L05",
+      "source_path": "src/backends/zvec.js",
+      "blob_sha": "879b198125f7d67e047d219393b848fc215f0909",
+      "byte_length": 1444,
+      "line_count": 34,
+      "anchors": [
+        {
+          "anchor": "export async function zvecSearch(",
+          "lines": [
+            9
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L06",
+      "source_path": "src/backends/codegraph.js",
+      "blob_sha": "1b7407a8e29dbe9359eed5f427a7a70e6e1f4ace",
+      "byte_length": 1295,
+      "line_count": 30,
+      "anchors": [
+        {
+          "anchor": "export async function codegraphQuery(",
+          "lines": [
+            4
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L07",
+      "source_path": "src/backends/serena.js",
+      "blob_sha": "913d1b38914ebf91d9df7e554554b13b3448b7d2",
+      "byte_length": 7887,
+      "line_count": 206,
+      "anchors": [
+        {
+          "anchor": "class SerenaPool",
+          "lines": [
+            13
+          ]
+        },
+        {
+          "anchor": "export async function serenaQuery(",
+          "lines": [
+            138
+          ]
+        },
+        {
+          "anchor": "function buildCall(",
+          "lines": [
+            174
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L08",
+      "source_path": "src/mcp/client.js",
+      "blob_sha": "b1d079d6546b429b30cf6be54290b566d122debe",
+      "byte_length": 4337,
+      "line_count": 126,
+      "anchors": [
+        {
+          "anchor": "export class StdioMcpClient",
+          "lines": [
+            5
+          ]
+        },
+        {
+          "anchor": "export function toolText(",
+          "lines": [
+            123
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L09",
+      "source_path": "src/mcp/server.js",
+      "blob_sha": "2924844ac163912236cf4f14acbc9abe22ad518e",
+      "byte_length": 6100,
+      "line_count": 123,
+      "anchors": [
+        {
+          "anchor": "export function startMcpServer(",
+          "lines": [
+            51
+          ]
+        },
+        {
+          "anchor": "async function handle(",
+          "lines": [
+            95
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L10",
+      "source_path": "src/lib/process.js",
+      "blob_sha": "7dcc7a7e063b93344eefcc186f43819784da4e5a",
+      "byte_length": 3835,
+      "line_count": 119,
+      "anchors": [
+        {
+          "anchor": "export async function resolveBin(",
+          "lines": [
+            28
+          ]
+        },
+        {
+          "anchor": "export function run(",
+          "lines": [
+            42
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L11",
+      "source_path": "upstreams.lock.json",
+      "blob_sha": "99a30f5f0b14eaf8b4eb21ab58788ab1d4f36466",
+      "byte_length": 697,
+      "line_count": 26,
+      "anchors": [
+        {
+          "anchor": "\"zvec-grep\"",
+          "lines": [
+            4
+          ]
+        },
+        {
+          "anchor": "\"codegraph\"",
+          "lines": [
+            11
+          ]
+        },
+        {
+          "anchor": "\"serena\"",
+          "lines": [
+            18
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L12",
+      "source_path": "package.json",
+      "blob_sha": "a3af86119c3ef8fe71739469b6ac520465ebbcb4",
+      "byte_length": 1302,
+      "line_count": 27,
+      "anchors": [
+        {
+          "anchor": "\"check:integration\"",
+          "lines": [
+            20
+          ]
+        },
+        {
+          "anchor": "\"test:compatibility\"",
+          "lines": [
+            19
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L13",
+      "source_path": "scripts/compatibility.mjs",
+      "blob_sha": "f5dfd8bc714a8dc32ad04b63a97ea69eba9a4466",
+      "byte_length": 4464,
+      "line_count": 62,
+      "anchors": [
+        {
+          "anchor": "const query = async",
+          "lines": [
+            24
+          ]
+        },
+        {
+          "anchor": "await query('references'",
+          "lines": [
+            50
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L14",
+      "source_path": "test/security.test.js",
+      "blob_sha": "9f14277af56b2bc5ae17a9e3e9700f2d46f7902c",
+      "byte_length": 8631,
+      "line_count": 151,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L15",
+      "source_path": "test/cancellation.test.js",
+      "blob_sha": "ddcdc54ea41512622429f0fad47371c5b0ecfc76",
+      "byte_length": 4247,
+      "line_count": 75,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L16",
+      "source_path": "test/index-manager.test.js",
+      "blob_sha": "f81114ddc512142321976625fdbb16469b1ce2db",
+      "byte_length": 10453,
+      "line_count": 209,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L17",
+      "source_path": "test/router.test.js",
+      "blob_sha": "41f62f0a6ff616d12b3e8fd777a0cf93e351240a",
+      "byte_length": 1122,
+      "line_count": 25,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L18",
+      "source_path": "test/fusion.test.js",
+      "blob_sha": "e647714766a63835653cfabde85fdfc6f1793a9f",
+      "byte_length": 905,
+      "line_count": 22,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z01",
+      "source_path": "src/index.ts",
+      "blob_sha": "bca021366c5715decd5d6a7a71c2e537315fd2ae",
+      "byte_length": 1631,
+      "line_count": 71,
+      "anchors": [
+        {
+          "anchor": "export { createZvecGrep }",
+          "lines": [
+            1
+          ]
+        },
+        {
+          "anchor": "createEmbeddingModel,",
+          "lines": [
+            27
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z02",
+      "source_path": "src/engine/service/index.ts",
+      "blob_sha": "27af345e74fd3f996273ca5be6444508471d0f16",
+      "byte_length": 841,
+      "line_count": 34,
+      "anchors": [
+        {
+          "anchor": "openWorkspaceReadSession,",
+          "lines": [
+            5
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z03",
+      "source_path": "src/engine/service/types.ts",
+      "blob_sha": "1017431714998992853136dbfc5f9b4d959899e9",
+      "byte_length": 6655,
+      "line_count": 255,
+      "anchors": [
+        {
+          "anchor": "CreateZvecGrepOptions",
+          "lines": [
+            19
+          ]
+        },
+        {
+          "anchor": "ZvecGrepContextOptions",
+          "lines": [
+            60,
+            82,
+            251
+          ]
+        },
+        {
+          "anchor": "ZvecGrepContextResult",
+          "lines": [
+            61,
+            233,
+            251
+          ]
+        },
+        {
+          "anchor": "ZvecGrepContextCoverage",
+          "lines": [
+            128,
+            237
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z04",
+      "source_path": "src/engine/service/zvec-grep.ts",
+      "blob_sha": "11e6a763c325a7b882631710b08a87f9ebb2f084",
+      "byte_length": 63592,
+      "line_count": 2179,
+      "anchors": [
+        {
+          "anchor": "openWorkspaceReadSession(",
+          "lines": [
+            103
+          ]
+        },
+        {
+          "anchor": "class ZvecGrepService",
+          "lines": [
+            189
+          ]
+        },
+        {
+          "anchor": "assertDaemonWriteAllowed(",
+          "lines": [
+            205,
+            341,
+            365,
+            548
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z05",
+      "source_path": "src/engine/service/workspace-index.ts",
+      "blob_sha": "b82bb1a5e54747d944a98941fd22fab9eb382591",
+      "byte_length": 7141,
+      "line_count": 259,
+      "anchors": [
+        {
+          "anchor": "class WorkspaceIndex",
+          "lines": [
+            34
+          ]
+        },
+        {
+          "anchor": "indexWorkspacePaths(",
+          "lines": [
+            88
+          ]
+        },
+        {
+          "anchor": "createWorkspaceIndexStorage(",
+          "lines": [
+            52,
+            58
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z06",
+      "source_path": "src/engine/pipeline/indexing/index.ts",
+      "blob_sha": "90f61d994d7284834a08151b2c6766c4a5bbde8b",
+      "byte_length": 45993,
+      "line_count": 1737,
+      "anchors": [
+        {
+          "anchor": "PreparedFile",
+          "lines": [
+            64,
+            69,
+            713,
+            836,
+            872,
+            887,
+            958,
+            1005,
+            1087
+          ]
+        },
+        {
+          "anchor": "indexWorkspacePaths",
+          "lines": [
+            150,
+            155,
+            297
+          ]
+        },
+        {
+          "anchor": "extractForIndexing",
+          "lines": [
+            31,
+            844
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z07",
+      "source_path": "src/engine/storage/index.ts",
+      "blob_sha": "0d37b8c41162b8b4fdb2620f22c2056b4bc2d4f8",
+      "byte_length": 1961,
+      "line_count": 84,
+      "anchors": [
+        {
+          "anchor": "export interface WorkspaceIndexStorage",
+          "lines": [
+            48
+          ]
+        },
+        {
+          "anchor": "replaceFile(",
+          "lines": [
+            69
+          ]
+        },
+        {
+          "anchor": "finalizeWrites()",
+          "lines": [
+            76
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z08",
+      "source_path": "src/engine/storage/zvec.ts",
+      "blob_sha": "c1040e6a5555224e9dc57e7bda554039d1e71a5d",
+      "byte_length": 34965,
+      "line_count": 1343,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z09",
+      "source_path": "src/engine/extraction/runtime.ts",
+      "blob_sha": "3588c25a7e690cca0edc131880526c30d2eff4c7",
+      "byte_length": 1867,
+      "line_count": 68,
+      "anchors": [
+        {
+          "anchor": "export async function extractForIndexing(",
+          "lines": [
+            34
+          ]
+        },
+        {
+          "anchor": "function routeSource(",
+          "lines": [
+            54
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z10",
+      "source_path": "src/engine/extraction/vector-content.ts",
+      "blob_sha": "67e55497a82e1776a5004325000cc4f6ed531be9",
+      "byte_length": 3480,
+      "line_count": 131,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z11",
+      "source_path": "src/engine/pipeline/search/index.ts",
+      "blob_sha": "ce47a8f16d1e1f467c3bc7c6fa7532a16498504a",
+      "byte_length": 31582,
+      "line_count": 1297,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z12",
+      "source_path": "src/engine/extraction/code/tree-sitter/grammar.ts",
+      "blob_sha": "390ee1ed0044267ee89cec909453047fbb4c2106",
+      "byte_length": 1343,
+      "line_count": 63,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z13",
+      "source_path": "src/engine/models/index.ts",
+      "blob_sha": "3e78469247a414c1df68a4cdd12f6a6d774551d2",
+      "byte_length": 467,
+      "line_count": 18,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z14",
+      "source_path": "src/engine/utils/daemon-lease.ts",
+      "blob_sha": "4e05299dec81e0af0874710ae5040a4e9fa04cf5",
+      "byte_length": 5961,
+      "line_count": 216,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z15",
+      "source_path": "src/authorization/operation.ts",
+      "blob_sha": "4d8c07ed59d3f6bf5fd1baadeaeb2e45a15cc7f7",
+      "byte_length": 2408,
+      "line_count": 79,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z16",
+      "source_path": "package.json",
+      "blob_sha": "4e7dbb5202f1e08d139ab677327cad92027e40a5",
+      "byte_length": 3189,
+      "line_count": 86,
+      "anchors": [
+        {
+          "anchor": "\"type\": \"module\"",
+          "lines": [
+            5
+          ]
+        },
+        {
+          "anchor": "\"web-tree-sitter\": \"^0.20.8\"",
+          "lines": [
+            80
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z17",
+      "source_path": "tsconfig.json",
+      "blob_sha": "b0d2a33b9c16fc1778727e605faa7f45a591aebc",
+      "byte_length": 412,
+      "line_count": 18,
+      "anchors": [
+        {
+          "anchor": "\"module\": \"NodeNext\"",
+          "lines": [
+            4
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z18",
+      "source_path": "package-lock.json",
+      "blob_sha": "3d3776db80b82f7ce791d0e6564a0f4df4cec848",
+      "byte_length": 211896,
+      "line_count": 5998,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z19",
+      "source_path": "LICENSE",
+      "blob_sha": "f49a4e16e68b128803cc2dcea614603632b04eac",
+      "byte_length": 11356,
+      "line_count": 201,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z20",
+      "source_path": "src/engine/service/root.ts",
+      "blob_sha": "e0844e0b2cb3a679ff3436a97fb30d04838fe449",
+      "byte_length": 2412,
+      "line_count": 90,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z21",
+      "source_path": "test/integration/service.test.mjs",
+      "blob_sha": "e5f1d472f288dc915688ad48cb4ae0452276ca0f",
+      "byte_length": 13872,
+      "line_count": 469,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z22",
+      "source_path": "test/path-indexing.test.mjs",
+      "blob_sha": "a67d217167f877718dbea912e3c9e744727c701e",
+      "byte_length": 11797,
+      "line_count": 368,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z23",
+      "source_path": "test/service-model-cache.test.mjs",
+      "blob_sha": "557969b6eb8d71acb7c5c0850126e32f3362ea3f",
+      "byte_length": 5046,
+      "line_count": 172,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "Z24",
+      "source_path": "test/root-lease.test.mjs",
+      "blob_sha": "922c9019e6d2707dff5153a72741e1f0c897d9ee",
+      "byte_length": 5276,
+      "line_count": 160,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C01",
+      "source_path": "src/index.ts",
+      "blob_sha": "90397c55c62afefec4ae45d94efc4132bc2980ed",
+      "byte_length": 79048,
+      "line_count": 1947,
+      "anchors": [
+        {
+          "anchor": "export class CodeGraph",
+          "lines": [
+            141
+          ]
+        },
+        {
+          "anchor": "static async open(",
+          "lines": [
+            335
+          ]
+        },
+        {
+          "anchor": "async indexAll(",
+          "lines": [
+            471
+          ]
+        },
+        {
+          "anchor": "this.resolver.runPostExtract();",
+          "lines": [
+            580,
+            830
+          ]
+        },
+        {
+          "anchor": "getCallers(nodeId:",
+          "lines": [
+            1719
+          ]
+        },
+        {
+          "anchor": "getImpactRadius(nodeId:",
+          "lines": [
+            1743
+          ]
+        },
+        {
+          "anchor": "async buildContext(",
+          "lines": [
+            1901
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C02",
+      "source_path": "src/extraction/index.ts",
+      "blob_sha": "93be48352fc9392b733ed4517ea56c3d24f9b204",
+      "byte_length": 132884,
+      "line_count": 3027,
+      "anchors": [
+        {
+          "anchor": "definitionDelta?: string[]",
+          "lines": [
+            132
+          ]
+        },
+        {
+          "anchor": "ParseWorkerPool",
+          "lines": [
+            25,
+            1677,
+            1694
+          ]
+        },
+        {
+          "anchor": "StoreWriter",
+          "lines": [
+            26,
+            1717,
+            1727
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C03",
+      "source_path": "src/extraction/tree-sitter.ts",
+      "blob_sha": "c34dc4716df1bb2a62392a9e5cc3c5f429ff31ac",
+      "byte_length": 313974,
+      "line_count": 6814,
+      "anchors": [
+        {
+          "anchor": "tryKernelExtract, takeDeferredPreParse",
+          "lines": [
+            34
+          ]
+        },
+        {
+          "anchor": "from './languages'",
+          "lines": [
+            23
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C04",
+      "source_path": "src/extraction/store-writer.ts",
+      "blob_sha": "a766bd813b3a9e86a6386f0e0faff84200241e29",
+      "byte_length": 7216,
+      "line_count": 190,
+      "anchors": [
+        {
+          "anchor": "export interface StoreBundle",
+          "lines": [
+            14
+          ]
+        },
+        {
+          "anchor": "export function finalizeStoreBundle(",
+          "lines": [
+            44
+          ]
+        },
+        {
+          "anchor": "export class StoreWriter",
+          "lines": [
+            65
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C05",
+      "source_path": "src/resolution/index.ts",
+      "blob_sha": "7b4bccc180af585c5d69212b95a54d6e6a14832d",
+      "byte_length": 110121,
+      "line_count": 2458,
+      "anchors": [
+        {
+          "anchor": "synthesizeCallbackEdges",
+          "lines": [
+            23,
+            1942
+          ]
+        },
+        {
+          "anchor": "loadProjectAliases",
+          "lines": [
+            25,
+            648
+          ]
+        },
+        {
+          "anchor": "loadWorkspacePackages",
+          "lines": [
+            27,
+            662
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C06",
+      "source_path": "src/db/index.ts",
+      "blob_sha": "f01d195d1179de10ddd0198d50c84ef92b6afb99",
+      "byte_length": 36080,
+      "line_count": 856,
+      "anchors": [
+        {
+          "anchor": "export class DatabaseConnection",
+          "lines": [
+            72
+          ]
+        },
+        {
+          "anchor": "static open(dbPath: string)",
+          "lines": [
+            127
+          ]
+        },
+        {
+          "anchor": "conn.healBulkNodeLoad();",
+          "lines": [
+            147
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C07",
+      "source_path": "package.json",
+      "blob_sha": "667dd5805b8f2b4389f298d2f01379ca920f0a33",
+      "byte_length": 2138,
+      "line_count": 61,
+      "anchors": [
+        {
+          "anchor": "\"copy-assets\"",
+          "lines": [
+            22
+          ]
+        },
+        {
+          "anchor": "\"web-tree-sitter\": \"^0.25.3\"",
+          "lines": [
+            49
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C08",
+      "source_path": "tsconfig.json",
+      "blob_sha": "4969d061a0004ce9134e679af220e2190c13241f",
+      "byte_length": 924,
+      "line_count": 34,
+      "anchors": [
+        {
+          "anchor": "\"module\": \"commonjs\"",
+          "lines": [
+            4
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S01",
+      "source_path": "LICENSE",
+      "blob_sha": "d27bba648a59b23cadf39b9e74fd0684ea2e15dd",
+      "byte_length": 1066,
+      "line_count": 21,
+      "anchors": [
+        {
+          "anchor": "MIT License",
+          "lines": [
+            1
+          ]
+        },
+        {
+          "anchor": "Copyright (c) 2025 Oraios AI",
+          "lines": [
+            3
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S02",
+      "source_path": "src/serena/tools/symbol_tools.py",
+      "blob_sha": "32ea7abf9a385150a2b796b0ba2fee4ac228eb1a",
+      "byte_length": 34548,
+      "line_count": 738,
+      "anchors": [
+        {
+          "anchor": "class FindSymbolTool(",
+          "lines": [
+            134
+          ]
+        },
+        {
+          "anchor": "class FindReferencingSymbolsTool(",
+          "lines": [
+            252
+          ]
+        },
+        {
+          "anchor": "class FindImplementationsTool(",
+          "lines": [
+            342
+          ]
+        },
+        {
+          "anchor": "class GetSymbolsOverviewTool(",
+          "lines": [
+            36
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S03",
+      "source_path": "src/serena/symbol.py",
+      "blob_sha": "8c230ae520120bdacc218426dd4077ac506f5390",
+      "byte_length": 60539,
+      "line_count": 1381,
+      "anchors": [
+        {
+          "anchor": "class LanguageServerSymbolLocation:",
+          "lines": [
+            30
+          ]
+        },
+        {
+          "anchor": "from .ls_manager import LanguageServerManager",
+          "lines": [
+            22
+          ]
+        },
+        {
+          "anchor": "from .project import Project",
+          "lines": [
+            23
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S04",
+      "source_path": "src/serena/ls_manager.py",
+      "blob_sha": "2dd3aaf4082b9f030ad8c9d6fe5c5b6059c6cfe7",
+      "byte_length": 17314,
+      "line_count": 371,
+      "anchors": [
+        {
+          "anchor": "class LanguageServerFactory:",
+          "lines": [
+            27
+          ]
+        },
+        {
+          "anchor": "class LanguageServerManager:",
+          "lines": [
+            71
+          ]
+        },
+        {
+          "anchor": "def from_languages(",
+          "lines": [
+            100
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S05",
+      "source_path": "src/solidlsp/ls.py",
+      "blob_sha": "cba90723dcdec4083093133e6fe89c6f70949df5",
+      "byte_length": 155979,
+      "line_count": 3256,
+      "anchors": [
+        {
+          "anchor": "class LSPFileBuffer:",
+          "lines": [
+            91
+          ]
+        },
+        {
+          "anchor": "from serena.util.file_system import match_path",
+          "lines": [
+            24
+          ]
+        },
+        {
+          "anchor": "from serena.util.text_utils import MatchedConsecutiveLines",
+          "lines": [
+            25
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S06",
+      "source_path": "src/solidlsp/ls_config.py",
+      "blob_sha": "67d77b02e5c9bde0cce7365f813ece7950194dfe",
+      "byte_length": 43873,
+      "line_count": 1020,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S07",
+      "source_path": "src/solidlsp/ls_process.py",
+      "blob_sha": "e231d967cf2cd4e5d374cb5990a188f93466841c",
+      "byte_length": 34632,
+      "line_count": 828,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S08",
+      "source_path": "src/solidlsp/ls_request.py",
+      "blob_sha": "e2a42ced5af8f90d570f8222cb407dcbb2de05d9",
+      "byte_length": 20327,
+      "line_count": 383,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S09",
+      "source_path": "src/solidlsp/ls_types.py",
+      "blob_sha": "24d512663a9a88195d517492bf5d28644f0d4592",
+      "byte_length": 15051,
+      "line_count": 425,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S10",
+      "source_path": "src/solidlsp/language_servers/sourcekit_lsp.py",
+      "blob_sha": "7dea0cbdbe191e425f71494b2a94eefea23a733d",
+      "byte_length": 18098,
+      "line_count": 371,
+      "anchors": [
+        {
+          "anchor": "class SourceKitLSP(",
+          "lines": [
+            19
+          ]
+        },
+        {
+          "anchor": "def _get_sourcekit_lsp_version(",
+          "lines": [
+            34
+          ]
+        },
+        {
+          "anchor": "def _normalize_symbol_name(",
+          "lines": [
+            65
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "S11",
+      "source_path": "src/solidlsp/dependency_provider.py",
+      "blob_sha": "21dccb4eead46d877aba3cfd5a65016526b3d45b",
+      "byte_length": 16316,
+      "line_count": 369,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L19",
+      "source_path": "src/admin.js",
+      "blob_sha": "51caedc1a8fb4e1d6bd61cec9765a4b3743d0aff",
+      "byte_length": 7302,
+      "line_count": 171,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L20",
+      "source_path": "src/cli.js",
+      "blob_sha": "ea5a80ac111e1793cfc4e85ca235aa95e549e429",
+      "byte_length": 2540,
+      "line_count": 76,
+      "anchors": [],
+      "status": "verified",
+      "review": "inventory_prior_context",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "L21",
+      "source_path": "src/lib/roots.js",
+      "blob_sha": "b711e1f8bd1e0826785af66c25152145275fe696",
+      "byte_length": 1292,
+      "line_count": 32,
+      "anchors": [
+        {
+          "anchor": "export function containsPath(",
+          "lines": [
+            15
+          ]
+        },
+        {
+          "anchor": "export async function requestRoot(",
+          "lines": [
+            26
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "full",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    },
+    {
+      "id": "C09",
+      "source_path": "src/context/index.ts",
+      "blob_sha": "b3c5a5726627361a4b657432d3c2605b17a767ee",
+      "byte_length": 60265,
+      "line_count": 1459,
+      "anchors": [
+        {
+          "anchor": "export class ContextBuilder",
+          "lines": [
+            188
+          ]
+        },
+        {
+          "anchor": "const context: TaskContext = {",
+          "lines": [
+            273
+          ]
+        },
+        {
+          "anchor": "format: 'markdown'",
+          "lines": [
+            148
+          ]
+        }
+      ],
+      "status": "verified",
+      "review": "range",
+      "note": "Identity verification is not behavioral or transitive-dependency verification."
+    }
+  ],
+  "failures": [],
+  "selected_count": 65
+}

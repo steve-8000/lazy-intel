@@ -1,7 +1,10 @@
 {
   "unit": "U08",
   "title": "Fixed plans, source-qualified evidence and MCP compatibility",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "newPaths": [
     "src/unified.js",
     "test/contracts/unified-engine.test.js"

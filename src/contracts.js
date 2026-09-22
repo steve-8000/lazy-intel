@@ -125,6 +125,9 @@ export function envelope(partial) {
     truncated: Boolean(partial.truncated),
     ...(error ? { error } : {}),
     timing: { ...ZERO_TIMING, ...(partial.timing ?? {}) },
+    ...(partial.views ? { views: partial.views } : {}),
+    ...(partial.semanticObservations ? { semanticObservations: partial.semanticObservations } : {}),
+    ...(partial.issues ? { issues: partial.issues } : {}),
     ...(partial.raw ? { raw: partial.raw } : {}),
   };
 }
@@ -144,6 +147,9 @@ export function failureEnvelope(backend, operation, code, message, extra = {}) {
     truncated: extra.truncated ?? false,
     error,
     timing: extra.timing,
+    views: extra.views,
+    semanticObservations: extra.semanticObservations,
+    issues: extra.issues,
   });
 }
 

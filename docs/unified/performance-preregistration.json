@@ -1,0 +1,87 @@
+{
+  "schema_version": 2,
+  "status": "PREPARED",
+  "generated_at": "2026-09-21T22:28:19.861Z",
+  "corpus": {
+    "files": [
+      "package.json",
+      "src/discount.mjs",
+      "src/invoice.mjs",
+      "README.md"
+    ],
+    "sha256": "9b6dfba0454cacc99c1a00dd83f35d01097aab634a572eec75486cd3a9a2a4cd",
+    "source": "scripts/verify-performance.mjs"
+  },
+  "preregistered_thresholds": {
+    "cold_p95_ms": {
+      "operator": "<=",
+      "value": 30000
+    },
+    "restart_p95_ms": {
+      "operator": "<=",
+      "value": 30000
+    },
+    "warm_p95_ms": {
+      "operator": "<=",
+      "value": 10000
+    },
+    "dirty_p95_ms": {
+      "operator": "<=",
+      "value": 30000
+    },
+    "process_tree_rss_p95_bytes": {
+      "operator": "<=",
+      "value": 2000000000
+    },
+    "quality_min_anchored_results": {
+      "operator": ">=",
+      "value": 1
+    },
+    "quality_required_anchor": {
+      "operator": "contains",
+      "value": "applyDiscount"
+    }
+  },
+  "matrix": [
+    {
+      "mode": "cold",
+      "samples": 5,
+      "lifecycle": "new workspace/state + startup",
+      "latency": "raw elapsedMs",
+      "memory": "aggregate process-tree RSS"
+    },
+    {
+      "mode": "restart",
+      "samples": 5,
+      "lifecycle": "existing indexed state + new runtime",
+      "latency": "raw elapsedMs",
+      "memory": "aggregate process-tree RSS"
+    },
+    {
+      "mode": "warm",
+      "samples": 5,
+      "lifecycle": "persistent runtime + repeated requests",
+      "latency": "raw elapsedMs",
+      "memory": "aggregate process-tree RSS"
+    },
+    {
+      "mode": "dirty",
+      "samples": 5,
+      "lifecycle": "persistent runtime + source mutation + refreshed evidence",
+      "latency": "raw elapsedMs",
+      "memory": "aggregate process-tree RSS"
+    }
+  ],
+  "measurement_policy": {
+    "no_model_downloads": true,
+    "no_network_configuration_mutation": true,
+    "candidate_must_be_supplied": true,
+    "baseline_retained": true,
+    "quality_thresholds_are_not_derived_from_candidate": true,
+    "quality_anchors": [
+      "applyDiscount",
+      "invoiceTotal"
+    ]
+  },
+  "immutable_preregistration": true
+}

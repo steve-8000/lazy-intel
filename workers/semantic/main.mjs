@@ -2,7 +2,7 @@ import { access } from "node:fs/promises";
 import { constants } from "node:fs";
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { dirname, resolve } from "node:path";
+import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { serveWorker, WorkerError } from "../../packages/core/dist/index.js";
@@ -38,23 +38,27 @@ class PythonBridge {
     if (!(await executable(python))) {
       throw new WorkerError("backend_failed", `trusted Python interpreter is unavailable: ${python}`, false);
     }
-    this.#child = spawn(python, [BRIDGE], {
+    const child = spawn(python, [BRIDGE], {
       cwd: ROOT,
       env: { ...process.env, PYTHONPATH: `${VENDOR_SRC}${process.env.PYTHONPATH ? `:${process.env.PYTHONPATH}` : ""}` },
       stdio: ["pipe", "pipe", "pipe"],
     });
+    this.#child = child;
     this.#dead = null;
-    this.#child.stdout.setEncoding("utf8");
-    this.#child.stdout.on("data", (chunk) => this.#onData(chunk));
-    this.#child.stderr.setEncoding("utf8");
-    this.#child.stderr.on("data", (chunk) => process.stderr.write(`semantic-python: ${chunk}`));
-    this.#child.once("error", (error) => this.#die(error));
-    this.#child.once("exit", (code, signal) => {
+    this.#buffer = "";
+    child.stdout.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => this.#onData(child, chunk));
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk) => process.stderr.write(`semantic-python: ${chunk}`));
+    child.once("error", (error) => { if (this.#child === child) this.#die(error); });
+    child.once("exit", (code, signal) => {
+      if (this.#child !== child) return;
       if (code !== 0 || signal !== null) this.#die(new Error(`Python bridge exited (code=${code}, signal=${signal})`));
     });
   }
 
-  #onData(chunk) {
+  #onData(child, chunk) {
+    if (this.#child !== child) return;
     this.#buffer += chunk;
     for (;;) {
       const newline = this.#buffer.indexOf("\n");
@@ -81,6 +85,7 @@ class PythonBridge {
     for (const resolveWaiter of this.#waiters.values()) resolveWaiter({ ok: false, code: "backend_failed", retryable: true, message: this.#dead.message });
     this.#waiters.clear();
     this.#child = null;
+    this.#buffer = "";
   }
 
   async request(operation, payload, budgetMs) {
@@ -118,15 +123,24 @@ class PythonBridge {
   }
 }
 
+function validatePayload(payload) {
+  const serverPath = payload?.languageServerPath;
+  if (serverPath !== undefined && (!serverPath || !isAbsolute(serverPath))) {
+    throw new WorkerError("invalid_request", "languageServerPath must be an explicit absolute executable path", false);
+  }
+}
+
 const bridge = new PythonBridge();
 await serveWorker({
   kind: "semantic",
   upstreamCommit: UPSTREAM_COMMIT,
   handlers: {
-    initialize: async (payload, context) => bridge.request("initialize", payload, context.remainingBudgetMs),
-    symbol: async (payload, context) => bridge.request("symbol", payload, context.remainingBudgetMs),
-    references: async (payload, context) => bridge.request("references", payload, context.remainingBudgetMs),
-    overview: async (payload, context) => bridge.request("overview", payload, context.remainingBudgetMs),
+    initialize: async (payload, context) => { validatePayload(payload); return bridge.request("initialize", payload, context.remainingBudgetMs); },
+    symbol: async (payload, context) => { validatePayload(payload); return bridge.request("symbol", payload, context.remainingBudgetMs); },
+    references: async (payload, context) => { validatePayload(payload); return bridge.request("references", payload, context.remainingBudgetMs); },
+    implementations: async (payload, context) => { validatePayload(payload); return bridge.request("implementations", payload, context.remainingBudgetMs); },
+    diagnostics: async (payload, context) => { validatePayload(payload); return bridge.request("diagnostics", payload, context.remainingBudgetMs); },
+    overview: async (payload, context) => { validatePayload(payload); return bridge.request("overview", payload, context.remainingBudgetMs); }
   },
   dispose: async () => bridge.close(),
 });

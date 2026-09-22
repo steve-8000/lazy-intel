@@ -46,3 +46,10 @@ test("sortEvidence is deterministic and independent of input order", () => {
   const shuffled = sortEvidence([values[2], values[0], values[1]], { operation: "references" }).map((entry) => entry.id);
   assert.deepEqual(first, shuffled);
 });
+
+test("captured revisions cannot deduplicate after a later source check matches", () => {
+  const base = item({ id: "old" });
+  const old = makeEvidence({ ...base, anchor: { contentHash: "old" } });
+  const current = makeEvidence({ ...base, id: "current", anchor: { contentHash: "current" } });
+  assert.equal(dedupe([old, current]).length, 2);
+});

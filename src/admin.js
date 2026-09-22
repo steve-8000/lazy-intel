@@ -4,21 +4,12 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { indexStatus, ensureIndexes, reindexIndexes } from "./index-manager.js";
-import { pathExists, resolveBin, run } from "./lib/process.js";
-import { ENGINE_MODE } from "./unified.js";
+import { pathExists } from "./lib/process.js";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
 // OMP must expose exactly one code-intelligence MCP; the standalone backends are subsumed.
 const SUPERSEDED_SERVERS = ["zvec-grep", "codegraph", "serena"];
 
-async function pins() {
-  const lock = JSON.parse(await readFile(path.join(repoRoot, "upstreams.lock.json"), "utf8"));
-  return {
-    zg: lock.upstreams["zvec-grep"].version,
-    codegraph: lock.upstreams.codegraph.version,
-    serena: lock.upstreams.serena.version,
-  };
-}
 
 async function engineRange() {
   const pkg = JSON.parse(await readFile(path.join(repoRoot, "package.json"), "utf8"));
@@ -27,24 +18,15 @@ async function engineRange() {
 
 export async function doctor(root = process.cwd()) {
   const rows = [];
-  const pin = await pins();
   const range = await engineRange();
   const nodeMajor = Number(process.versions.node.split(".")[0]);
   const nodeMinor = Number(process.versions.node.split(".")[1]);
   const nodeOk = (nodeMajor > 22 || (nodeMajor === 22 && nodeMinor >= 5)) && nodeMajor < 25;
   rows.push({ item: "node", ok: nodeOk, detail: `${process.version} (${process.execPath}); required ${range}` });
 
-  rows.push({ item: "engine", ok: true, detail: `${ENGINE_MODE}; set LAZY_INTEL_ENGINE=unified for the embedded forks, unset it to roll back to the standalone backends` });
+  rows.push({ item: "engine", ok: true, detail: "unified embedded forks; rollback requires the previous binary and its separate state" });
   rows.push(await vendorRow());
 
-  if (ENGINE_MODE === "legacy") {
-    // Only the legacy reader shells out to these. Probing them in unified mode
-    // would report a missing external install as a fault when nothing uses it.
-    rows.push(await checkVersion("zg", ["version"], pin.zg));
-    rows.push(await checkVersion("codegraph", ["version"], pin.codegraph));
-    rows.push(await checkVersion("serena", ["--version"], pin.serena));
-    rows.push(await zvecRuntimeRow());
-  }
 
   const status = await indexStatus(path.resolve(root));
   rows.push({ item: "embedding", ok: true, detail: status.embedding });
@@ -83,35 +65,11 @@ async function vendorRow() {
   }
   return {
     item: "vendored forks",
-    ok: ENGINE_MODE === "legacy" || built,
+    ok: built,
     detail: `${parts.join(", ")}; build ${built ? "present" : "MISSING — run npm run build"}`,
   };
 }
 
-async function checkVersion(item, args, expected) {
-  try {
-    const command = await resolveBin(item);
-    const r = await run(command, args, { timeoutMs: 30_000 });
-    const found = (r.stdout || r.stderr).split("\n").map((l) => l.trim()).find(Boolean) ?? "";
-    const version = found.match(/\d+\.\d+\.\d+/)?.[0];
-    const ok = version === expected;
-    return { item, ok, detail: `${version ?? found} (pinned ${expected})${ok ? "" : " MISMATCH"} @ ${command}` };
-  } catch (error) {
-    return { item, ok: false, detail: error.message };
-  }
-}
-
-async function zvecRuntimeRow() {
-  try {
-    const zg = await resolveBin("zg");
-    const r = await run(zg, ["server", "status"], { timeoutMs: 15_000 });
-    const ready = /ready|running/i.test(r.stdout);
-    const url = r.stdout.match(/http:\/\/\S+/)?.[0] ?? "no url";
-    return { item: "zvec daemon", ok: true, detail: ready ? `shared server ${url}` : "direct mode (no shared server)" };
-  } catch (error) {
-    return { item: "zvec daemon", ok: true, detail: `direct mode (${error.message.split("\n")[0]})` };
-  }
-}
 
 export async function initProject(root, options = {}) {
   const absolute = path.resolve(root);
@@ -168,14 +126,12 @@ export async function installOmp(root, options = {}) {
       LAZY_INTEL_AUTO_INDEX: "true",
       LAZY_INTEL_AUTO_REPAIR: "true",
       LAZY_INTEL_MAINTENANCE_MS: "5000",
-      LAZY_INTEL_ZVEC_MODE: "auto",
-      LAZY_INTEL_SERENA_CONTEXT: "agent",
       SERENA_USAGE_REPORTING: "false",
       DO_NOT_TRACK: "1",
       ...config.mcpServers["lazy-intel"]?.env,
-      LAZY_INTEL_SERENA_BIN: await resolveBin("serena"),
     },
   };
+  for (const key of ["LAZY_INTEL_ZVEC_MODE", "LAZY_INTEL_SERENA_CONTEXT", "LAZY_INTEL_SERENA_BIN"]) delete entry.env[key];
   // A project-scoped install pins the root; the global install follows OMP's session cwd.
   if (!options.global) entry.cwd = absolute;
   config.mcpServers["lazy-intel"] = entry;

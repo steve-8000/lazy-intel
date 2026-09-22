@@ -1,11 +1,7 @@
 /**
- * Unified mode claims no external install is needed on the query path
- * (README.md, "Two engines, one tool"). The claim is only worth making if it is
- * measured, so both tests here run with `PATH` reduced to the directory holding
- * this Node binary: `zg` and `codegraph` are unreachable.
- *
- * The legacy test is the control. Without it, a passing unified run could just
- * mean the restricted environment never actually hid the executables.
+ * The unified runtime owns both the publication coordinator and its workers. This
+ * contract runs with only the Node directory on PATH, so no external backend CLI
+ * can accidentally make a query pass.
  */
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
@@ -18,26 +14,27 @@ import { promisify } from "node:util";
 
 const run = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-// Only the running interpreter. Anything the product needs beyond Node has to be
-// something it owns, which is exactly the property under test.
 const NODE_ONLY_PATH = path.dirname(process.execPath);
 
 async function workspace() {
   const directory = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-embedded-lifecycle-"));
   await writeFile(path.join(directory, "package.json"), '{"type":"module"}\n');
-  await writeFile(path.join(directory, "discount.mjs"), "export function applyDiscount(total, rate) {\n  return total * (1 - rate);\n}\n");
-  await writeFile(path.join(directory, "invoice.mjs"), "import { applyDiscount } from './discount.mjs';\n\nexport function invoice(total) {\n  return applyDiscount(total, 0.1);\n}\n");
+  await writeFile(path.join(directory, "main.js"), "export function applyDiscount(total, rate) {\n  return total * (1 - rate);\n}\n");
+  await writeFile(path.join(directory, "invoice.js"), "import { applyDiscount } from './main.js';\n\nexport function invoice(total) {\n  return applyDiscount(total, 0.1);\n}\n");
   return directory;
 }
 
-async function drive(root, engine, body) {
+async function drive(root) {
   const script = [
     `const { codeIntel } = await import(${JSON.stringify(path.join(ROOT, "src/engine.js"))});`,
     `const { closeUnified } = await import(${JSON.stringify(path.join(ROOT, "src/unified.js"))});`,
     `const root = ${JSON.stringify(root)};`,
     "let out;",
-    "try { out = await (async () => { " + body + " })(); }",
-    "catch (error) { out = { failed: error instanceof Error ? error.message : String(error) }; }",
+    "try {",
+    "  const reindex = await codeIntel({ operation: 'reindex', backend: 'codegraph', root, indexTimeoutMs: 300000 });",
+    "  const query = await codeIntel({ operation: 'impact', symbol: 'applyDiscount', query: 'applyDiscount', root, timeoutMs: 120000, indexTimeoutMs: 300000 });",
+    "  out = { reindex: reindex.meta, query: query.meta };",
+    "} catch (error) { out = { failed: error instanceof Error ? error.message : String(error) }; }",
     "await closeUnified();",
     "process.stdout.write('RESULT:' + JSON.stringify(out) + '\\n');",
   ].join("\n");
@@ -48,7 +45,7 @@ async function drive(root, engine, body) {
     env: {
       ...process.env,
       PATH: NODE_ONLY_PATH,
-      LAZY_INTEL_ENGINE: engine,
+      LAZY_INTEL_ENGINE: "unified",
       LAZY_INTEL_ROOT: root,
       LAZY_INTEL_ALLOWED_ROOTS: root,
       LAZY_INTEL_AUTO_INDEX: "false",
@@ -60,43 +57,21 @@ async function drive(root, engine, body) {
   return JSON.parse(line.slice("RESULT:".length));
 }
 
-test("unified builds both indexes and answers a query with no backend executable reachable", { timeout: 900_000 }, async () => {
+test("the embedded runtime publishes and queries a graph with no external CLI reachable", { timeout: 900_000 }, async () => {
   const root = await workspace();
   try {
-    const result = await drive(root, "unified", [
-      "const reindex = await codeIntel({ operation: 'reindex', backend: 'all', root, indexTimeoutMs: 300000 });",
-      "const search = await codeIntel({ operation: 'search', query: 'applying a percentage discount to a total', root, timeoutMs: 120000, indexTimeoutMs: 300000 });",
-      "return { reindex: reindex.meta, search: search.meta };",
-    ].join("\n"));
-
+    const result = await drive(root);
     assert.ok(!result.failed, `unified failed with no CLI on PATH: ${result.failed}`);
     assert.equal(result.reindex.status, "ok", JSON.stringify(result.reindex));
-    assert.deepEqual(result.reindex.backends.map((entry) => entry.backend), ["zvec", "codegraph"]);
-    assert.ok(result.reindex.backends.every((entry) => entry.ok === true), JSON.stringify(result.reindex));
+    assert.deepEqual(result.reindex.backends.map((entry) => entry.backend), ["codegraph"]);
+    assert.equal(result.reindex.backends[0].ok, true, JSON.stringify(result.reindex));
 
-    // Lifecycle alone is not the claim; the query path must also stay inside the
-    // product, and it must produce anchored evidence rather than an empty answer
-    // that would pass this test for the wrong reason.
-    assert.equal(result.search.status, "ok", JSON.stringify(result.search));
-    const anchored = result.search.evidence.filter((item) => item.locator?.relativePath);
-    assert.ok(anchored.length > 0, `search returned no anchored evidence: ${JSON.stringify(result.search.evidence)}`);
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
-test("legacy in the same environment cannot proceed, proving the executables really were hidden", { timeout: 300_000 }, async () => {
-  const root = await workspace();
-  try {
-    const result = await drive(root, "legacy", [
-      "const reindex = await codeIntel({ operation: 'reindex', backend: 'all', root, indexTimeoutMs: 120000 });",
-      "return { reindex: reindex.meta };",
-    ].join("\n"));
-
-    const backends = result.reindex?.backends ?? [];
+    assert.equal(result.query.status, "ok", JSON.stringify(result.query));
+    assert.equal(result.query.backends[0].backend, "codegraph");
+    assert.ok(result.query.evidence.length > 0, `query returned no evidence: ${JSON.stringify(result.query)}`);
     assert.ok(
-      result.failed || backends.some((entry) => entry.ok === false),
-      `legacy unexpectedly succeeded without zg or codegraph on PATH: ${JSON.stringify(result)}`,
+      result.query.evidence.some((item) => item.method === "indexed_graph" && item.locator?.relativePath),
+      `query returned no anchored graph evidence: ${JSON.stringify(result.query.evidence)}`,
     );
   } finally {
     await rm(root, { recursive: true, force: true });

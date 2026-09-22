@@ -1,0 +1,1250 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-22T02:28:01.158Z",
+  "baseline": "docs/unified/acceptance.json",
+  "baseline_sha256": "35d03bff69cd06123aae90b7de3d1c155b164c2483a888a1690fc2be9b4ddfa0",
+  "original_criteria_preserved": 68,
+  "score_aggregation": "prohibited",
+  "release_guardrails": {
+    "performance": "FAIL: immutable 2GB process-tree RSS guardrail exceeded; original REL-04 measurement and REL-05 quality are separate contracts."
+  },
+  "items": [
+    {
+      "id": "SRC-01",
+      "group": "SRC",
+      "name": "commit pin",
+      "expected": "Tag/main drift cannot silently change source.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "scripts/verify-vendor.mjs"
+        },
+        {
+          "path": "upstreams.lock.json"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SRC-02",
+      "group": "SRC",
+      "name": "blob hash",
+      "expected": "Mapped source bytes match expected Git blob.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "scripts/verify-vendor.mjs"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SRC-03",
+      "group": "SRC",
+      "name": "anchor location",
+      "expected": "Declared source anchors exist at reported actual lines.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/source-verification.json"
+        },
+        {
+          "path": "docs/unified/source-checks.json"
+        }
+      ]
+    },
+    {
+      "id": "SRC-04",
+      "group": "SRC",
+      "name": "inventory upgrade",
+      "expected": "Inventory-only source is read before edit.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": "One of nineteen inventory-grade upstream paths changed; its original 90 lines were read before the first successful edit. The other eighteen paths retain original blobs.",
+      "evidence": [
+        {
+          "path": "docs/unified/source-review-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SRC-05",
+      "group": "SRC",
+      "name": "distribution parity",
+      "expected": "Tag source vs package distribution is recorded.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/distribution-provenance.json"
+        }
+      ]
+    },
+    {
+      "id": "SRC-06",
+      "group": "SRC",
+      "name": "license closure",
+      "expected": "Notices and runtime/grammar/model licenses retained.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/dependency-audit.json"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md"
+        }
+      ]
+    },
+    {
+      "id": "BUILD-01",
+      "group": "BUILD",
+      "name": "ESM and CJS",
+      "expected": "Both fork entries import without package-mode mismatch.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/headless-entries.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "BUILD-02",
+      "group": "BUILD",
+      "name": "headless import",
+      "expected": "No CLI, MCP listener, watcher or GUI starts during import.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/headless-entries.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "BUILD-03",
+      "group": "BUILD",
+      "name": "assets",
+      "expected": "SQL/WASM/native files resolve in installed layout.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/embedded-lifecycle.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        },
+        {
+          "path": "scripts/build-unified.mjs"
+        }
+      ]
+    },
+    {
+      "id": "BUILD-04",
+      "group": "BUILD",
+      "name": "Python closure",
+      "expected": "Read API imports without fake/stub dependencies.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/dependency-audit.json"
+        },
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "BUILD-05",
+      "group": "BUILD",
+      "name": "model ownership",
+      "expected": "Borrowed model not closed by one workspace.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/retrieval-contract-evidence.json"
+        },
+        {
+          "path": "test/parity/retrieval.test.js"
+        }
+      ]
+    },
+    {
+      "id": "BUILD-06",
+      "group": "BUILD",
+      "name": "offline start",
+      "expected": "Post-setup normal start makes no unintended network requests.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/offline-evidence.json"
+        },
+        {
+          "path": "scripts/verify-offline.mjs"
+        }
+      ]
+    },
+    {
+      "id": "RUN-01",
+      "group": "RUN",
+      "name": "building guard",
+      "expected": "No sync/query begins under a building result.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/index-manager.test.js"
+        },
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-02",
+      "group": "RUN",
+      "name": "UTF8 chunks",
+      "expected": "Korean/emoji split across pipe chunks is unchanged.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/process.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-03",
+      "group": "RUN",
+      "name": "source spaces",
+      "expected": "Indentation/trailing newline are not trimmed by transport.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/process.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-04",
+      "group": "RUN",
+      "name": "abort reaping",
+      "expected": "Caller settles; owned stubborn child is eventually reaped.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/process.test.js"
+        },
+        {
+          "path": "test/cancellation.test.js"
+        },
+        {
+          "path": "test/contracts/worker-lifecycle.test.js"
+        },
+        {
+          "path": "docs/unified/boundary-evidence.json"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-05",
+      "group": "RUN",
+      "name": "shared cancel",
+      "expected": "One caller abort does not cancel another shared waiter.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/index-manager.test.js"
+        },
+        {
+          "path": "test/contracts/worker-lifecycle.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-06",
+      "group": "RUN",
+      "name": "late epoch",
+      "expected": "Old worker result cannot satisfy new session request.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/worker-lifecycle.test.js"
+        },
+        {
+          "path": "test/faults/semantic-correlation.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-07",
+      "group": "RUN",
+      "name": "partial required failure",
+      "expected": "Auxiliary hits cannot disguise failed required operation.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/engine.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "RUN-08",
+      "group": "RUN",
+      "name": "backpressure",
+      "expected": "Queue and response bytes remain within configured limits.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/mcp-protocol.test.js"
+        },
+        {
+          "path": "test/contracts/worker-lifecycle.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-01",
+      "group": "WS",
+      "name": "root symlink",
+      "expected": "Canonical source root/path cannot escape policy.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/security.test.js"
+        },
+        {
+          "path": "test/contracts/workspace-scope.test.js"
+        },
+        {
+          "path": "test/semantic-negative.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-02",
+      "group": "WS",
+      "name": "state separation",
+      "expected": "sourceRoot is never replaced with stateRoot.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/workspace-scope.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-03",
+      "group": "WS",
+      "name": "multiple process owner",
+      "expected": "Two lazy-intel instances cannot independently write one root.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/workspace-scope.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-04",
+      "group": "WS",
+      "name": "legacy daemon",
+      "expected": "No lease bypass or unsolicited machine daemon restart.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/contracts/headless-entries.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-05",
+      "group": "WS",
+      "name": "watch loss",
+      "expected": "Null filename/error/loss triggers reconciliation.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/index-manager.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-06",
+      "group": "WS",
+      "name": "new directory",
+      "expected": "Files inside a newly created directory are included.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/index-manager.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-07",
+      "group": "WS",
+      "name": "rename/delete",
+      "expected": "Old vectors/graph references are not silently retained.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/parity/graph.test.js"
+        },
+        {
+          "path": "test/parity/retrieval.test.js"
+        },
+        {
+          "path": "test/contracts/graph-publication.test.js"
+        },
+        {
+          "path": "test/contracts/unified-engine.test.js"
+        },
+        {
+          "path": "docs/unified/graph-contract-evidence.json"
+        },
+        {
+          "path": "docs/unified/retrieval-contract-evidence.json"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "WS-08",
+      "group": "WS",
+      "name": "ignore/build config",
+      "expected": "Relevant policy changes invalidate required projections.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/boundary-evidence.json"
+        },
+        {
+          "path": "test/contracts/workspace-scope.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-01",
+      "group": "SEM",
+      "name": "name_path overload",
+      "expected": "Current overload naming and ambiguity behavior retained.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-02",
+      "group": "SEM",
+      "name": "references semantics",
+      "expected": "Containing symbols and source locations match intended old contract.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-03",
+      "group": "SEM",
+      "name": "document version",
+      "expected": "Own LSP buffer/hash/version recorded; foreign editor state not invented.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-04",
+      "group": "SEM",
+      "name": "coordinate codec",
+      "expected": "UTF8/UTF16, zero/one-based, CRLF and emoji convert correctly.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-05",
+      "group": "SEM",
+      "name": "SourceKit launch",
+      "expected": "Only canonical trusted executable is launched.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        },
+        {
+          "path": "packages/core/src/adapters/semantic.ts"
+        },
+        {
+          "path": "test/semantic-negative.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-06",
+      "group": "SEM",
+      "name": "missing build context",
+      "expected": "No false exact/complete result when toolchain context missing.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        },
+        {
+          "path": "test/faults/stale-source.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-07",
+      "group": "SEM",
+      "name": "capability missing",
+      "expected": "Unsupported operation is unavailable, not empty.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        },
+        {
+          "path": "test/contracts/worker-lifecycle.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "SEM-08",
+      "group": "SEM",
+      "name": "diagnostics completion",
+      "expected": "No-message and successful empty diagnostic report distinguished.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-01",
+      "group": "STATE",
+      "name": "captured manifest",
+      "expected": "All prepared records reference the same captured bytes they claim.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/parity/extraction.test.js"
+        },
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-02",
+      "group": "STATE",
+      "name": "before mutation crash",
+      "expected": "Unapplied journal recovered safely.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-03",
+      "group": "STATE",
+      "name": "graph first crash",
+      "expected": "Graph changed/retrieval old does not publish coherent success.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-04",
+      "group": "STATE",
+      "name": "retrieval partial crash",
+      "expected": "Partly replaced vector store is not served as old clean view.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-05",
+      "group": "STATE",
+      "name": "after ack crash",
+      "expected": "Replay does not duplicate data and can reconstruct publication.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "test/faults/publication.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-06",
+      "group": "STATE",
+      "name": "same handle read/write",
+      "expected": "Reads cannot observe own uncommitted mutation accidentally.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/faults/publication.test.js"
+        },
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-07",
+      "group": "STATE",
+      "name": "strict source change",
+      "expected": "Source changed during strict query produces honest state.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/faults/publication-live.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "STATE-08",
+      "group": "STATE",
+      "name": "rebuild rollback",
+      "expected": "Staged rebuild can roll back without reusing migrated old state.",
+      "owner_unit": "U06",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/boundary-evidence.json"
+        },
+        {
+          "path": "test/faults/publication-live.test.js"
+        }
+      ]
+    },
+    {
+      "id": "IR-01",
+      "group": "IR",
+      "name": "syntax coverage",
+      "expected": "Native/WASM/language extraction retained against golden corpus.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/parity/extraction.test.js"
+        },
+        {
+          "path": "docs/unified/parser-convergence.json"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-02",
+      "group": "IR",
+      "name": "non-code input",
+      "expected": "Markdown/config/text extraction remains available.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/retrieval-contract-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-03",
+      "group": "IR",
+      "name": "embedding text",
+      "expected": "Source/body/signature metadata changes are measured against baseline.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/retrieval-contract-evidence.json"
+        },
+        {
+          "path": "test/parity/retrieval.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-04",
+      "group": "IR",
+      "name": "definitionDelta",
+      "expected": "Unchanged files rebind after target declaration changes.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/graph-contract-evidence.json"
+        },
+        {
+          "path": "test/parity/graph.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-05",
+      "group": "IR",
+      "name": "framework passes",
+      "expected": "Post-extract/conformance/deferred resolution still executes.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/graph-contract-evidence.json"
+        },
+        {
+          "path": "test/contracts/graph-publication.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-06",
+      "group": "IR",
+      "name": "fresh vs incremental store",
+      "expected": "Fresh-only StoreWriter not used as generic update shortcut.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/graph-contract-evidence.json"
+        },
+        {
+          "path": "test/contracts/graph-publication.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-07",
+      "group": "IR",
+      "name": "parser ABI",
+      "expected": "No forced incompatible grammar/runtime hoisting.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "vendor/zvec-grep/package-lock.json"
+        },
+        {
+          "path": "vendor/codegraph/package-lock.json"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "IR-08",
+      "group": "IR",
+      "name": "parse count",
+      "expected": "Single parsing only asserted for measured parity-enabled routes.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": "No single-parse convergence is claimed. Shared captured bytes and independently measured snapshot parity do not merge native parser ownership.",
+      "evidence": [
+        {
+          "path": "docs/unified/parser-convergence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-01",
+      "group": "EVID",
+      "name": "explicit primitive",
+      "expected": "No hidden operation change or extra semantic inference.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/plan.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-02",
+      "group": "EVID",
+      "name": "bounded auto",
+      "expected": "At most documented dependent stage, no agent loop.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/plan.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-03",
+      "group": "EVID",
+      "name": "fixed context",
+      "expected": "Fixed composite plan, not heuristic stop-on-first-hit.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/plan.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-04",
+      "group": "EVID",
+      "name": "identity conflict",
+      "expected": "Same name in another scope/revision is not merged.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/evidence.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-05",
+      "group": "EVID",
+      "name": "coverage",
+      "expected": "Ranked samples and exhaustive/truncated search remain distinct.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/context-pack.test.js"
+        },
+        {
+          "path": "packages/core/src/adapters/retrieval.ts"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-06",
+      "group": "EVID",
+      "name": "empty distinction",
+      "expected": "Zero-result protocol success differs from empty broken output.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/boundary-evidence.json"
+        },
+        {
+          "path": "test/engine.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-07",
+      "group": "EVID",
+      "name": "output bounds",
+      "expected": "Headers/body/warnings and wire limits all accounted.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/boundary-evidence.json"
+        },
+        {
+          "path": "test/context-pack.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "EVID-08",
+      "group": "EVID",
+      "name": "MCP compatibility",
+      "expected": "One code_intel and existing envelope/control keys preserved.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "test/mcp-smoke.test.js"
+        },
+        {
+          "path": "test/mcp-protocol.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "REL-01",
+      "group": "REL",
+      "name": "baseline test suites",
+      "expected": "Existing applicable security/index/cancel suites pass.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "REL-02",
+      "group": "REL",
+      "name": "real backend parity",
+      "expected": "Same source/model/code comparisons have saved evidence.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/backend-parity.json"
+        },
+        {
+          "path": "scripts/verify-backend-parity.mjs"
+        }
+      ]
+    },
+    {
+      "id": "REL-03",
+      "group": "REL",
+      "name": "real OMP",
+      "expected": "Install/upgrade/abort/multi-root use works with one tool.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/install-evidence.json"
+        },
+        {
+          "path": "scripts/verify-install.mjs"
+        }
+      ]
+    },
+    {
+      "id": "REL-04",
+      "group": "REL",
+      "name": "performance",
+      "expected": "Cold/restart/warm/dirty latency and memory measured separately.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "20 actual rows: five per cold/restart/warm/dirty. Measurement requirement is met; separate preregistered RSS guardrail FAIL is retained, not waived.",
+      "evidence": [
+        {
+          "path": "docs/unified/performance-measurement.json"
+        },
+        {
+          "path": "scripts/verify-performance.mjs"
+        }
+      ]
+    },
+    {
+      "id": "REL-05",
+      "group": "REL",
+      "name": "quality non-regression",
+      "expected": "Critical source anchors preserved; quality thresholds preregistered.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Twenty exact source SHA/span rows and all five dirty new-hash observations passed immutable preregistered anchor thresholds.",
+      "evidence": [
+        {
+          "path": "docs/unified/performance-preregistration.json"
+        },
+        {
+          "path": "docs/unified/performance-measurement.json"
+        }
+      ]
+    },
+    {
+      "id": "REL-06",
+      "group": "REL",
+      "name": "no source writes",
+      "expected": "Semantic read path cannot edit source or execute arbitrary commands.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/semantic-evidence.json"
+        },
+        {
+          "path": "test/security.test.js"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    },
+    {
+      "id": "REL-07",
+      "group": "REL",
+      "name": "rollback",
+      "expected": "Old binary+state path restored in an exercised rollback.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "docs/unified/install-evidence.json"
+        },
+        {
+          "path": "scripts/verify-install.mjs"
+        }
+      ]
+    },
+    {
+      "id": "REL-08",
+      "group": "REL",
+      "name": "final source integration",
+      "expected": "Default path uses local fork APIs and shared inputs, not three products.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": "Reviewed implementation and the named executed evidence satisfy this original contract; evidence scope is retained in the linked artifacts.",
+      "evidence": [
+        {
+          "path": "src/unified.js"
+        },
+        {
+          "path": "test/contracts/embedded-lifecycle.test.js"
+        },
+        {
+          "path": "docs/unified/migration-state.json"
+        },
+        {
+          "path": "docs/unified/test-evidence.json"
+        }
+      ]
+    }
+  ]
+}

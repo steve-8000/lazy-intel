@@ -1,501 +1,396 @@
-/**
- * The unified read path: the product's query path served by the vendored forks
- * running as typed libraries in private workers, instead of by `zg`/`codegraph`
- * subprocesses and an external Serena MCP server.
- *
- * This module is the only place where the control-plane vocabulary
- * (`packages/core/src/contracts.ts`) meets the product vocabulary
- * (`src/contracts.js`, `src/evidence.js`). Keeping the translation in one file is
- * what lets the legacy adapters stay selectable: `src/engine.js` picks a reader,
- * and nothing else in the product knows which one answered.
- *
- * Selection is `LAZY_INTEL_ENGINE`. It stays `legacy` by default until the U09
- * release gate, because the two paths have different failure modes and the
- * switch must be a deliberate, reversible act rather than a side effect of an
- * upgrade.
- *
- * Two translations here are lossy in one direction and must not be faked in the
- * other:
- *
- *  - The control plane anchors evidence to half-open UTF-8 byte spans; the
- *    product's locators are line ranges. Bytes are authoritative, so lines are
- *    derived by counting newlines in the file the anchor names. When the file
- *    cannot be read, the evidence keeps its text and loses its locator rather
- *    than carrying a guessed line number.
- *  - The control plane distinguishes `lexical`, `vector`, `hybrid`, `syntax`,
- *    `resolved_graph` and `lsp`; the product's public enum has three values.
- *    The narrowing is recorded in the evidence text's provenance, never
- *    silently widened into a stronger claim.
- */
-
-import { createRequire } from "node:module";
-import { readFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { ADAPTER_VERSION, envelope, failureEnvelope } from "./contracts.js";
-import { ensureIndexes } from "./index-manager.js";
+import { ensureIndexes, observeIndexState, noteIndexReadFailure } from "./index-manager.js";
 import * as Evidence from "./evidence.js";
 import { log } from "./lib/log.js";
+import { requestRoot } from "./lib/roots.js";
+import { lineRangeForSpan } from "./lib/source.js";
 
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const require = createRequire(import.meta.url);
-
-/** `legacy` until the release gate flips it; `unified` opts a deployment in. */
-export const ENGINE_MODE = process.env.LAZY_INTEL_ENGINE === "unified" ? "unified" : "legacy";
-
-/**
- * Control-plane method to the product's three-value public enum. Retrieval
- * methods all collapse to `hybrid_retrieval`, which is what the product has
- * always meant by "the retrieval backend found this"; graph resolution becomes
- * `indexed_graph`; LSP stays itself.
- */
-const METHOD_TO_PRODUCT = {
-  lexical: "hybrid_retrieval",
-  vector: "hybrid_retrieval",
-  hybrid: "hybrid_retrieval",
-  syntax: "indexed_graph",
-  resolved_graph: "indexed_graph",
-  lsp: "lsp",
+export const ENGINE_MODE = "unified";
+const COMPONENT = { zvec: "retrieval", codegraph: "graph", serena: "semantic" };
+const BACKEND = { retrieval: "zvec", graph: "codegraph", semantic: "serena" };
+const METHOD_TO_PRODUCT = { lexical: "hybrid_retrieval", vector: "hybrid_retrieval", hybrid: "hybrid_retrieval", syntax: "indexed_graph", resolved_graph: "indexed_graph", lsp: "lsp" };
+const KIND_TO_PRODUCT = { definition: "definition", reference: "reference", implementation: "implementation", diagnostic: "diagnostic", call: "relation", dependency: "relation", impact: "impact", retrieval: "retrieval" };
+const LANGUAGE_BY_EXTENSION = {
+  ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".cts": "typescript",
+  ".js": "typescript", ".jsx": "typescript", ".mjs": "typescript", ".cjs": "typescript",
+  ".py": "python", ".pyi": "python", ".go": "go", ".rs": "rust", ".rb": "ruby", ".php": "php", ".java": "java",
+  ".swift": "swift", ".kt": "kotlin", ".cs": "csharp", ".c": "cpp", ".h": "cpp", ".cpp": "cpp", ".cc": "cpp", ".hpp": "cpp",
+  ".dart": "dart", ".lua": "lua", ".ex": "elixir", ".exs": "elixir", ".scala": "scala", ".zig": "zig", ".svelte": "svelte", ".vue": "vue",
 };
-
-/** Control-plane evidence kinds the product's enum does not have a slot for. */
-const KIND_TO_PRODUCT = {
-  definition: "definition",
-  reference: "reference",
-  implementation: "implementation",
-  diagnostic: "diagnostic",
-  call: "relation",
-  dependency: "relation",
-  impact: "impact",
-  retrieval: "retrieval",
-};
-
-const BACKEND_BY_COMPONENT = { retrieval: "zvec", graph: "codegraph", semantic: "serena" };
-
+const runtimes = new Map();
 let corePromise;
-
-/**
- * The compiled control plane. It is loaded on first unified read rather than at
- * import time so that a legacy deployment never pays for it and never fails to
- * start because the build output is missing.
- */
-async function core() {
+let profilePromise;
+function core() {
   corePromise ??= import(path.join(ROOT_DIR, "packages/core/dist/index.js")).catch((error) => {
     corePromise = undefined;
     throw new Error(`the unified engine needs a build: ${error.message}. Run npm run build.`);
   });
   return corePromise;
 }
-
-const runtimes = new Map();
-
-/**
- * One runtime per canonical root: three supervisors, three adapters, one set of
- * long-lived worker processes. Creating this is expensive (a worker start plus a
- * library load per backend), so it is cached and torn down only by `closeUnified`.
- */
-async function runtimeFor(root) {
-  let runtime = runtimes.get(root);
-  if (runtime) return runtime;
-
-  runtime = (async () => {
-    const { createRetrievalAdapter, createGraphAdapter, createSemanticAdapter, WorkerSupervisor } = await core();
-    const workspaceId = root;
-    const onLog = (line, stream) => log("debug", "worker output", { root, stream, line });
-
-    const retrieval = createRetrievalAdapter({ workspaceId, workerPath: path.join(ROOT_DIR, "workers/retrieval/main.mjs"), supervisor: { onLog } });
-    const graphSupervisor = new WorkerSupervisor({
-      kind: "graph",
-      modulePath: path.join(ROOT_DIR, "workers/graph/main.mjs"),
-      workspaceId,
-      onLog,
-    });
-    const graph = createGraphAdapter({ supervisor: graphSupervisor, sourceRoot: root });
-
-    return { root, retrieval, graph, graphSupervisor, semantic: new Map(), semanticFailed: new Map() };
-  })();
-
-  runtimes.set(root, runtime);
-  return runtime;
+function digest(value) { return createHash("sha256").update(JSON.stringify(value)).digest("hex"); }
+function profiles() {
+  profilePromise ??= Promise.all(["zvec-grep", "codegraph"].map((name) => readFile(path.join(ROOT_DIR, "vendor", name, "UPSTREAM.json"), "utf8")))
+    .then(([retrieval, graph]) => ({ parserProfileDigest: digest({ schema: "prepared-snapshot/2", retrieval, graph }), resolverProfileDigest: digest(graph) }));
+  return profilePromise;
 }
-
-/**
- * Language servers are never discovered and never installed. The operator names
- * the executables in `LAZY_INTEL_LSP` as a JSON object of language to absolute
- * path, e.g. {"python":"/opt/homebrew/bin/pyright-langserver"}. An unnamed
- * language is reported as unavailable with that reason, which is the whole point
- * of the no-install policy: a query must never trigger a download.
- */
 function trustedLanguageServers() {
-  const raw = process.env.LAZY_INTEL_LSP;
-  if (!raw) return {};
   try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch (error) {
-    log("warn", "LAZY_INTEL_LSP is not valid JSON; no language server is trusted", { error: error.message });
-    return {};
+    const value = JSON.parse(process.env.LAZY_INTEL_LSP || "{}");
+    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  } catch { return {}; }
+}
+async function newIndexWorker(runtime, projection) {
+  const api = await core();
+  const supervisor = { onLog: (line, stream) => log("debug", "worker output", { root: runtime.root, stream, line }) };
+  if (projection === "retrieval") {
+    runtime.retrieval = api.createRetrievalAdapter({ workspaceId: runtime.scope.workspaceId, workerPath: path.join(ROOT_DIR, "workers/retrieval/main.mjs"), supervisor });
+  } else {
+    runtime.graphSupervisor = new api.WorkerSupervisor({ ...supervisor, kind: "graph", modulePath: path.join(ROOT_DIR, "workers/graph/main.mjs"), workspaceId: runtime.scope.workspaceId });
+    runtime.graph = api.createGraphAdapter({ supervisor: runtime.graphSupervisor, sourceRoot: runtime.root });
   }
 }
+async function runtimeFor(root) {
+  root = await realpath(root);
+  let pending = runtimes.get(root);
+  if (pending) return pending;
+  pending = (async () => {
+    const api = await core();
+    const trustedForLanguageTools = await requestRoot(root).then(() => true, () => false);
+    const scope = await api.openWorkspaceRuntime({ sourceRoot: root, trustedForLanguageTools });
+    try {
+      const publication = await api.PublicationCoordinator.open(scope.canonicalStateRoot);
+      const runtime = { root, scope, publication, semantic: new Map(), sync: Promise.resolve(), closed: false };
+      await Promise.all([newIndexWorker(runtime, "retrieval"), newIndexWorker(runtime, "graph")]);
+      publication.registerRecovery((projection, batch) => applyProjection(runtime, projection, batch));
+      return runtime;
+    } catch (error) { await scope.release(); throw error; }
+  })();
+  runtimes.set(root, pending);
+  pending.catch(() => { if (runtimes.get(root) === pending) runtimes.delete(root); });
+  return pending;
+}
+function supervisorFor(runtime, projection) {
+  return projection === "retrieval" ? runtime.retrieval.supervisor : runtime.graphSupervisor;
+}
+function waitForJob(job, signal) {
+  if (!signal) return job;
+  signal.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const abort = () => { cleanup(); reject(signal.reason ?? new Error("cancelled")); };
+    const cleanup = () => signal.removeEventListener("abort", abort);
+    signal.addEventListener("abort", abort, { once: true });
+    job.then((value) => { cleanup(); resolve(value); }, (error) => { cleanup(); reject(error); });
+  });
+}
+function sourceChunks(sources) {
+  const chunks = [];
+  let current = [], size = 0;
+  for (const source of sources) {
+    const bytes = Buffer.byteLength(JSON.stringify(source));
+    if (size + bytes > 700_000 && current.length) { chunks.push(current); current = []; size = 0; }
+    current.push(source); size += bytes;
+  }
+  if (current.length || chunks.length === 0) chunks.push(current);
+  return chunks;
+}
+async function applyProjection(runtime, projection, batch) {
+  if (batch.storeRoot) await assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot);
+  const api = await core();
+  const supervisor = supervisorFor(runtime, projection);
+  const previous = currentBatch(runtime, projection);
+  const priorHashes = new Map((previous?.sources ?? []).map((source) => [source.relativePath, source.contentHash]));
+  const upserts = batch.full ? batch.sources : batch.sources.filter((source) => priorHashes.get(source.relativePath) !== source.contentHash);
+  const chunks = sourceChunks(upserts);
+  let ack, transport;
+  const applyDeadline = performance.now() + 1_800_000;
+  try {
+    for (let index = 0; index < chunks.length; index += 1) {
+      const part = { batchId: batch.batchId, part: index, final: index === chunks.length - 1, manifestId: batch.manifestId, sources: chunks[index], deletedPaths: index === 0 ? batch.deletedPaths : [], full: batch.full && index === 0 };
+      transport = await api.stagePreparedBatch(batch.storeRoot, part);
+      const result = await supervisor.call("apply", { root: runtime.root, stateRoot: batch.storeRoot, batchRef: transport.reference, options: { embedding: batch.embedding } }, {
+        requestId: api.newRequestId(projection + "-apply"), signal: new AbortController().signal, deadlineMonotonicMs: applyDeadline,
+      });
+      if (!result.ok) throw new Error(result.message);
+      ack = result.payload;
+      const staged = projection === "graph" && !part.final;
+      if (ack?.state !== (staged ? "staged" : "applied") || ack.batchId !== batch.batchId || ack.manifestId !== batch.manifestId || (!staged && (typeof ack.durableBoundary !== "string" || !ack.durableBoundary))) {
+        throw new Error(projection + " did not acknowledge the prepared part");
+      }
+      await transport.release(); transport = undefined;
+    }
+    return { ...ack, storeRoot: batch.storeRoot };
+  } catch (error) {
+    // Retain input until any timed-out native operation has been physically reaped.
+    await supervisor.close();
+    if (!runtime.closed) await newIndexWorker(runtime, projection);
+    throw error;
+  } finally {
+    if (transport) await transport.release();
+  }
+}
+async function capture(runtime, observedSeq) {
+  const api = await core();
+  return api.captureWorkspaceSnapshot({ workspaceId: runtime.scope.workspaceId, sourceRoot: runtime.root, observedSeq: String(observedSeq), ...(await profiles()) });
+}
+function currentBatch(runtime, projection) { return runtime.publication.currentBatch(projection); }
+function isWithin(parent, child) { return child === parent || child.startsWith(parent + path.sep); }
+async function assertOwnedStoreRoot(stateRoot, storeRoot) {
+  const canonicalStateRoot = await realpath(stateRoot);
+  const resolvedStoreRoot = await realpath(storeRoot).catch(() => path.resolve(storeRoot));
+  if (!isWithin(canonicalStateRoot, resolvedStoreRoot)) throw new Error("publication store root escapes workspace state root");
+  const storesRoot = path.join(canonicalStateRoot, "stores");
+  const resolvedStoresRoot = await realpath(storesRoot).catch(() => storesRoot);
+  if (resolvedStoresRoot !== storesRoot || !isWithin(storesRoot, resolvedStoreRoot)) throw new Error("publication store root is outside the owned stores directory");
+}
 
-/**
- * Extension to the language-server id Serena actually accepts
- * (`solidlsp.ls_config.LanguageServerId`). Note there is no `javascript` id: the
- * TypeScript server handles both, so a `.js` file resolves to `typescript`.
- * Guessing an id that is not in that enum produces a refusal, not a fallback.
- */
-const LANGUAGE_BY_EXTENSION = {
-  ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".cts": "typescript",
-  ".js": "typescript", ".jsx": "typescript", ".mjs": "typescript", ".cjs": "typescript",
-  ".py": "python", ".pyi": "python",
-  ".go": "go", ".rs": "rust", ".rb": "ruby", ".php": "php", ".java": "java",
-  ".swift": "swift", ".kt": "kotlin", ".cs": "csharp", ".c": "cpp", ".h": "cpp",
-  ".cpp": "cpp", ".cc": "cpp", ".hpp": "cpp", ".dart": "dart", ".lua": "lua",
-  ".ex": "elixir", ".exs": "elixir", ".scala": "scala", ".zig": "zig", ".svelte": "svelte", ".vue": "vue",
-};
+/** One capture and publication owns all requested projections, including admin work. */
+export async function synchronizeWorkspace(root, backends, options = {}) {
+  const runtime = await runtimeFor(root);
+  const projections = [...new Set(backends.map((backend) => COMPONENT[backend]).filter((value) => value === "graph" || value === "retrieval"))];
+  const run = async () => {
+    if (runtime.closed) throw new Error("workspace is closing");
+    if (runtime.publication.status().needsRecovery) await runtime.publication.recover();
+    const previous = projections.map((projection) => currentBatch(runtime, projection)).filter(Boolean);
+    await Promise.all(previous.map((batch) => batch.storeRoot ? assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot) : undefined));
+    const configured = process.env.LAZY_INTEL_EMBEDDING || await (await import("./lifecycle.js")).configuredEmbedding();
+    const embedding = options.embedding ?? previous.find((batch) => batch.embedding)?.embedding ?? configured ?? undefined;
+    const observedSeq = String(observeIndexState(root)?.generation ?? 1);
+    const captured = await capture(runtime, observedSeq, embedding);
+    const profileDigest = digest({ scope: captured.manifest.scopeDigest, parser: captured.manifest.parserProfileDigest, resolver: captured.manifest.resolverProfileDigest, embedding });
+    const rebuild = options.rebuild === true || previous.length !== projections.length || new Set(previous.map((batch) => batch.storeRoot)).size > 1 || previous.some((batch) => batch.profileDigest !== profileDigest);
+    const oldPaths = new Set(previous.flatMap((batch) => batch.sources.map((source) => source.relativePath)));
+    const paths = new Set(captured.sources.map((source) => source.relativePath));
+    const storeRoot = rebuild ? path.join(runtime.scope.canonicalStateRoot, "stores", randomUUID())
+      : previous[0]?.storeRoot ?? path.join(runtime.scope.canonicalStateRoot, "stores", randomUUID());
+    await assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, storeRoot);
+    const batch = { batchId: randomUUID(), manifestId: captured.manifest.id, manifest: captured.manifest, profileDigest,
+      projections, sources: captured.sources, deletedPaths: [...oldPaths].filter((entry) => !paths.has(entry)),
+      full: rebuild || previous.length === 0, storeRoot, embedding };
+    const unchanged = !rebuild && projections.every((projection) => {
+      const view = runtime.publication.view(projection);
+      return view?.state === "clean" && view.appliedManifestId === batch.manifestId && view.profileDigest === profileDigest;
+    });
+    if (!unchanged) await runtime.publication.publishBatch(batch, (projection, pending) => applyProjection(runtime, projection, pending));
+    if (!unchanged && rebuild) {
+      for (const projection of projections) {
+        const old = previous.find((entry) => entry.projections.includes(projection));
+        if (!old?.storeRoot || old.storeRoot === storeRoot) continue;
+        const supervisor = supervisorFor(runtime, projection);
+        await supervisor.call("close-store", { root, stateRoot: old.storeRoot }, {
+          requestId: (await core()).newRequestId("retire-store"), signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
+        });
+      }
+    }
+    return projections.map((projection) => ({ backend: BACKEND[projection], ok: true, ready: true, building: false,
+      action: rebuild ? "rebuilt" : unchanged ? "ready" : "synced", view: runtime.publication.view(projection) }));
+  };
+  const job = runtime.sync.then(run, run);
+  runtime.sync = job.then(() => undefined, () => undefined);
+  return waitForJob(job, options.signal);
+}
+export async function unifiedIndexStatus(root) {
+  const runtime = await runtimeFor(root);
+  const status = runtime.publication.status();
+  const backends = Object.fromEntries(["retrieval", "graph"].map((projection) => {
+    const view = runtime.publication.view(projection);
+    return [BACKEND[projection], { present: Boolean(view), ready: view?.state === "clean", building: view?.state === "applying",
+      needsRecovery: view?.state === "needs_recovery", view, stateRoot: view?.storeRoot ?? runtime.scope.canonicalStateRoot }];
+  }));
+  return { root, workspaceId: runtime.scope.workspaceId, stateRoot: runtime.scope.canonicalStateRoot,
+    views: status.views, mixedViews: status.mixedViews, applying: status.applying, needsRecovery: status.needsRecovery,
+    pendingBatches: status.pendingBatches.map(({ batchId, manifestId, projections, profileDigest }) => ({ batchId, manifestId, projections, profileDigest })), backends };
+}
 
-/**
- * The semantic worker owns a Python interpreter and one language server per
- * language, so a port is created per language and only when a semantic read is
- * actually asked for. A failure is remembered: re-probing a missing interpreter
- * on every query would turn one configuration problem into a per-request stall.
- */
+/** Pin only index reads. Semantic work never extends the index lease lifetime. */
+export async function unifiedStage(reads, input, deadline, execute) {
+  const indexed = reads.filter((read) => read.backend !== "serena");
+  const results = new Map();
+  const semantic = reads.filter((read) => read.backend === "serena").map(async (read) => {
+    const [settled] = await Promise.allSettled([execute(read)]); results.set(read, settled);
+  });
+  const indexes = (async () => {
+    if (!indexed.length) return;
+    try {
+      const readiness = await ensureIndexes(input.root, [...new Set(indexed.map((read) => read.backend))], {
+        freshness: input.freshness, timeoutMs: deadline.budget(input.indexTimeoutMs), signal: deadline.signal,
+      });
+      const ready = new Set(readiness.filter((row) => row.ready && !row.building).map((row) => row.backend));
+      for (const read of indexed.filter((read) => !ready.has(read.backend))) {
+        const row = readiness.find((entry) => entry.backend === read.backend);
+        results.set(read, { status: "fulfilled", value: failureEnvelope(read.backend, read.operation, row?.building ? "INDEX_BUILDING" : "INDEX_UNAVAILABLE", row?.error ?? row?.detail ?? "no clean published view") });
+      }
+      const usable = indexed.filter((read) => ready.has(read.backend));
+      if (!usable.length) return;
+      const runtime = await runtimeFor(input.root);
+      await runtime.publication.read([...new Set(usable.map((read) => COMPONENT[read.backend]))], { requireCoherent: true, signal: deadline.signal }, async (views) => {
+        const lease = { runtime, views };
+        const settled = await Promise.allSettled(usable.map((read) => execute(read, lease)));
+        if (input.freshness === "strict") {
+          const batch = currentBatch(runtime, COMPONENT[usable[0].backend]);
+          const verified = await capture(runtime, batch.manifest?.observedSeq ?? observeIndexState(input.root)?.generation ?? 1, batch.embedding);
+          if (verified.manifest.id !== batch.manifestId) throw new Error("source_changed: source or policy changed during strict query");
+        }
+        usable.forEach((read, index) => results.set(read, settled[index]));
+      });
+    } catch (error) {
+      for (const read of indexed) if (!results.has(read)) results.set(read, { status: "rejected", reason: error });
+    }
+  })();
+  await Promise.all([...semantic, indexes]);
+  return reads.map((read) => results.get(read));
+}
 async function semanticPort(runtime, language) {
   const existing = runtime.semantic.get(language);
   if (existing) return existing;
-  const failure = runtime.semanticFailed.get(language);
-  if (failure) throw new Error(failure);
-  const { createSemanticAdapter } = await core();
+  const api = await core();
   const languageServerPath = trustedLanguageServers()[language];
-  try {
-    const port = createSemanticAdapter({
-      workspaceId: runtime.root,
-      sourceRoot: runtime.root,
-      scopeDigest: runtime.root,
-      language,
-      ...(languageServerPath ? { languageServerPath } : {}),
-      workerPath: path.join(ROOT_DIR, "workers/semantic/main.mjs"),
-    });
-    runtime.semantic.set(language, port);
-    return port;
-  } catch (error) {
-    runtime.semanticFailed.set(language, error.message);
-    throw error;
+  const port = api.createSemanticAdapter({ workspaceId: runtime.scope.workspaceId, sourceRoot: runtime.root,
+    scopeDigest: runtime.scope.scopeDigest, buildContextDigest: runtime.scope.buildContextDigest,
+    trustedForLanguageTools: runtime.scope.trustedForLanguageTools && typeof languageServerPath === "string" && path.isAbsolute(languageServerPath),
+    language, ...(languageServerPath ? { languageServerPath } : {}), upstreamCommit: "949a27ef1e5fda1a6e7b561e777bcece345c6ffd", workerPath: path.join(ROOT_DIR, "workers/semantic/main.mjs") });
+  runtime.semantic.set(language, port);
+  return port;
+}
+function fileBytes(cache, relativePath) {
+  if (!cache.has(relativePath)) return null;
+  const captured = cache.get(relativePath);
+  if (captured && typeof captured.content === "string") {
+    const bytes = Buffer.from(captured.content, "utf8");
+    if (bytes.byteLength !== captured.byteLength || createHash("sha256").update(bytes).digest("hex") !== captured.contentHash) return null;
+    cache.set(relativePath, bytes);
+    return bytes;
   }
+  return Buffer.isBuffer(captured) ? captured : null;
 }
-
-/** File bytes for byte-to-line conversion, cached only for one read request. */
-async function fileBytes(cache, root, relativePath) {
-  const key = `${root}\u0000${relativePath}`;
-  let bytes = cache.get(key);
-  if (bytes === undefined) {
-    bytes = readFile(path.join(root, relativePath)).catch(() => null);
-    cache.set(key, bytes);
-  }
-  return bytes;
-}
-
-/**
- * Zero-based line range for a half-open byte span.
- *
- * Counting newlines is the only honest conversion: the anchor was produced from
- * byte offsets and the product renders lines, so anything cheaper would be a
- * guess. `endLineExclusive` is the line after the last line the span touches.
- */
-function lineRangeForSpan(bytes, span) {
-  const start = Math.max(0, Math.min(span.startByte, bytes.length));
-  const end = Math.max(start, Math.min(span.endByte, bytes.length));
-  let startLine = 0;
-  for (let index = 0; index < start; index += 1) if (bytes[index] === 0x0a) startLine += 1;
-  let endLine = startLine;
-  for (let index = start; index < end; index += 1) if (bytes[index] === 0x0a) endLine += 1;
-  return { startLine, endLineExclusive: endLine + 1 };
-}
-
-function provenanceFor(component, operation, upstreamCommit, method) {
-  return {
-    backend: BACKEND_BY_COMPONENT[component],
-    operation,
-    // The exact fork the answer came from, so a stale build is visible in the
-    // response instead of being attributed to the pinned source.
-    backendVersion: upstreamCommit ?? "unknown",
-    adapterVersion: ADAPTER_VERSION,
-    executionId: `${component}-${method}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-  };
-}
-
-async function toProductEvidence(item, { component, operation, root, upstreamCommit, index, fileCache }) {
-  const provenance = provenanceFor(component, operation, upstreamCommit, item.method);
+function toProductEvidence(item, { component, operation, root, upstreamCommit, index, fileCache }) {
+  const provenance = { backend: BACKEND[component], operation, backendVersion: upstreamCommit ?? "unknown", adapterVersion: ADAPTER_VERSION, executionId: `${component}-${randomUUID()}` };
   const text = item.text ?? "";
-  if (text.length === 0) return null;
-
-  if (item.anchor === null) {
-    // No canonical anchor means the backend gave prose. It stays prose: inventing
-    // a locator from formatted text is exactly the failure this engine removes.
-    return {
-      typed: false,
-      value: Evidence.makeOpaque({
-        id: `${provenance.executionId}-${index}`,
-        method: "opaque",
-        text,
-        reason: "unsupported_shape",
-        provenance,
-      }),
-    };
-  }
-
-  const bytes = await fileBytes(fileCache, root, item.anchor.relativePath);
-  if (bytes === null) {
-    return {
-      typed: false,
-      value: Evidence.makeOpaque({
-        id: `${provenance.executionId}-${index}`,
-        method: "opaque",
-        text,
-        reason: "unsupported_shape",
-        provenance,
-      }),
-    };
-  }
-
+  if (!text) return null;
+  if (!item.anchor) return { typed: false, value: Evidence.makeOpaque({ id: `${provenance.executionId}-${index}`, text, reason: "unsupported_shape", provenance }) };
+  const bytes = fileBytes(fileCache, item.anchor.relativePath);
+  if (!bytes) return { typed: false, value: Evidence.makeOpaque({ id: `${provenance.executionId}-${index}`, text, reason: "unsupported_shape", provenance }) };
   const range = lineRangeForSpan(bytes, item.anchor.span);
   const alias = item.aliases[0];
-  return {
-    typed: true,
-    value: Evidence.makeEvidence({
-      id: `${provenance.executionId}-${index}`,
-      kind: KIND_TO_PRODUCT[item.kind] ?? "retrieval",
-      method: METHOD_TO_PRODUCT[item.method] ?? "hybrid_retrieval",
-      locator: { rootKey: root, relativePath: item.anchor.relativePath, range },
-      ...(alias ? { subject: { qualifiedName: alias.nativeId, backendNamespace: alias.engine } } : {}),
-      text,
-      sourceCheck: item.sourceCheck === "matched"
-        ? { status: "matched", sha256: item.anchor.contentHash }
-        : { status: "unchecked", reason: "not_requested" },
-      observation: { before: null, after: null, consistency: "unverified" },
-      provenance: [provenance],
-    }),
-  };
+  return { typed: true, value: Evidence.makeEvidence({
+    id: `${provenance.executionId}-${index}`, kind: KIND_TO_PRODUCT[item.kind] ?? "retrieval", method: METHOD_TO_PRODUCT[item.method] ?? "hybrid_retrieval",
+    locator: { rootKey: root, relativePath: item.anchor.relativePath, range },
+    ...(alias ? { subject: { qualifiedName: alias.nativeId, backendId: alias.nativeId, backendNamespace: alias.engine } } : {}),
+    text, textKind: item.textKind ?? "source", anchor: item.anchor, projectionView: item.projectionView, semanticObservation: item.semanticObservation,
+    coverage: item.coverage, relatedAnchors: item.relatedAnchors,
+    sourceCheck: item.sourceCheck === "matched" ? { status: "matched", sha256: item.anchor.contentHash }
+      : { status: item.sourceCheck === "mismatch" ? "mismatch" : "unchecked", reason: "captured source requires current-file verification" },
+    observation: { before: null, after: null, consistency: "unverified" }, provenance: [provenance],
+  }) };
 }
-
-/** Coverage in the control plane is richer than the product's three values. */
-function productCoverage(coverage) {
-  if (!coverage) return "unknown";
-  if (coverage.completeWithinScope === true) return "backend_complete";
-  if (coverage.completeWithinScope === false) return "bounded";
-  return "unknown";
-}
-
-const ISSUE_TO_ERROR_CODE = {
-  invalid_input: "MALFORMED_RESPONSE",
-  ambiguous_subject: "UNRECOGNIZED_RESPONSE",
-  unsupported_capability: "UNSUPPORTED_CAPABILITY",
-  index_building: "INDEX_BUILDING",
-  source_changed: "UNRECOGNIZED_RESPONSE",
-  freshness_unavailable: "INDEX_UNAVAILABLE",
-  deadline: "TIMEOUT",
-  cancelled: "TIMEOUT",
-  protocol_error: "MALFORMED_RESPONSE",
-  worker_failed: "TRANSPORT_CLOSED",
-  needs_recovery: "INDEX_UNAVAILABLE",
-  output_truncated: "OUTPUT_LIMIT",
-};
-
-async function toEnvelope(result, { component, operation, root, upstreamCommit, timing, fileCache }) {
-  const backend = BACKEND_BY_COMPONENT[component];
+const ISSUE_TO_ERROR_CODE = { invalid_input: "MALFORMED_RESPONSE", ambiguous_subject: "UNRECOGNIZED_RESPONSE", unsupported_capability: "UNSUPPORTED_CAPABILITY",
+  index_building: "INDEX_BUILDING", source_changed: "SOURCE_MISMATCH", freshness_unavailable: "INDEX_UNAVAILABLE", deadline: "TIMEOUT", cancelled: "CANCELLED",
+  protocol_error: "MALFORMED_RESPONSE", worker_failed: "TRANSPORT_CLOSED", needs_recovery: "INDEX_UNAVAILABLE", output_truncated: "OUTPUT_LIMIT" };
+function toEnvelope(result, details) {
+  const backend = BACKEND[details.component];
   const blocking = result.issues.find((issue) => issue.code !== "output_truncated");
   if (result.outcome === "error" || result.outcome === "unavailable") {
-    const code = blocking ? ISSUE_TO_ERROR_CODE[blocking.code] ?? "TOOL_ERROR" : "TOOL_ERROR";
-    return failureEnvelope(backend, operation, code, blocking?.message ?? `${backend} read failed`, {
-      outcome: result.outcome,
-      timing,
-    });
+    return failureEnvelope(backend, details.operation, blocking ? ISSUE_TO_ERROR_CODE[blocking.code] ?? "TOOL_ERROR" : "TOOL_ERROR", blocking?.message ?? backend + " read failed", { outcome: result.outcome, timing: details.timing, views: result.views, semanticObservations: result.semanticObservations, issues: result.issues });
   }
-
-  const items = [];
-  const opaque = [];
-  let index = 0;
-  for (const item of result.evidence) {
-    const converted = await toProductEvidence(item, { component, operation, root, upstreamCommit, index: index += 1, fileCache });
-    if (!converted) continue;
-    if (converted.typed) items.push(converted.value);
-    else opaque.push(converted.value);
+  const items = [], opaque = [];
+  for (const [index, item] of result.evidence.entries()) {
+    const converted = toProductEvidence(item, { ...details, index });
+    if (converted) (converted.typed ? items : opaque).push(converted.value);
   }
-
-  return envelope({
-    backend,
-    operation,
-    outcome: result.outcome,
-    items,
-    opaque,
-    coverage: productCoverage(result.coverage),
-    returned: items.length + opaque.length,
-    total: result.coverage?.omitted === null ? null : items.length + opaque.length + (result.coverage?.omitted ?? 0),
-    truncated: result.issues.some((issue) => issue.code === "output_truncated"),
-    timing,
-  });
+  const views = result.views ?? [...new Map(result.evidence.filter((item) => item.projectionView).map((item) => [item.projectionView.viewId, item.projectionView])).values()];
+  const semanticObservations = result.semanticObservations ?? result.evidence.flatMap((item) => item.semanticObservation ? [item.semanticObservation] : []);
+  return envelope({ backend, operation: details.operation, outcome: result.outcome, items, opaque,
+    coverage: result.coverage.completeWithinScope === true ? "backend_complete" : result.coverage.completeWithinScope === false ? "bounded" : "unknown",
+    returned: items.length + opaque.length, total: result.coverage.omitted === null ? null : items.length + opaque.length + result.coverage.omitted,
+    truncated: result.issues.some((issue) => issue.code === "output_truncated") || items.length + opaque.length < result.evidence.length,
+    timing: details.timing, views, semanticObservations, issues: result.issues });
 }
-
-const SEARCH_MODES = { search: "hybrid", auto: "hybrid", context: "hybrid" };
-
-/**
- * One unified read. Mirrors `executeRead`'s contract exactly: it resolves to an
- * envelope for every outcome, including failure, so one degraded backend never
- * discards a sibling's answer.
- */
-export async function unifiedRead(read, input, deadline) {
+export async function unifiedRead(read, input, deadline, lease) {
+  if (read.backend !== "serena" && !lease) {
+    const [settled] = await unifiedStage([read], input, deadline, (selected, pin) => unifiedRead(selected, input, deadline, pin));
+    if (settled.status === "rejected") throw settled.reason;
+    return settled.value;
+  }
   const started = performance.now();
+  const component = COMPONENT[read.backend];
+  const runtime = lease?.runtime ?? await runtimeFor(input.root);
+  const api = await core();
+  const context = { requestId: api.newRequestId(component), signal: deadline.signal, deadlineMonotonicMs: performance.now() + deadline.budget(input.timeoutMs),
+    workspaceId: runtime.scope.workspaceId, maxEvidence: input.limit, maxOutputChars: input.maxChars, maxWireBytes: 1_048_576 };
   const fileCache = new Map();
-  const timing = () => {
-    const totalMs = Math.max(0, Math.round(performance.now() - started));
-    return { prepareMs: 0, queueMs: 0, executeMs: totalMs, totalMs };
-  };
-  const backend = read.backend;
-  const component = backend === "zvec" ? "retrieval" : backend === "codegraph" ? "graph" : "semantic";
-
-  // The index-manager stays the single lifecycle owner in both engine modes. The
-  // unified path is a different *reader*, not a second indexer: two owners would
-  // race on the same derived state. Serena has no derived index, so it is skipped.
-  if (component !== "semantic") {
-    try {
-      deadline.signal?.throwIfAborted();
-      const [ready] = await ensureIndexes(input.root, [backend], { freshness: input.freshness, timeoutMs: input.indexTimeoutMs, signal: deadline.signal });
-      if (ready?.building || ready?.ready !== true) {
-        // Serving a query off a projection that is still being built would return
-        // a confident answer about a partial index.
-        return failureEnvelope(backend, read.operation, ready?.building ? "INDEX_BUILDING" : "INDEX_UNAVAILABLE", ready?.detail ?? ready?.error ?? `${backend} index unavailable`, { timing: timing() });
+  let result, upstreamCommit = null;
+  try {
+    if (component === "retrieval" || component === "graph") {
+      const batch = currentBatch(runtime, component);
+      const view = lease.views[component];
+      for (const source of batch.sources) fileCache.set(source.relativePath, source);
+      if (component === "retrieval") {
+        result = await runtime.retrieval.read({ query: input.query ?? input.symbol ?? "", mode: "hybrid", scope: { ...runtime.scope, canonicalStateRoot: view.storeRoot },
+          view, sources: batch.sources, limit: input.limit }, context);
+        upstreamCommit = runtime.retrieval.supervisor.upstreamCommit;
+      } else {
+        result = await runtime.graph.read({ operation: read.operation === "impact" ? "impact" : read.operation === "architecture" ? "architecture" : "context",
+          query: input.query ?? input.symbol ?? "", subject: input.symbol ? { namePath: input.symbol, relativePath: input.relativePath ?? null, anchor: null, nativeAlias: null } : null,
+          depth: input.depth, view, sources: batch.sources }, context);
+        upstreamCommit = runtime.graphSupervisor.upstreamCommit;
       }
-    } catch (error) {
-      return failureEnvelope(backend, read.operation, "INDEX_UNAVAILABLE", error?.message ?? String(error), { timing: timing() });
+      result = { ...result, views: [view] };
+      if (result.issues?.some((issue) => issue.code === "worker_failed")) noteIndexReadFailure(input.root, read.backend, result.issues.map((issue) => issue.message).join("; "));
+    } else {
+      const language = LANGUAGE_BY_EXTENSION[path.extname(input.relativePath ?? "").toLowerCase()];
+      if (!language) return failureEnvelope("serena", read.operation, "UNSUPPORTED_CAPABILITY", "Cannot determine the language; supply relativePath with a recognized source-file extension.");
+      const port = await semanticPort(runtime, language);
+      result = await port.read({ operation: read.operation, subject: input.symbol ? { namePath: input.symbol, relativePath: input.relativePath ?? null, anchor: null, nativeAlias: null } : null,
+        relativePath: input.relativePath ?? null, includeBody: input.includeBody, depth: input.depth, substringMatching: input.substringMatching, maxMatches: input.limit }, context);
+      const files = [...new Set(result.evidence.flatMap((item) => item.anchor ? [item.anchor.relativePath] : []))];
+      if (files.length) {
+        const sources = await api.captureSourceSnapshots({ workspaceId: runtime.scope.workspaceId, sourceRoot: runtime.root,
+          files, observedSeq: String(observeIndexState(input.root)?.generation ?? 1), scopeDigest: runtime.scope.scopeDigest, ...(await profiles()) });
+        for (const source of sources) fileCache.set(source.relativePath, source);
+      }
     }
-  }
-
-  let runtime;
-  try {
-    runtime = await runtimeFor(input.root);
+    const stale = result.evidence.filter((item) => item.anchor && fileCache.get(item.anchor.relativePath)?.contentHash !== item.anchor.contentHash);
+    if (stale.length) {
+      const rejected = new Set(stale);
+      result = { ...result, outcome: "partial", evidence: result.evidence.filter((item) => !rejected.has(item)),
+        coverage: { ...result.coverage, completeWithinScope: false },
+        issues: [...result.issues, { code: "source_changed", message: "Evidence no longer matches the captured source bytes", retryable: true }] };
+    }
+    const totalMs = Math.max(0, Math.round(performance.now() - started));
+    return toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit, fileCache, timing: { prepareMs: 0, queueMs: 0, executeMs: totalMs, totalMs } });
   } catch (error) {
-    return failureEnvelope(backend, read.operation, "INDEX_UNAVAILABLE", error.message, { timing: timing() });
-  }
-
-  const { newRequestId } = await core();
-  const context = {
-    requestId: newRequestId(component),
-    signal: deadline.signal,
-    deadlineMonotonicMs: performance.now() + deadline.budget(input.timeoutMs),
-    workspaceId: input.root,
-    maxEvidence: input.limit,
-    maxOutputChars: input.maxChars,
-    maxWireBytes: 1_048_576,
-  };
-
-  try {
-    if (component === "retrieval") {
-      const result = await runtime.retrieval.read({
-        query: input.query ?? input.symbol ?? "",
-        mode: SEARCH_MODES[read.operation] ?? "hybrid",
-        scope: { workspaceId: input.root, canonicalSourceRoot: input.root, canonicalStateRoot: input.root, scopeDigest: input.root, buildContextDigest: null, trustedForLanguageTools: false },
-        view: null,
-        limit: input.limit,
-      }, context);
-      return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: runtime.retrieval.supervisor.upstreamCommit, timing: timing(), fileCache });
-    }
-
-    if (component === "graph") {
-      const result = await runtime.graph.read({
-        operation: read.operation === "impact" ? "impact" : read.operation === "architecture" ? "architecture" : "context",
-        query: input.query ?? input.symbol ?? "",
-        subject: input.symbol ? { namePath: input.symbol, relativePath: input.relativePath ?? null, anchor: null, nativeAlias: null } : null,
-        depth: input.depth,
-        view: { projection: "graph", viewId: input.root, appliedManifestId: input.root, profileDigest: "live", state: "clean" },
-      }, context);
-      return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: runtime.graphSupervisor.upstreamCommit, timing: timing(), fileCache });
-    }
-
-    // The language decides which server answers, so it comes from the file under
-    // question rather than from a global default that would silently ask the
-    // wrong server about the wrong file.
-    const extension = path.extname(input.relativePath ?? "").toLowerCase();
-    const language = LANGUAGE_BY_EXTENSION[extension];
-    if (!language) {
-      return failureEnvelope(
-        backend,
-        read.operation,
-        "UNSUPPORTED_CAPABILITY",
-        "Cannot determine the language for this semantic request; supply relativePath with a recognized source-file extension.",
-        { timing: timing() },
-      );
-    }
-    const port = await semanticPort(runtime, language);
-    const result = await port.read({
-      operation: read.operation === "references" ? "references" : read.operation === "implementations" ? "implementations" : read.operation === "diagnostics" ? "diagnostics" : "symbol",
-      subject: input.symbol ? { namePath: input.symbol, relativePath: input.relativePath ?? null, anchor: null, nativeAlias: null } : null,
-      relativePath: input.relativePath ?? null,
-      includeBody: input.includeBody,
-    }, context);
-    return await toEnvelope(result, { component, operation: read.operation, root: input.root, upstreamCommit: null, timing: timing(), fileCache });
-  } catch (error) {
-    // A throw here is a bug in the bridge or a dead worker, never a backend
-    // answer. It degrades this one read; the engine keeps the others.
-    return failureEnvelope(backend, read.operation, "TRANSPORT_CLOSED", error?.message ?? String(error), { timing: timing() });
+    if (deadline.signal.aborted) throw error;
+    return failureEnvelope(read.backend, read.operation, "TRANSPORT_CLOSED", error.message);
   }
 }
-
-export async function embeddedLifecycle(root, backend, operation, options = {}, details = {}) {
+export async function unifiedSemanticStatus(root) {
   const runtime = await runtimeFor(root);
-  const { newRequestId } = await core();
-  const signal = options.signal ?? new AbortController().signal;
-  const timeoutMs = Math.max(1, options.timeoutMs ?? 120_000);
-  const context = {
-    requestId: newRequestId(backend === "zvec" ? "retrieval" : "graph"),
-    signal,
-    deadlineMonotonicMs: performance.now() + timeoutMs,
-    workspaceId: root,
-  };
-  const supervisor = backend === "zvec" ? runtime.retrieval.supervisor : runtime.graphSupervisor;
-  const callOperation = backend === "zvec" ? (operation === "probe" ? "info" : "index") : operation;
-  const payload = backend === "zvec"
-    ? { root, options: { ...((options.embedding ?? details.embedding) ? { embedding: await (options.embedding ?? details.embedding) } : {}), ...(operation === "rebuild" ? { rebuild: true } : {}) } }
-    : { root };
-  const result = await supervisor.call(callOperation, payload, context);
-  if (!result.ok) {
-    if (operation === "probe") return { present: false, ready: false, building: false, detail: result.message };
-    throw new Error(result.message);
-  }
-  if (operation === "probe") {
-    if (backend === "zvec") {
-      const info = result.payload;
-      const status = info.status;
-      const building = Boolean(status && status.filesPending > 0);
-      return {
-        present: Boolean(info.indexed),
-        ready: Boolean(info.indexed) && !building,
-        building,
-        detail: status ? JSON.stringify({ filesPending: status.filesPending, filesFailed: status.filesFailed }) : info.suggestion ?? null,
-      };
-    }
-    const stats = result.payload?.stats ?? result.payload;
-    return { present: true, ready: true, building: false, detail: JSON.stringify(stats) };
-  }
-  return result.payload;
+  return { backend: "serena", ok: true, configuredLanguages: Object.keys(trustedLanguageServers()), activeLanguages: [...runtime.semantic.keys()] };
 }
-
-/** Release every worker process. Safe to call when nothing was ever started. */
+export async function repairUnifiedSemantic(root) {
+  const runtime = await runtimeFor(root);
+  const ports = [...runtime.semantic.values()];
+  runtime.semantic.clear();
+  await Promise.all(ports.map((port) => port.close()));
+  return { backend: "serena", ok: true, action: "repair", building: false };
+}
 export async function closeUnified() {
-  const pending = [...runtimes.values()];
+  const entries = [...runtimes.values()];
   runtimes.clear();
-
-  for (const entry of pending) {
+  await Promise.all(entries.map(async (pending) => {
+    let runtime;
     try {
-      const runtime = await entry;
-      await runtime.retrieval.close();
-      await runtime.graphSupervisor.close();
-      for (const port of runtime.semantic.values()) await port.close();
-    } catch (error) {
-      log("warn", "unified runtime shutdown failed", { error: error?.message ?? String(error) });
-    }
-  }
+      runtime = await pending;
+      runtime.closed = true;
+      await Promise.all([runtime.retrieval.close(), runtime.graphSupervisor.close(), ...[...runtime.semantic.values()].map((port) => port.close())]);
+      await runtime.sync;
+      await runtime.publication.close();
+    } catch (error) { log("warn", "unified runtime shutdown failed", { error: error.message }); }
+    finally { if (runtime) await runtime.scope.release(); }
+  }));
 }
-
-/** Exposed for the contract test: byte spans must render as the lines they cover. */
-export const __internals = { lineRangeForSpan, METHOD_TO_PRODUCT, KIND_TO_PRODUCT };
+export const __internals = { lineRangeForSpan, METHOD_TO_PRODUCT, KIND_TO_PRODUCT, runtimeFor };

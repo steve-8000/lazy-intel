@@ -1,0 +1,699 @@
+{
+  "schema_version": 1,
+  "source": "lazy-intel-unified-source-design/acceptance.json",
+  "generated_at": "2026-09-21T21:26:35.573Z",
+  "legend": {
+    "met": "verified against the live path with the named evidence",
+    "met_isolated": "component verified, but the component is not yet the gate in the default path",
+    "partial": "part of the claim is verified; the remainder is named",
+    "unverified": "no evidence exists in this repository"
+  },
+  "tally": {
+    "met": 44,
+    "partial": 12,
+    "unverified": 6,
+    "met_isolated": 6
+  },
+  "items": [
+    {
+      "id": "SRC-01",
+      "group": "SRC",
+      "name": "commit pin",
+      "expected": "Tag/main drift cannot silently change source.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": null,
+      "evidence": "scripts/verify-release.mjs::pin-agreement; scripts/verify-vendor.mjs"
+    },
+    {
+      "id": "SRC-02",
+      "group": "SRC",
+      "name": "blob hash",
+      "expected": "Mapped source bytes match expected Git blob.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": null,
+      "evidence": "scripts/verify-vendor.mjs (blob per file); test/contracts/headless-entries.test.js::every vendored tree matches its UPSTREAM.json ledger"
+    },
+    {
+      "id": "SRC-03",
+      "group": "SRC",
+      "name": "anchor location",
+      "expected": "Declared source anchors exist at reported actual lines.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": null,
+      "evidence": "design verify_sources.py anchors, docs/unified/source-checks.json"
+    },
+    {
+      "id": "SRC-04",
+      "group": "SRC",
+      "name": "inventory upgrade",
+      "expected": "Inventory-only source is read before edit.",
+      "owner_unit": "U00",
+      "status": "partial",
+      "result": null,
+      "evidence": "patched files carry original_blob in UPSTREAM.json local_patches; 19 inventory-grade paths were never read in full"
+    },
+    {
+      "id": "SRC-05",
+      "group": "SRC",
+      "name": "distribution parity",
+      "expected": "Tag source vs package distribution is recorded.",
+      "owner_unit": "U00",
+      "status": "met",
+      "result": null,
+      "evidence": "docs/unified/distribution-provenance.json: both Node distributions reproduced byte-for-byte from the pinned source"
+    },
+    {
+      "id": "SRC-06",
+      "group": "SRC",
+      "name": "license closure",
+      "expected": "Notices and runtime/grammar/model licenses retained.",
+      "owner_unit": "U00",
+      "status": "partial",
+      "result": null,
+      "evidence": "THIRD_PARTY_NOTICES.md covers direct deps; docs/unified/dependency-audit.json DEP-3 Python transitive licences unresolved"
+    },
+    {
+      "id": "BUILD-01",
+      "group": "BUILD",
+      "name": "ESM and CJS",
+      "expected": "Both fork entries import without package-mode mismatch.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/headless-entries.test.js::the fork entries expose the surface the workers are typed against"
+    },
+    {
+      "id": "BUILD-02",
+      "group": "BUILD",
+      "name": "headless import",
+      "expected": "No CLI, MCP listener, watcher or GUI starts during import.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/headless-entries.test.js::importing either fork entry starts no server, watcher, worker or timer"
+    },
+    {
+      "id": "BUILD-03",
+      "group": "BUILD",
+      "name": "assets",
+      "expected": "SQL/WASM/native files resolve in installed layout.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": null,
+      "evidence": "verify-release::unified-query runs the real sqlite/wasm assets from the built layout"
+    },
+    {
+      "id": "BUILD-04",
+      "group": "BUILD",
+      "name": "Python closure",
+      "expected": "Read API imports without fake/stub dependencies.",
+      "owner_unit": "U02",
+      "status": "met",
+      "result": null,
+      "evidence": "workers/semantic/.venv resolves real serena; test/contracts/semantic-adapter.test.js frames a real child"
+    },
+    {
+      "id": "BUILD-05",
+      "group": "BUILD",
+      "name": "model ownership",
+      "expected": "Borrowed model not closed by one workspace.",
+      "owner_unit": "U02",
+      "status": "unverified",
+      "result": null,
+      "evidence": "no test asserts that one workspace closing a borrowed embedding model leaves another workspace usable"
+    },
+    {
+      "id": "BUILD-06",
+      "group": "BUILD",
+      "name": "offline start",
+      "expected": "Post-setup normal start makes no unintended network requests.",
+      "owner_unit": "U02",
+      "status": "partial",
+      "result": null,
+      "evidence": "verify-release::no-query-time-install proves installer/updater modules are unreachable; no test asserts network silence at runtime"
+    },
+    {
+      "id": "RUN-01",
+      "group": "RUN",
+      "name": "building guard",
+      "expected": "No sync/query begins under a building result.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/index-manager.test.js::a building observation is not success or a failure"
+    },
+    {
+      "id": "RUN-02",
+      "group": "RUN",
+      "name": "UTF8 chunks",
+      "expected": "Korean/emoji split across pipe chunks is unchanged.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/process.test.js::run decodes UTF-8 code points split across byte chunks"
+    },
+    {
+      "id": "RUN-03",
+      "group": "RUN",
+      "name": "source spaces",
+      "expected": "Indentation/trailing newline are not trimmed by transport.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/process.test.js::run preserves raw stdout indentation and trailing newline"
+    },
+    {
+      "id": "RUN-04",
+      "group": "RUN",
+      "name": "abort reaping",
+      "expected": "Caller settles; owned stubborn child is eventually reaped.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/process.test.js::abort escalates through SIGKILL and reaps a SIGTERM-resistant child"
+    },
+    {
+      "id": "RUN-05",
+      "group": "RUN",
+      "name": "shared cancel",
+      "expected": "One caller abort does not cancel another shared waiter.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/worker-lifecycle.test.js::a cancelled caller is released while the worker keeps serving everyone else"
+    },
+    {
+      "id": "RUN-06",
+      "group": "RUN",
+      "name": "late epoch",
+      "expected": "Old worker result cannot satisfy new session request.",
+      "owner_unit": "U03",
+      "status": "partial",
+      "result": null,
+      "evidence": "test/faults/semantic-correlation.test.js covers id mismatch inside one session; no epoch fence across a worker restart"
+    },
+    {
+      "id": "RUN-07",
+      "group": "RUN",
+      "name": "partial required failure",
+      "expected": "Auxiliary hits cannot disguise failed required operation.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/fusion.test.js::degraded backend is surfaced without failing good evidence; host probe returned required_backend_failed"
+    },
+    {
+      "id": "RUN-08",
+      "group": "RUN",
+      "name": "backpressure",
+      "expected": "Queue and response bytes remain within configured limits.",
+      "owner_unit": "U03",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/worker-lifecycle.test.js::an oversized response is reported as a bound, never silently truncated"
+    },
+    {
+      "id": "WS-01",
+      "group": "WS",
+      "name": "root symlink",
+      "expected": "Canonical source root/path cannot escape policy.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/security.test.js::request roots reject sibling prefixes and symlink escapes before indexing"
+    },
+    {
+      "id": "WS-02",
+      "group": "WS",
+      "name": "state separation",
+      "expected": "sourceRoot is never replaced with stateRoot.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/workspace-scope.test.js::workspace scope separates source and state"
+    },
+    {
+      "id": "WS-03",
+      "group": "WS",
+      "name": "multiple process owner",
+      "expected": "Two lazy-intel instances cannot independently write one root.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/workspace-scope.test.js::a lock whose holder is dead is reclaimed"
+    },
+    {
+      "id": "WS-04",
+      "group": "WS",
+      "name": "legacy daemon",
+      "expected": "No lease bypass or unsolicited machine daemon restart.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/headless-entries.test.js::the zvec fork entry cannot reach the CLI, MCP server or daemon"
+    },
+    {
+      "id": "WS-05",
+      "group": "WS",
+      "name": "watch loss",
+      "expected": "Null filename/error/loss triggers reconciliation.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/index-manager.test.js::a null-filename watcher event marks the generation dirty"
+    },
+    {
+      "id": "WS-06",
+      "group": "WS",
+      "name": "new directory",
+      "expected": "Files inside a newly created directory are included.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/index-manager.test.js exercises files created inside a new directory"
+    },
+    {
+      "id": "WS-07",
+      "group": "WS",
+      "name": "rename/delete",
+      "expected": "Old vectors/graph references are not silently retained.",
+      "owner_unit": "U04",
+      "status": "met",
+      "result": null,
+      "evidence": "test/parity/graph.test.js::snapshot graph updates match stock deletion, rename, and definition rebind"
+    },
+    {
+      "id": "WS-08",
+      "group": "WS",
+      "name": "ignore/build config",
+      "expected": "Relevant policy changes invalidate required projections.",
+      "owner_unit": "U04",
+      "status": "unverified",
+      "result": null,
+      "evidence": "no test asserts that changing .gitignore/tsconfig invalidates the affected projections"
+    },
+    {
+      "id": "SEM-01",
+      "group": "SEM",
+      "name": "name_path overload",
+      "expected": "Current overload naming and ambiguity behavior retained.",
+      "owner_unit": "U05",
+      "status": "partial",
+      "result": null,
+      "evidence": "test/evidence.test.js::dedupe preserves overloads covers merge; name_path ambiguity resolution itself is untested"
+    },
+    {
+      "id": "SEM-02",
+      "group": "SEM",
+      "name": "references semantics",
+      "expected": "Containing symbols and source locations match intended old contract.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/unified-engine.test.js::a configured language server serves anchored semantic evidence; host probe references ok on both roots"
+    },
+    {
+      "id": "SEM-03",
+      "group": "SEM",
+      "name": "document version",
+      "expected": "Own LSP buffer/hash/version recorded; foreign editor state not invented.",
+      "owner_unit": "U05",
+      "status": "partial",
+      "result": null,
+      "evidence": "packages/core/src/evidence/identity.ts records our own content hash; no assertion about foreign editor buffer state"
+    },
+    {
+      "id": "SEM-04",
+      "group": "SEM",
+      "name": "coordinate codec",
+      "expected": "UTF8/UTF16, zero/one-based, CRLF and emoji convert correctly.",
+      "owner_unit": "U05",
+      "status": "partial",
+      "result": null,
+      "evidence": "test/contracts/unified-engine.test.js covers UTF-8 byte spans and multi-byte lines; UTF-16/CRLF conversion untested"
+    },
+    {
+      "id": "SEM-05",
+      "group": "SEM",
+      "name": "SourceKit launch",
+      "expected": "Only canonical trusted executable is launched.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": null,
+      "evidence": "test/security.test.js::repo cwd and PATH cannot select Serena; explicit absolute overrides are canonical"
+    },
+    {
+      "id": "SEM-06",
+      "group": "SEM",
+      "name": "missing build context",
+      "expected": "No false exact/complete result when toolchain context missing.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": null,
+      "evidence": "test/faults/stale-source.test.js::a symbol request without a source path is refused instead of assuming TypeScript"
+    },
+    {
+      "id": "SEM-07",
+      "group": "SEM",
+      "name": "capability missing",
+      "expected": "Unsupported operation is unavailable, not empty.",
+      "owner_unit": "U05",
+      "status": "met",
+      "result": null,
+      "evidence": "test/contracts/worker-lifecycle.test.js::an unsupported operation is rejected without killing the worker"
+    },
+    {
+      "id": "SEM-08",
+      "group": "SEM",
+      "name": "diagnostics completion",
+      "expected": "No-message and successful empty diagnostic report distinguished.",
+      "owner_unit": "U05",
+      "status": "unverified",
+      "result": null,
+      "evidence": "diagnostics is reported unsupported_capability, so the no-message vs clean-report distinction does not exist yet"
+    },
+    {
+      "id": "STATE-01",
+      "group": "STATE",
+      "name": "captured manifest",
+      "expected": "All prepared records reference the same captured bytes they claim.",
+      "owner_unit": "U06",
+      "status": "met_isolated",
+      "result": null,
+      "evidence": "test/parity/extraction.test.js::snapshot bytes win when disk content differs"
+    },
+    {
+      "id": "STATE-02",
+      "group": "STATE",
+      "name": "before mutation crash",
+      "expected": "Unapplied journal recovered safely.",
+      "owner_unit": "U06",
+      "status": "met_isolated",
+      "result": null,
+      "evidence": "test/faults/publication.test.js::recovers before-component-write"
+    },
+    {
+      "id": "STATE-03",
+      "group": "STATE",
+      "name": "graph first crash",
+      "expected": "Graph changed/retrieval old does not publish coherent success.",
+      "owner_unit": "U06",
+      "status": "met_isolated",
+      "result": null,
+      "evidence": "test/faults/publication.test.js::recovers after-component-write-before-ack"
+    },
+    {
+      "id": "STATE-04",
+      "group": "STATE",
+      "name": "retrieval partial crash",
+      "expected": "Partly replaced vector store is not served as old clean view.",
+      "owner_unit": "U06",
+      "status": "met_isolated",
+      "result": null,
+      "evidence": "test/faults/publication.test.js::recovers before-catalog-publication"
+    },
+    {
+      "id": "STATE-05",
+      "group": "STATE",
+      "name": "after ack crash",
+      "expected": "Replay does not duplicate data and can reconstruct publication.",
+      "owner_unit": "U06",
+      "status": "met_isolated",
+      "result": null,
+      "evidence": "test/faults/publication.test.js::recovers after-catalog-publication"
+    },
+    {
+      "id": "STATE-06",
+      "group": "STATE",
+      "name": "same handle read/write",
+      "expected": "Reads cannot observe own uncommitted mutation accidentally.",
+      "owner_unit": "U06",
+      "status": "met_isolated",
+      "result": null,
+      "evidence": "test/faults/publication.test.js::mixed applied manifests are reported and coherent reads are refused"
+    },
+    {
+      "id": "STATE-07",
+      "group": "STATE",
+      "name": "strict source change",
+      "expected": "Source changed during strict query produces honest state.",
+      "owner_unit": "U06",
+      "status": "partial",
+      "result": null,
+      "evidence": "test/index-manager.test.js::dirtiness is unknown until this process establishes a baseline; strict-query mid-edit is untested"
+    },
+    {
+      "id": "STATE-08",
+      "group": "STATE",
+      "name": "rebuild rollback",
+      "expected": "Staged rebuild can roll back without reusing migrated old state.",
+      "owner_unit": "U06",
+      "status": "unverified",
+      "result": null,
+      "evidence": "no staged-rebuild rollback test"
+    },
+    {
+      "id": "IR-01",
+      "group": "IR",
+      "name": "syntax coverage",
+      "expected": "Native/WASM/language extraction retained against golden corpus.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": null,
+      "evidence": "test/parity/extraction.test.js::snapshot extraction preserves complete structures for enabled languages"
+    },
+    {
+      "id": "IR-02",
+      "group": "IR",
+      "name": "non-code input",
+      "expected": "Markdown/config/text extraction remains available.",
+      "owner_unit": "U07",
+      "status": "partial",
+      "result": null,
+      "evidence": "docs/unified/parser-convergence.json limits convergence to measured languages; non-code extraction is not asserted"
+    },
+    {
+      "id": "IR-03",
+      "group": "IR",
+      "name": "embedding text",
+      "expected": "Source/body/signature metadata changes are measured against baseline.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": null,
+      "evidence": "test/parity/retrieval.test.js::prepared snapshot input matches stock extraction and vector composition"
+    },
+    {
+      "id": "IR-04",
+      "group": "IR",
+      "name": "definitionDelta",
+      "expected": "Unchanged files rebind after target declaration changes.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": null,
+      "evidence": "test/parity/graph.test.js covers definition rebind"
+    },
+    {
+      "id": "IR-05",
+      "group": "IR",
+      "name": "framework passes",
+      "expected": "Post-extract/conformance/deferred resolution still executes.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": null,
+      "evidence": "test/parity/graph.test.js matches stock output, which runs the framework passes"
+    },
+    {
+      "id": "IR-06",
+      "group": "IR",
+      "name": "fresh vs incremental store",
+      "expected": "Fresh-only StoreWriter not used as generic update shortcut.",
+      "owner_unit": "U07",
+      "status": "partial",
+      "result": null,
+      "evidence": "prepared.ts uses the fresh path only for fresh builds; no test forces the incremental route to prove the distinction"
+    },
+    {
+      "id": "IR-07",
+      "group": "IR",
+      "name": "parser ABI",
+      "expected": "No forced incompatible grammar/runtime hoisting.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": null,
+      "evidence": "vendor lockfiles pinned per package; verify-vendor::PASS"
+    },
+    {
+      "id": "IR-08",
+      "group": "IR",
+      "name": "parse count",
+      "expected": "Single parsing only asserted for measured parity-enabled routes.",
+      "owner_unit": "U07",
+      "status": "met",
+      "result": null,
+      "evidence": "verify-release::parser-convergence asserts single-parse only where measured"
+    },
+    {
+      "id": "EVID-01",
+      "group": "EVID",
+      "name": "explicit primitive",
+      "expected": "No hidden operation change or extra semantic inference.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/plan.test.js::an explicit primitive performs exactly one semantic read"
+    },
+    {
+      "id": "EVID-02",
+      "group": "EVID",
+      "name": "bounded auto",
+      "expected": "At most documented dependent stage, no agent loop.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/plan.test.js::auto stays within two logical reads and one dependent stage"
+    },
+    {
+      "id": "EVID-03",
+      "group": "EVID",
+      "name": "fixed context",
+      "expected": "Fixed composite plan, not heuristic stop-on-first-hit.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/plan.test.js::context is a declared composite with a gated second stage"
+    },
+    {
+      "id": "EVID-04",
+      "group": "EVID",
+      "name": "identity conflict",
+      "expected": "Same name in another scope/revision is not merged.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/evidence.test.js::dedupe preserves overloads, modules, claims, and merges only true duplicates"
+    },
+    {
+      "id": "EVID-05",
+      "group": "EVID",
+      "name": "coverage",
+      "expected": "Ranked samples and exhaustive/truncated search remain distinct.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/context-pack.test.js::observation span distinguishes concurrent and unverified observations"
+    },
+    {
+      "id": "EVID-06",
+      "group": "EVID",
+      "name": "empty distinction",
+      "expected": "Zero-result protocol success differs from empty broken output.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/backends.test.js::blank zvec output is malformed, never empty"
+    },
+    {
+      "id": "EVID-07",
+      "group": "EVID",
+      "name": "output bounds",
+      "expected": "Headers/body/warnings and wire limits all accounted.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/fusion.test.js::the character budget covers the whole response, not each section"
+    },
+    {
+      "id": "EVID-08",
+      "group": "EVID",
+      "name": "MCP compatibility",
+      "expected": "One code_intel and existing envelope/control keys preserved.",
+      "owner_unit": "U08",
+      "status": "met",
+      "result": null,
+      "evidence": "test/mcp-smoke.test.js::stdio MCP exposes exactly one tool; host probe tools/list == [code_intel]"
+    },
+    {
+      "id": "REL-01",
+      "group": "REL",
+      "name": "baseline test suites",
+      "expected": "Existing applicable security/index/cancel suites pass.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": null,
+      "evidence": "npm test: 113 tests, 112 pass, 0 fail, 1 skip"
+    },
+    {
+      "id": "REL-02",
+      "group": "REL",
+      "name": "real backend parity",
+      "expected": "Same source/model/code comparisons have saved evidence.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": null,
+      "evidence": "lazy-intel-preflight/ab-real-repo.mjs saved legacy vs unified evidence on a real repository"
+    },
+    {
+      "id": "REL-03",
+      "group": "REL",
+      "name": "real OMP",
+      "expected": "Install/upgrade/abort/multi-root use works with one tool.",
+      "owner_unit": "U09",
+      "status": "partial",
+      "result": null,
+      "evidence": "host probe drove the registered stdio server over 2 roots x 7 operations in both engines; install and upgrade paths were not exercised"
+    },
+    {
+      "id": "REL-04",
+      "group": "REL",
+      "name": "performance",
+      "expected": "Cold/restart/warm/dirty latency and memory measured separately.",
+      "owner_unit": "U09",
+      "status": "unverified",
+      "result": null,
+      "evidence": "no cold/restart/warm/dirty latency and memory matrix; only per-operation wall time"
+    },
+    {
+      "id": "REL-05",
+      "group": "REL",
+      "name": "quality non-regression",
+      "expected": "Critical source anchors preserved; quality thresholds preregistered.",
+      "owner_unit": "U09",
+      "status": "partial",
+      "result": null,
+      "evidence": "A/B kept anchors and raised verified counts; no preregistered quality threshold"
+    },
+    {
+      "id": "REL-06",
+      "group": "REL",
+      "name": "no source writes",
+      "expected": "Semantic read path cannot edit source or execute arbitrary commands.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": null,
+      "evidence": "test/security.test.js::source paths cannot escape a permitted root; the semantic read API exposes no edit or shell operation"
+    },
+    {
+      "id": "REL-07",
+      "group": "REL",
+      "name": "rollback",
+      "expected": "Old binary+state path restored in an exercised rollback.",
+      "owner_unit": "U09",
+      "status": "met",
+      "result": null,
+      "evidence": "verify-release::rollback-switch; host probe ran both engines from the same registration"
+    },
+    {
+      "id": "REL-08",
+      "group": "REL",
+      "name": "final source integration",
+      "expected": "Default path uses local fork APIs and shared inputs, not three products.",
+      "owner_unit": "U09",
+      "status": "unverified",
+      "result": null,
+      "evidence": "the default path is still legacy, so the shipped default does not use the fork APIs"
+    }
+  ]
+}

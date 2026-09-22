@@ -16,6 +16,7 @@ import {
   EngineError,
   errorDetails,
 } from "../errors.js";
+import type { PreparedSnapshotBatch, PreparedSnapshotResult } from "../pipeline/indexing/prepared.js";
 import {
   createEmbeddingModel,
   EmbeddingPurpose,
@@ -206,7 +207,7 @@ class ZvecGrepService implements ZvecGrep {
       root,
       this.options.daemonInstanceToken,
     );
-    const location = workspaceIndexLocation(root);
+    const location = workspaceIndexLocation(root, options.stateRoot ?? this.options.stateRoot);
     try {
       return await this.withEmbeddingModelOperation(() =>
         withHomeWriteLock(
@@ -335,6 +336,42 @@ class ZvecGrepService implements ZvecGrep {
     }
   }
 
+  async indexPrepared(options: { stateRoot: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult> {
+    this.ensureOpen();
+    const root = this.root;
+    const location = workspaceIndexLocation(root, options.stateRoot);
+    return await this.withEmbeddingModelOperation(() =>
+      withHomeWriteLock(location.home, "indexPrepared", async () => {
+        const existing = readWorkspaceManifest(location.home);
+        const existingRuntime = existing?.embeddingRuntime ?? {};
+        const embeddingModel = this.embeddingModelForIndex(existing, "indexPrepared", existingRuntime);
+        if (isWorkspaceIndexed(existing)) {
+          assertWorkspaceEmbeddingMatchesCurrentModel(existing, embeddingModel, "prepared snapshot apply");
+        }
+        const effectiveRuntime = effectiveEmbeddingRuntime(
+          this.options,
+          embeddingModel,
+          runtimeForModelProvider(existing, embeddingModel, existingRuntime),
+        );
+        const rootPaths = existing?.rootPaths ?? validateRootPaths([root]);
+        const manifest = prepareWorkspaceManifest(
+          location,
+          existing,
+          rootPaths,
+          embeddingModel,
+          embeddingRuntimeAfterIndex(existing, existingRuntime, embeddingModel, effectiveRuntime, this.options),
+        );
+        const workspaceIndex = new WorkspaceIndex(manifest, { mode: "write", embeddingModel });
+        try {
+          const result = await workspaceIndex.indexPrepared(options.batch);
+          writeWorkspaceManifest(location.home, { ...manifest, updatedTime: Date.now() });
+          return result;
+        } finally {
+          workspaceIndex.close();
+        }
+      }),
+    );
+  }
   async dropIndex(options: ZvecGrepInfoOptions = {}): Promise<boolean> {
     this.ensureOpen();
     const root = resolveZvecGrepRoot(options.root ?? this.root);
@@ -342,7 +379,7 @@ class ZvecGrepService implements ZvecGrep {
       root,
       this.options.daemonInstanceToken,
     );
-    const location = workspaceIndexLocation(root);
+    const location = workspaceIndexLocation(root, options.stateRoot ?? this.options.stateRoot);
     try {
       if (!readWorkspaceManifest(location.home)) {
         return false;
@@ -366,7 +403,7 @@ class ZvecGrepService implements ZvecGrep {
       root,
       this.options.daemonInstanceToken,
     );
-    const location = workspaceIndexLocation(root);
+    const location = workspaceIndexLocation(root, options.stateRoot ?? this.options.stateRoot);
     try {
       await withHomeWriteLock(location.home, "index.disable", async () => {
         const existing = readWorkspaceManifest(location.home);
@@ -381,7 +418,7 @@ class ZvecGrepService implements ZvecGrep {
           embedding: null,
           indexVersion: null,
           createdTime: existing?.createdTime ?? now,
-          updatedTime: now,
+          updatedTime: existing?.updatedTime ?? now,
           embeddingRuntime: existing?.embeddingRuntime ?? {},
         });
       });
@@ -412,12 +449,21 @@ class ZvecGrepService implements ZvecGrep {
     const request = normalizeContextRequest(options);
 
     const startRoot = resolveZvecGrepRoot(options.root ?? this.root);
+    const stateRoot = options.stateRoot ?? this.options.stateRoot;
     if (options.rg) {
       return this.contextFromRg(startRoot, request, options, timings);
     }
 
-    assertNearestWorkspaceHomeUnlocked(startRoot, "context");
-    const nearest = findNearestWorkspaceIndex(startRoot);
+    if (stateRoot === undefined) {
+      assertNearestWorkspaceHomeUnlocked(startRoot, "context");
+    }
+    const nearest = stateRoot !== undefined
+      ? (() => {
+          const location = workspaceIndexLocation(startRoot, stateRoot);
+          const info = readWorkspaceManifest(location.home);
+          return info ? { location, info } : null;
+        })()
+      : findNearestWorkspaceIndex(startRoot);
     if (nearest) {
       const { location, info } = nearest;
       if (info.indexPolicy === "disabled") {
@@ -446,11 +492,20 @@ class ZvecGrepService implements ZvecGrep {
   async info(options: ZvecGrepInfoOptions = {}): Promise<ZvecGrepInfoResult> {
     this.ensureOpen();
     const startRoot = resolveZvecGrepRoot(options.root ?? this.root);
-    assertNearestWorkspaceHomeUnlocked(startRoot, "info");
-    const nearest = findNearestWorkspaceIndex(startRoot);
+    const stateRoot = options.stateRoot ?? this.options.stateRoot;
+    if (stateRoot === undefined) {
+      assertNearestWorkspaceHomeUnlocked(startRoot, "info");
+    }
+    const nearest = stateRoot !== undefined
+      ? (() => {
+          const location = workspaceIndexLocation(startRoot, stateRoot);
+          const info = readWorkspaceManifest(location.home);
+          return info ? { location, info } : null;
+        })()
+      : findNearestWorkspaceIndex(startRoot);
 
     if (!nearest) {
-      const location = workspaceIndexLocation(startRoot);
+      const location = workspaceIndexLocation(startRoot, stateRoot);
 
       return {
         root: startRoot,

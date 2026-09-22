@@ -3,7 +3,6 @@ import { codeIntel } from "../engine.js";
 import { bootstrapRoot, closeIndexManager } from "../index-manager.js";
 import { log } from "../lib/log.js";
 import { bootRoot } from "../lib/roots.js";
-import { closeSerena } from "../backends/serena.js";
 import { closeUnified } from "../unified.js";
 import { ERROR_CODES } from "../contracts.js";
 import { WIRE_CAP_BYTES as CONTEXT_WIRE_CAP_BYTES } from "../context-pack.js";
@@ -160,7 +159,6 @@ export function startMcpServer() {
     for (const record of controllers.values()) record.controller.abort();
     controllers.clear();
     queue.length = 0;
-    closeSerena();
     closeIndexManager();
     // Worker processes outlive their parent's stdin unless they are released, and
     // an orphaned worker keeps a workspace lock nobody can reclaim.

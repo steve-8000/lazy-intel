@@ -1,7 +1,10 @@
 {
   "unit": "U06",
   "title": "Captured manifests, read gates and crash recovery",
-  "status": "complete",
+  "status": "superseded",
+  "record_kind": "historical_implementation_checkpoint_not_current_acceptance",
+  "superseded_by": "docs/unified/acceptance-evidence.json",
+  "current_architecture": "docs/unified/migration-state.json",
   "newPaths": [
     "packages/core/src/workspace/publication.ts",
     "test/faults/publication.test.js"

@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "criteria": {
+    "BUILD-05": {
+      "status": "PASS",
+      "observations": [
+        "Two real zvec-grep services indexed and queried separate temporary workspaces while sharing one borrowed embedding model.",
+        "Closing service A before indexing and querying service B succeeded; closing either service left the caller-owned model usable.",
+        "The shared model dispose counter remained zero after both service closes and incremented only when the caller explicitly disposed the model."
+      ]
+    },
+    "IR-02": {
+      "status": "PASS",
+      "observations": [
+        "Real prepared snapshots for Markdown, JSON, YAML configuration, and plaintext matched stock extraction fragments and vector composition.",
+        "The same snapshots were ingested through the real zvec-grep service and each format returned non-empty observable indexed context for a unique marker.",
+        "Reapplying prepared snapshots with a model whose embedding dimension differs from the published index is rejected with EMBEDDING_SCHEMA_CHANGE_REQUIRES_REBUILD."
+      ]
+    },
+    "WS-07": {
+      "status": "PASS",
+      "observations": [
+        "A real prepared-batch rename deleted the old absolute file path, indexed the new path, and returned only the renamed file for the vector marker.",
+        "A subsequent real prepared-batch delete removed the renamed vector metadata; the same vector query returned zero items and filesDeleted=1."
+      ]
+    },
+    "retrieval-empty-workspace": {
+      "status": "PASS",
+      "observations": [
+        "Public codeIntel sync, file deletion, sync, and strict zvec search over an empty workspace returned status=empty with zvec outcome=empty, no issues, zero evidence, and a clean published retrieval view.",
+        "The fixed guard distinguishes sources: undefined (missing capture) from sources: [] (legitimate empty capture); the empty publication had no native file rows and no captured-source-unavailable error.",
+        "A public rename probe published after.txt, removed before.txt from native file rows and FTS hits, and returned anchored evidence at after.txt under a clean retrieval view."
+      ]
+    },
+    "retrieval-source-evidence": {
+      "status": "PASS",
+      "observations": [
+        "Real retrieval contract evidence declares textKind=source and returns text equal to the complete UTF-8 source span captured by the canonical anchor, rather than a preview snippet.",
+        "The source anchor identity follows the effective captured range, including excerptRange for source-role context items whose displayed preview is shorter; the downstream verifier can therefore match the complete captured span while outline-role items remain descriptions.",
+        "Native zvec text ranges were reproduced with an oversized CRLF JavaScript fixture containing é/漢/emoji; web-tree-sitter and extractor ranges remained UTF-16 code-unit offsets, and the adapter converted them explicitly to UTF-8-byte anchors without content-based unit guessing.",
+        "Indexed source-role anchors are independently checked against the native excerpt content; lexical line matches and outline descriptions retain their distinct broader-content contracts.",
+        "A direct prepared zvec context query on the oversized fixture returned content equal to its excerptRange UTF-16 slice (including later value17), confirming the source-role equality check targets excerptRange rather than the broader entity range."
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "prepared snapshots preserve stock extraction and indexed results across formats",
+      "command": "node --test test/parity/retrieval.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "5 tests passed; 0 failed; 0 skipped"
+    },
+    {
+      "name": "two real stores sharing a borrowed model survive close order and retain caller ownership",
+      "command": "node --test test/parity/retrieval.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "real service A and service B each indexed one file and returned non-empty fused FTS+vector context; caller embed succeeded after both closes"
+    },
+    {
+      "name": "prepared apply rejects an embedding schema mismatch",
+      "command": "node --test test/parity/retrieval.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "schema-changing prepared apply rejected with EMBEDDING_SCHEMA_CHANGE_REQUIRES_REBUILD"
+    },
+    {
+      "name": "prepared rename and delete remove stale vector metadata",
+      "command": "node --test test/parity/retrieval.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "real prepared rename reported filesDeleted=1 and returned only after.txt; subsequent delete reported filesDeleted=1 and returned zero vector matches"
+    },
+    {
+      "name": "public empty workspace remains a valid empty retrieval result",
+      "command": "node --test --test-name-pattern=\"public unified retrieval returns a valid empty result\" test/contracts/unified-engine.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "1 focused public process test passed; sync/delete/sync strict search returned isError=false, status=empty, zvec outcome=empty, issues=[], evidence=[], clean view, native file rows=[]"
+    },
+    {
+      "name": "retrieval maps real zvec context items to anchored evidence and empty results",
+      "command": "node --test test/contracts/retrieval-adapter.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "4 tests passed; 0 failed; 0 skipped; evidence text matched captured anchor bytes and textKind was source"
+    },
+    {
+      "name": "oversized unicode code chunks preserve native and UTF8 source boundaries",
+      "command": "node --test test/parity/retrieval.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "UTF-16 native ranges converted independently to UTF-8 byte boundaries for later CRLF chunks containing é/漢/emoji"
+    },
+    {
+      "name": "retrieval anchors UTF8 bytes from multibyte CRLF lexical columns",
+      "command": "node --test test/contracts/retrieval-adapter.test.js",
+      "exit_code": 0,
+      "result": "PASS",
+      "raw_result": "adapter evidence text was needle and independent captured UTF-8 bytes matched the anchor span"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm --prefix vendor/zvec-grep run build",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_identity": "vendor/zvec-grep/src/engine/extraction/code/extractor.ts"
+    },
+    {
+      "command": "npm --prefix packages/core run build",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_identity": "packages/core/src/adapters/retrieval.ts"
+    },
+    {
+      "command": "node --test test/parity/retrieval.test.js",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_identity": "vendor/zvec-grep/dist/lazy-entry.js; test/parity/retrieval.test.js"
+    },
+    {
+      "command": "node --test test/contracts/retrieval-adapter.test.js",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_identity": "packages/core/dist/adapters/retrieval.js; test/contracts/retrieval-adapter.test.js"
+    }
+  ],
+  "model": {
+    "reference": "retrieval-parity-deterministic",
+    "provider": "test",
+    "dimension": 2,
+    "ownership": "borrowed"
+  },
+  "cleanup": {
+    "temporary_workspaces_removed": true,
+    "caller_owned_model_disposed_explicitly": true,
+    "vendor_files_changed": false
+  }
+}

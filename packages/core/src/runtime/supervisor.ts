@@ -32,7 +32,6 @@ import { setTimeout as delay } from "node:timers/promises";
 import type { Outcome, WorkspaceId } from "../contracts.js";
 import {
   MAX_MESSAGE_BYTES,
-  PROTOCOL_VERSION,
   isWorkerMessage,
   messageBytes,
   type ParentRequest,
@@ -94,11 +93,13 @@ export class WorkerSupervisor {
   #epoch: string | null = null;
   #upstreamCommit: string | null = null;
   #starting: Promise<{ child: ChildProcess; epoch: string }> | null = null;
+  #startingChild: ChildProcess | null = null;
   #pending = new Map<string, PendingCall>();
   #physicalJobs = new Map<string, PhysicalJob>();
   #abandoned = 0;
   #restartTimes: number[] = [];
   #closed = false;
+  #closing: Promise<void> | null = null;
   #deadReason: string | null = null;
 
   constructor(options: SupervisorOptions) {
@@ -139,8 +140,10 @@ export class WorkerSupervisor {
         // The caller left during startup. The worker keeps starting for others.
         return { ok: false, code: "cancelled", message: "caller aborted during worker startup", retryable: false, workerEpoch: null };
       }
-      return { ok: false, code: "worker_failed", message: error instanceof Error ? error.message : String(error), retryable: true, workerEpoch: null };
+      return { ok: false, code: "worker_failed", message: error instanceof Error ? error.message : String(error), retryable: !this.#closed, workerEpoch: null };
     }
+    if (this.#closed) return { ok: false, code: "worker_failed", message: `${this.#options.kind} worker is closed`, retryable: false, workerEpoch: null };
+    if (context.signal.aborted) return { ok: false, code: "cancelled", message: "caller aborted before dispatch", retryable: false, workerEpoch: started.epoch };
 
     const remainingBudgetMs = Math.max(0, Math.round(context.deadlineMonotonicMs - performance.now()));
     if (remainingBudgetMs === 0) {
@@ -207,7 +210,8 @@ export class WorkerSupervisor {
           if (message.ok) {
             finish({ ok: true, outcome: message.outcome, payload: message.payload as Res, workerEpoch: message.workerEpoch, workMs: message.workMs });
           } else {
-            finish({ ok: false, code: message.code, message: message.message, retryable: message.retryable, workerEpoch: message.workerEpoch });
+            const failure = message as Extract<WorkerMessage, { type: "response"; ok: false }>;
+            finish({ ok: false, code: failure.code, message: failure.message, retryable: failure.retryable, workerEpoch: failure.workerEpoch });
           }
         },
         fail: (result) => finish(result as CallResult<Res>),
@@ -224,9 +228,15 @@ export class WorkerSupervisor {
     });
   }
 
-  async close(): Promise<void> {
+  close(): Promise<void> {
+    return this.#closing ??= this.#closeOwned();
+  }
+
+  async #closeOwned(): Promise<void> {
     this.#closed = true;
     const child = this.#child;
+    const starting = this.#starting;
+    const startingChild = this.#startingChild;
     this.#child = null;
     this.#epoch = null;
     this.#physicalJobs.clear();
@@ -235,8 +245,13 @@ export class WorkerSupervisor {
       entry.fail({ ok: false, code: "worker_failed", message: "supervisor closed", retryable: false, workerEpoch: entry.workerEpoch });
     }
     this.#pending.clear();
-    if (!child) return;
-    await this.#terminate(child);
+
+    const children = new Set<ChildProcess>();
+    if (child) children.add(child);
+    if (startingChild) children.add(startingChild);
+    const termination = Promise.all([...children].map((owned) => this.#terminate(owned)));
+    if (starting) await starting.catch(() => {});
+    await termination;
   }
 
   async #ensureStarted(signal: AbortSignal): Promise<{ child: ChildProcess; epoch: string }> {
@@ -244,14 +259,26 @@ export class WorkerSupervisor {
     if (this.#child && this.#child.connected && this.#epoch) return { child: this.#child, epoch: this.#epoch };
     this.#starting ??= this.#start().finally(() => {
       this.#starting = null;
+      this.#startingChild = null;
     });
     // Race the shared startup against this caller's abort, so one impatient caller
     // never cancels a start that other callers are also waiting on.
+    let onAbort!: () => void;
     const abortPromise = new Promise<never>((_, reject) => {
-      if (signal.aborted) reject(new Error("aborted"));
-      else signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
+      onAbort = () => reject(new Error("aborted"));
+      if (signal.aborted) onAbort();
+      else signal.addEventListener("abort", onAbort, { once: true });
     });
-    return await Promise.race([this.#starting, abortPromise]);
+    try {
+      const started = await Promise.race([this.#starting, abortPromise]);
+      if (this.#closed) {
+        await this.#terminate(started.child);
+        throw new Error("supervisor closed during worker startup");
+      }
+      return started;
+    } finally {
+      signal.removeEventListener("abort", onAbort);
+    }
   }
 
   async #start(): Promise<{ child: ChildProcess; epoch: string }> {
@@ -264,6 +291,7 @@ export class WorkerSupervisor {
       execArgv: options.execArgv ? [...options.execArgv] : [],
       serialization: "json",
     });
+    this.#startingChild = child;
 
     for (const [stream, source] of [["stdout", child.stdout], ["stderr", child.stderr]] as const) {
       source?.setEncoding("utf8");
@@ -275,44 +303,87 @@ export class WorkerSupervisor {
     }
 
     const handshake = new Promise<{ child: ChildProcess; epoch: string }>((resolve, reject) => {
-      const timer = setTimeout(() => {
-        reject(new Error(`${options.kind} worker did not report ready within ${options.startupTimeoutMs ?? DEFAULTS.startupTimeoutMs}ms`));
+      let timer: ReturnType<typeof setTimeout>;
+      let settled = false;
+      const failStartup = (reason: string): void => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        reject(new Error(reason));
         child.kill("SIGKILL");
+      };
+      timer = setTimeout(() => {
+        failStartup(options.kind + " worker did not report ready within " + (options.startupTimeoutMs ?? DEFAULTS.startupTimeoutMs) + "ms");
       }, options.startupTimeoutMs ?? DEFAULTS.startupTimeoutMs);
       timer.unref?.();
 
       let epoch: string | null = null;
       child.on("message", (raw: unknown) => {
-        if (!isWorkerMessage(raw)) return;
-        if (raw.type === "hello") {
-          if (raw.protocolVersion !== PROTOCOL_VERSION) {
-            clearTimeout(timer);
-            reject(new Error(`${options.kind} worker speaks protocol ${raw.protocolVersion}, parent speaks ${PROTOCOL_VERSION}`));
-            child.kill("SIGKILL");
+        const type = typeof raw === "object" && raw !== null && !Array.isArray(raw)
+          ? (raw as { type?: unknown }).type
+          : undefined;
+        if (type === "hello") {
+          if (!isWorkerMessage(raw) || raw.type !== "hello") {
+            failStartup("invalid " + options.kind + " worker hello");
+            return;
+          }
+          if (raw.kind !== options.kind) {
+            failStartup(options.kind + " worker reported kind " + raw.kind);
+            return;
+          }
+          if (raw.pid !== child.pid) {
+            failStartup(options.kind + " worker reported pid " + raw.pid + ", expected " + child.pid);
+            return;
+          }
+          if (epoch !== null) {
+            failStartup(options.kind + " worker reported hello more than once");
             return;
           }
           epoch = raw.workerEpoch;
           this.#upstreamCommit = raw.upstreamCommit;
           return;
         }
-        if (raw.type === "ready" && epoch !== null) {
+        if (type === "ready") {
+          if (!isWorkerMessage(raw) || raw.type !== "ready") {
+            failStartup("invalid " + options.kind + " worker ready");
+            return;
+          }
+          if (epoch === null) {
+            failStartup(options.kind + " worker reported ready before hello");
+            return;
+          }
+          if (raw.workerEpoch !== epoch) {
+            failStartup(options.kind + " worker ready epoch did not match hello");
+            return;
+          }
+          if (this.#closed) {
+            failStartup("supervisor closed during worker startup");
+            return;
+          }
+          settled = true;
           clearTimeout(timer);
           this.#child = child;
           this.#epoch = epoch;
           resolve({ child, epoch });
           return;
         }
+        if (!isWorkerMessage(raw)) return;
         if (raw.type === "response") this.#onResponse(raw);
       });
 
       child.once("error", (error) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timer);
-        reject(error);
+        reject(new Error(this.#closed ? "supervisor closed during worker startup" : error.message));
       });
       child.once("exit", (code, signal) => {
-        clearTimeout(timer);
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          reject(new Error(this.#closed ? "supervisor closed during worker startup" : options.kind + " worker exited during startup (code=" + code + " signal=" + signal + ")"));
+        }
         this.#onExit(child, code, signal);
-        reject(new Error(`${options.kind} worker exited during startup (code=${code} signal=${signal})`));
       });
     });
 
@@ -322,17 +393,20 @@ export class WorkerSupervisor {
   #onResponse(message: WorkerMessage & { type: "response" }): void {
     const job = this.#physicalJobs.get(message.requestId);
     if (!job) return;
-    this.#physicalJobs.delete(message.requestId);
-    if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
-
     const entry = this.#pending.get(message.requestId);
-    if (!entry) return;
-    if (entry.workerEpoch !== message.workerEpoch) {
-      // A reply from a process we already replaced. Its view of the workspace is
-      // gone; serving it would mix two projections.
-      this.#pending.delete(message.requestId);
+    if (!entry) {
+      this.#physicalJobs.delete(message.requestId);
+      if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
       return;
     }
+    if (entry.workerEpoch !== message.workerEpoch || job.workerEpoch !== message.workerEpoch) {
+      // A stale reply must be dropped before the live physical job or pending
+      // call is mutated. A valid current-epoch reply for the same request may
+      // still arrive and must be allowed to settle it.
+      return;
+    }
+    this.#physicalJobs.delete(message.requestId);
+    if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
     entry.settle(message);
   }
 
@@ -398,7 +472,7 @@ export class WorkerSupervisor {
     if (child.exitCode !== null || child.signalCode !== null) return;
     const exited = new Promise<void>((resolve) => child.once("exit", () => resolve()));
     child.kill("SIGTERM");
-    const result = await Promise.race([exited.then(() => "exited" as const), delay(2_000, "timeout" as const)]);
+    const result = await Promise.race([exited.then(() => "exited" as const), delay(2_000, "timeout" as const, { ref: false })]);
     if (result === "timeout") {
       child.kill("SIGKILL");
       await exited;

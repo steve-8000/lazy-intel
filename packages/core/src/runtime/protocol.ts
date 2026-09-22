@@ -99,10 +99,34 @@ export function messageBytes(message: unknown): number {
   return Buffer.byteLength(JSON.stringify(message) ?? "", "utf8");
 }
 
+const OUTCOMES = new Set<Outcome>(["ok", "empty", "partial", "unavailable", "error"]);
+const WORKER_KINDS = new Set<WorkerKind>(["retrieval", "graph", "semantic"]);
+
+function nonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 export function isWorkerMessage(value: unknown): value is WorkerMessage {
-  if (typeof value !== "object" || value === null) return false;
-  const type = (value as { type?: unknown }).type;
-  return type === "hello" || type === "ready" || type === "response";
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  const message = value as Record<string, unknown>;
+  if (message.type === "hello") {
+    return message.protocolVersion === PROTOCOL_VERSION
+      && WORKER_KINDS.has(message.kind as WorkerKind)
+      && nonEmptyString(message.workerEpoch)
+      && nonEmptyString(message.upstreamCommit)
+      && typeof message.pid === "number"
+      && Number.isInteger(message.pid)
+      && message.pid > 0;
+  }
+  if (message.type === "ready") return nonEmptyString(message.workerEpoch);
+  if (message.type !== "response" || typeof message.requestId !== "string" || !message.requestId
+      || typeof message.workerEpoch !== "string" || !message.workerEpoch
+      || typeof message.workMs !== "number" || !Number.isFinite(message.workMs)) return false;
+  if (message.ok === true) {
+    return OUTCOMES.has(message.outcome as Outcome) && Object.hasOwn(message, "payload") && message.payload !== undefined;
+  }
+  return message.ok === false && typeof message.code === "string"
+    && typeof message.message === "string" && typeof message.retryable === "boolean";
 }
 
 export function isParentMessage(value: unknown): value is ParentMessage {

@@ -30,6 +30,14 @@
       "test_evidence": "Existing headless entry and graph adapter contract tests."
     },
     {
+      "path": "src/index.ts",
+      "original_blob": "90397c55c62afefec4ae45d94efc4132bc2980ed",
+      "resulting_blob": "5b5388ed5dba9aea640f3e08d7d738618fa36556",
+      "unit": "U07",
+      "reason": "Added explicit stateRoot storage injection and captured-source syncSnapshots completion while retaining sourceRoot for parsing.",
+      "test_evidence": "Graph worker apply/replay/delete/rebind smoke; vendor build."
+    },
+    {
       "path": "src/context/index.ts",
       "original_blob": "b3c5a5726627361a4b657432d3c2605b17a767ee",
       "resulting_blob": "810a98b1c715ef4cfe52e066f0b87b13b9ce8f2d",
@@ -40,13 +48,77 @@
     {
       "path": "src/extraction/index.ts",
       "original_blob": "93be48352fc9392b733ed4517ea56c3d24f9b204",
-      "resulting_blob": "7c9be1868dbfee8092b3b828992e9f51e1526ebf",
+      "resulting_blob": "7eb09151baabd4f35d54a24eb3b4a0d9bae30b50",
       "unit": "U07",
-      "reason": "Added snapshot-fed indexSnapshot and syncSnapshots entrypoints that route through indexFileWithContent, preserving incremental hashing, deletion and definition-delta semantics without source re-reads.",
-      "test_evidence": "test/parity/extraction.test.js and test/parity/graph.test.js; vendor build and verify-vendor."
+      "reason": "Added snapshot-fed indexSnapshot and syncSnapshots entrypoints and removed hidden source-size exclusions so oversized captured source files retain native symbols.",
+      "test_evidence": "test/parity/extraction.test.js, test/parity/graph.test.js, oversized captured-source smoke; vendor build and verify-vendor."
+    },
+    {
+      "path": "src/extraction/index.ts",
+      "original_blob": "93be48352fc9392b733ed4517ea56c3d24f9b204",
+      "resulting_blob": "718b5c70f5fe710643b8fa5aaa50c2a675b0934a",
+      "unit": "IR05",
+      "reason": "Framework detection for syncSnapshots reads captured package manifests instead of the empty source root.",
+      "test_evidence": "test/parity/graph.test.js captured framework/conformance/deferred parity; vendor build."
+    },
+    {
+      "path": "src/resolution/index.ts",
+      "original_blob": "7b4bccc180af585c5d69212b95a54d6e6a14832d",
+      "resulting_blob": "aba1ca80ef0ff5a3a8da24bd78416587e9cef0a8",
+      "unit": "IR05",
+      "reason": "Deferred and conformance resolver passes read captured source bytes during snapshot synchronization.",
+      "test_evidence": "test/parity/graph.test.js captured framework/conformance/deferred parity; vendor build."
+    },
+    {
+      "path": "src/index.ts",
+      "original_blob": "90397c55c62afefec4ae45d94efc4132bc2980ed",
+      "resulting_blob": "6a7bdab978ec0e91595881d16f28e4699aa3a9a6",
+      "unit": "IR05",
+      "reason": "Snapshot synchronization scopes captured source bytes to resolver post-extract and deferred passes.",
+      "test_evidence": "test/parity/graph.test.js captured framework/conformance/deferred parity; vendor build."
+    },
+    {
+      "path": "src/extraction/index.ts",
+      "original_blob": "93be48352fc9392b733ed4517ea56c3d24f9b204",
+      "resulting_blob": "2c80e53a117526d740c04c67be11c3620d110adb",
+      "unit": "IR05",
+      "reason": "Recompute framework profiles from each complete captured publication and conservatively re-extract unchanged sources when the profile changes; detection context has no live-disk fallback.",
+      "test_evidence": "Multipart marker-late and incremental manifest-addition graph parity; vendor build."
+    },
+    {
+      "path": "src/resolution/index.ts",
+      "original_blob": "aba1ca80ef0ff5a3a8da24bd78416587e9cef0a8",
+      "resulting_blob": "4df03d3ea202c7f6b0b3d0d5b8d2403784c70d21",
+      "unit": "IR05",
+      "reason": "Treat complete captured source maps as authoritative for resolver reads, directory enumeration, aliases, Go modules, and workspace package metadata.",
+      "test_evidence": "Snapshot-purity live-disk mutation fixture; vendor build."
+    },
+    {
+      "path": "src/resolution/path-aliases.ts",
+      "original_blob": "73e366e7db3dc2dbfcf46d0eba2278cb9482d9c5",
+      "resulting_blob": "9cd0fc0b1187c93d0ad28a469de143e15986e7f6",
+      "unit": "IR05",
+      "reason": "Allow tsconfig/jsconfig alias and extends resolution through an authoritative captured file access view.",
+      "test_evidence": "Snapshot-purity alias metadata fixture; vendor build."
+    },
+    {
+      "path": "src/resolution/go-module.ts",
+      "original_blob": "03f6b9b2372780443843be39778a70c5c1860b02",
+      "resulting_blob": "6e6b9da849c5d17ab5c89195a7ab86be2a9076ed",
+      "unit": "IR05",
+      "reason": "Load go.mod from captured metadata when snapshot context is authoritative.",
+      "test_evidence": "Snapshot-purity Go metadata fixture; vendor build."
+    },
+    {
+      "path": "src/resolution/index.ts",
+      "original_blob": "7b4bccc180af585c5d69212b95a54d6e6a14832d",
+      "resulting_blob": "a3d2a0d5b4b3d6074798b5a8eb27dcf0f6626518",
+      "unit": "IR05",
+      "reason": "Captured resolver file existence is authoritative and never falls back to live disk when resolving snapshot imports.",
+      "test_evidence": "test/contracts/graph-publication.test.js captured directory import regression; vendor build."
     }
   ],
-  "patch_revision": 3,
+  "patch_revision": 4,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
@@ -56,6 +128,7 @@
     "src/lazy-entry.ts",
     "src/extraction/snapshot-input.ts"
   ],
+  "added_files_sha256": {"src/lazy-entry.ts":"081852a402d2e904f7b287c2344262e725428bbffe72bc63cd2ba7f94fd4d16e","src/extraction/snapshot-input.ts":"f4f7672d8e2f4a8b2ca45694e1517871d35161c18b1651f931d01bc9394a208f"},
   "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
   "manifest": [
     {

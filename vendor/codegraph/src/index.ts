@@ -38,6 +38,7 @@ import {
   IndexProgress,
   IndexResult,
   SyncResult,
+  SnapshotInput,
   extractFromSource,
   initGrammars,
 } from './extraction';
@@ -106,9 +107,10 @@ export { FileWatcher, WatchOptions, PendingFile, LockUnavailableError } from './
  * Options for initializing a new CodeGraph project
  */
 export interface InitOptions {
+  /** Separate durable storage root; source paths remain projectRoot. */
+  stateRoot?: string;
   /** Whether to run initial indexing after init */
   index?: boolean;
-
   /** Progress callback for indexing */
   onProgress?: (progress: IndexProgress) => void;
 }
@@ -122,6 +124,9 @@ export interface OpenOptions {
 
   /** Whether to run in read-only mode */
   readOnly?: boolean;
+
+  /** Separate durable storage root; source paths remain projectRoot. */
+  stateRoot?: string;
 }
 
 /**
@@ -170,13 +175,14 @@ export class CodeGraph {
   private constructor(
     db: DatabaseConnection,
     queries: QueryBuilder,
-    projectRoot: string
+    projectRoot: string,
+    stateRoot: string = projectRoot
   ) {
     this.db = db;
     this.queries = queries;
     this.projectRoot = projectRoot;
     this.fileLock = new FileLock(
-      path.join(getCodeGraphDir(projectRoot), 'codegraph.lock')
+      path.join(getCodeGraphDir(stateRoot), 'codegraph.lock')
     );
     this.wireLayers();
   }
@@ -286,23 +292,18 @@ export class CodeGraph {
   static async init(projectRoot: string, options: InitOptions = {}): Promise<CodeGraph> {
     await initGrammars();
     const resolvedRoot = path.resolve(projectRoot);
+    const resolvedStateRoot = path.resolve(options.stateRoot ?? resolvedRoot);
 
-    // Check if already initialized
-    if (isInitialized(resolvedRoot)) {
-      throw new Error(`CodeGraph already initialized in ${resolvedRoot}`);
+    if (isInitialized(resolvedStateRoot)) {
+      throw new Error(`CodeGraph already initialized in ${resolvedStateRoot}`);
     }
 
-    // Create directory structure
-    createDirectory(resolvedRoot);
-
-    // Initialize database
-    const dbPath = getDatabasePath(resolvedRoot);
+    createDirectory(resolvedStateRoot);
+    const dbPath = getDatabasePath(resolvedStateRoot);
     const db = DatabaseConnection.initialize(dbPath);
     const queries = new QueryBuilder(db.getDb());
+    const instance = new CodeGraph(db, queries, resolvedRoot, resolvedStateRoot);
 
-    const instance = new CodeGraph(db, queries, resolvedRoot);
-
-    // Run initial indexing if requested
     if (options.index) {
       await instance.indexAll({ onProgress: options.onProgress });
     }
@@ -313,23 +314,19 @@ export class CodeGraph {
   /**
    * Initialize synchronously (without indexing)
    */
-  static initSync(projectRoot: string): CodeGraph {
+  static initSync(projectRoot: string, options: { stateRoot?: string } = {}): CodeGraph {
     const resolvedRoot = path.resolve(projectRoot);
+    const resolvedStateRoot = path.resolve(options.stateRoot ?? resolvedRoot);
 
-    // Check if already initialized
-    if (isInitialized(resolvedRoot)) {
-      throw new Error(`CodeGraph already initialized in ${resolvedRoot}`);
+    if (isInitialized(resolvedStateRoot)) {
+      throw new Error(`CodeGraph already initialized in ${resolvedStateRoot}`);
     }
 
-    // Create directory structure
-    createDirectory(resolvedRoot);
-
-    // Initialize database
-    const dbPath = getDatabasePath(resolvedRoot);
+    createDirectory(resolvedStateRoot);
+    const dbPath = getDatabasePath(resolvedStateRoot);
     const db = DatabaseConnection.initialize(dbPath);
     const queries = new QueryBuilder(db.getDb());
-
-    return new CodeGraph(db, queries, resolvedRoot);
+    return new CodeGraph(db, queries, resolvedRoot, resolvedStateRoot);
   }
 
   /**
@@ -342,26 +339,22 @@ export class CodeGraph {
   static async open(projectRoot: string, options: OpenOptions = {}): Promise<CodeGraph> {
     await initGrammars();
     const resolvedRoot = path.resolve(projectRoot);
+    const resolvedStateRoot = path.resolve(options.stateRoot ?? resolvedRoot);
 
-    // Check if initialized
-    if (!isInitialized(resolvedRoot)) {
-      throw new Error(`CodeGraph not initialized in ${resolvedRoot}. Run init() first.`);
+    if (!isInitialized(resolvedStateRoot)) {
+      throw new Error(`CodeGraph not initialized in ${resolvedStateRoot}. Run init() first.`);
     }
 
-    // Validate directory structure
-    const validation = validateDirectory(resolvedRoot);
+    const validation = validateDirectory(resolvedStateRoot);
     if (!validation.valid) {
       throw new Error(`Invalid CodeGraph directory: ${validation.errors.join(', ')}`);
     }
 
-    // Open database
-    const dbPath = getDatabasePath(resolvedRoot);
+    const dbPath = getDatabasePath(resolvedStateRoot);
     const db = DatabaseConnection.open(dbPath);
     const queries = new QueryBuilder(db.getDb());
+    const instance = new CodeGraph(db, queries, resolvedRoot, resolvedStateRoot);
 
-    const instance = new CodeGraph(db, queries, resolvedRoot);
-
-    // Sync if requested
     if (options.sync) {
       await instance.sync();
     }
@@ -385,61 +378,52 @@ export class CodeGraph {
    * files is O(1) regardless of size, reclaims the disk, and sidesteps opening
    * (and running migrations against) the poisoned database entirely.
    */
-  static async recreate(projectRoot: string): Promise<CodeGraph> {
+  static async recreate(projectRoot: string, options: { stateRoot?: string } = {}): Promise<CodeGraph> {
     await initGrammars();
     const resolvedRoot = path.resolve(projectRoot);
+    const resolvedStateRoot = path.resolve(options.stateRoot ?? resolvedRoot);
 
-    // Check if initialized — recreate REBUILDS an existing project; it is not a
-    // first-time `init`.
-    if (!isInitialized(resolvedRoot)) {
-      throw new Error(`CodeGraph not initialized in ${resolvedRoot}. Run init() first.`);
+    if (!isInitialized(resolvedStateRoot)) {
+      throw new Error(`CodeGraph not initialized in ${resolvedStateRoot}. Run init() first.`);
     }
 
-    const dbPath = getDatabasePath(resolvedRoot);
+    const dbPath = getDatabasePath(resolvedStateRoot);
     try {
       removeDatabaseFiles(dbPath);
     } catch (err) {
-      // POSIX unlinks an open file fine; this fires mainly on Windows when a
-      // live daemon/MCP server still holds the database. Turn the raw EBUSY into
-      // an actionable instruction instead of a generic failure.
       const reason = err instanceof Error ? err.message : String(err);
       throw new Error(
         `Could not rebuild the index — the database file is in use (${reason}). ` +
           `Stop any running CodeGraph MCP server/daemon for this project and retry, ` +
-          `or remove the ${getCodeGraphDir(resolvedRoot)} directory and run "codegraph init".`
+          `or remove the ${getCodeGraphDir(resolvedStateRoot)} directory and run \"codegraph init\".`
       );
     }
 
-    // Re-create an empty, freshly-schema'd database at the same path.
     const db = DatabaseConnection.initialize(dbPath);
     const queries = new QueryBuilder(db.getDb());
-
-    return new CodeGraph(db, queries, resolvedRoot);
+    return new CodeGraph(db, queries, resolvedRoot, resolvedStateRoot);
   }
 
   /**
    * Open synchronously (without sync)
    */
-  static openSync(projectRoot: string): CodeGraph {
+  static openSync(projectRoot: string, options: { stateRoot?: string } = {}): CodeGraph {
     const resolvedRoot = path.resolve(projectRoot);
+    const resolvedStateRoot = path.resolve(options.stateRoot ?? resolvedRoot);
 
-    // Check if initialized
-    if (!isInitialized(resolvedRoot)) {
-      throw new Error(`CodeGraph not initialized in ${resolvedRoot}. Run init() first.`);
+    if (!isInitialized(resolvedStateRoot)) {
+      throw new Error(`CodeGraph not initialized in ${resolvedStateRoot}. Run init() first.`);
     }
 
-    // Validate directory structure
-    const validation = validateDirectory(resolvedRoot);
+    const validation = validateDirectory(resolvedStateRoot);
     if (!validation.valid) {
       throw new Error(`Invalid CodeGraph directory: ${validation.errors.join(', ')}`);
     }
 
-    // Open database
-    const dbPath = getDatabasePath(resolvedRoot);
+    const dbPath = getDatabasePath(resolvedStateRoot);
     const db = DatabaseConnection.open(dbPath);
     const queries = new QueryBuilder(db.getDb());
-
-    return new CodeGraph(db, queries, resolvedRoot);
+    return new CodeGraph(db, queries, resolvedRoot, resolvedStateRoot);
   }
 
   /**
@@ -1036,6 +1020,42 @@ export class CodeGraph {
         if (deferWal) {
           try { this.db.setWalAutocheckpoint(priorAutocheckpoint); } catch { /* connection may be closing */ }
         }
+        this.fileLock.release();
+      }
+    });
+  }
+  /** Apply captured source bytes without scanning the source root. */
+  async syncSnapshots(
+    snapshots: readonly SnapshotInput[],
+    deletedPaths: readonly string[] = [],
+    completeSources?: ReadonlyMap<string, string>,
+  ): Promise<SyncResult> {
+    return this.indexMutex.withLock(async () => {
+      this.fileLock.acquire();
+      this.resolver.setCapturedSources(new Map(completeSources ?? snapshots.map((snapshot) => [snapshot.relativePath, snapshot.content])));
+      try {
+        const result = await this.orchestrator.syncSnapshots(snapshots, deletedPaths, completeSources);
+        const changed = (result.filesAdded + result.filesModified) > 0;
+        if (changed) {
+          this.resolver.runPostExtract();
+          const refs = result.changedFilePaths ? this.queries.getUnresolvedReferencesByFiles(result.changedFilePaths) : [];
+          await this.resolver.resolveAndPersistListYielding(refs);
+        } else if (result.filesRemoved > 0) {
+          this.resolver.clearCaches();
+        }
+        if (result.definitionDelta && process.env.CODEGRAPH_NO_REBIND !== '1') {
+          this.orchestrator.resurrectStaleResolutionEdges(result.definitionDelta, result.changedFilePaths ?? []);
+        }
+        const orphanCount = this.queries.getUnresolvedReferencesCount();
+        if (orphanCount > 0) await this.resolveReferencesBatched(undefined, undefined);
+        if (changed || result.filesRemoved > 0 || orphanCount > 0) {
+          await this.resolver.resolveChainedCallsViaConformance();
+          await this.resolver.resolveDeferredThisMemberRefs();
+          await this.db.runMaintenance();
+        }
+        return result;
+      } finally {
+        this.resolver.setCapturedSources(null);
         this.fileLock.release();
       }
     });

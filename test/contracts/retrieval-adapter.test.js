@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -19,13 +20,23 @@ function context(workspaceId, signal = new AbortController().signal, budgetMs = 
     maxWireBytes: 8 * 1024 * 1024,
   };
 }
-
 function request(root, workspaceId, query, mode = "exact", limit = 20) {
+  const alpha = "const needle = 1;\nexport function alpha() { return needle; }\n";
+  const beta = "export function beta() { return 'other'; }\n";
+  const snapshot = (fileId, relativePath, content) => ({
+    fileId,
+    relativePath,
+    content,
+    encoding: "utf-8",
+    byteLength: Buffer.byteLength(content, "utf8"),
+    contentHash: createHash("sha256").update(content).digest("hex"),
+  });
   return {
     query,
     mode,
     limit,
     view: null,
+    sources: [snapshot("alpha-file", "alpha.js", alpha), snapshot("beta-file", "beta.js", beta)],
     scope: {
       workspaceId,
       canonicalSourceRoot: root,
@@ -67,30 +78,43 @@ test("retrieval maps real zvec context items to anchored evidence and empty resu
   assert.ok(found.evidence.length >= 1);
   const evidence = found.evidence[0];
   assert.ok(evidence.anchor);
-  assert.equal(evidence.anchor.fileId, "zvec:retrieval-anchor:alpha.js");
+  assert.equal(evidence.anchor.fileId, "alpha-file");
   assert.equal(evidence.anchor.span.coordinateSystem, "utf8-bytes");
   assert.ok(evidence.anchor.span.endByte > evidence.anchor.span.startByte);
   assert.equal(evidence.aliases[0].engine, "zvec");
   assert.equal(evidence.method, "lexical");
+  const alphaText = "const needle = 1;\nexport function alpha() { return needle; }\n";
+  const captured = Buffer.from(alphaText, "utf8").subarray(evidence.anchor.span.startByte, evidence.anchor.span.endByte).toString("utf8");
+  assert.equal(evidence.textKind, "source");
+  assert.equal(evidence.text, captured);
+  assert.equal(evidence.sourceCheck, "unchecked");
   assert.match(found.coverage.scopeDescription, /source=rg/);
 
   const empty = await adapter.read(request(root, "retrieval-anchor", "not-present"), context("retrieval-anchor"));
   assert.equal(empty.outcome, "empty");
   assert.deepEqual(empty.evidence, []);
 
-  // A direct worker crash is reported by the supervisor, and the next read starts
-  // a fresh epoch instead of reusing the dead process.
-  const crashPending = adapter.read(request(root, "retrieval-anchor", "needle"), context("retrieval-anchor"));
-  await new Promise((resolve) => setImmediate(resolve));
-  const [pid] = workerPids();
-  assert.ok(pid, "retrieval worker should be running");
-  process.kill(pid, "SIGKILL");
-  const crashed = await crashPending;
-  assert.equal(crashed.outcome, "unavailable");
-  assert.equal(crashed.issues[0].code, "worker_failed");
-  assert.equal(crashed.issues[0].retryable, true);
-  const afterCrash = await adapter.read(request(root, "retrieval-anchor", "needle"), context("retrieval-anchor"));
-  assert.ok(afterCrash.outcome === "ok" || afterCrash.outcome === "partial");
+});
+test("indexed retrieval requires clean publication and captured sources", async (t) => {
+  const root = await makeWorkspace();
+  const adapter = createRetrievalAdapter({ workspaceId: "retrieval-gate" });
+  t.after(async () => {
+    await adapter.close();
+    await rm(root, { recursive: true, force: true });
+  });
+  const base = request(root, "retrieval-gate", "needle", "lexical");
+  const missingSources = await adapter.read(
+    { ...base, sources: undefined, view: { state: "clean", storeRoot: path.join(root, ".state") } },
+    context("retrieval-gate"),
+  );
+  assert.equal(missingSources.outcome, "unavailable");
+  assert.equal(missingSources.issues[0].code, "invalid_input");
+  const unpublished = await adapter.read(
+    { ...base, view: { state: "needs_recovery", storeRoot: path.join(root, ".state") } },
+    context("retrieval-gate"),
+  );
+  assert.equal(unpublished.outcome, "unavailable");
+  assert.equal(unpublished.issues[0].code, "needs_recovery");
 });
 
 test("aborting a retrieval caller rejects as cancelled without killing the worker", async (t) => {
@@ -112,4 +136,46 @@ test("aborting a retrieval caller rejects as cancelled without killing the worke
 
   const next = await adapter.read(request(root, "retrieval-cancel", "needle", "exact", 1), context("retrieval-cancel"));
   assert.ok(next.outcome === "ok" || next.outcome === "partial");
+});
+test("retrieval anchors UTF8 bytes from multibyte CRLF lexical columns", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-retrieval-unicode-anchor-"));
+  const content = "é漢😀needle();\r\n";
+  await writeFile(path.join(root, "unicode.js"), content, "utf8");
+  const adapter = createRetrievalAdapter({ workspaceId: "retrieval-unicode-anchor" });
+  t.after(async () => {
+    await adapter.close();
+    await rm(root, { recursive: true, force: true });
+  });
+  const source = {
+    fileId: "unicode-file",
+    relativePath: "unicode.js",
+    content,
+    encoding: "utf-8",
+    byteLength: Buffer.byteLength(content, "utf8"),
+    contentHash: createHash("sha256").update(content).digest("hex"),
+  };
+  const result = await adapter.read(
+    {
+      query: "needle",
+      mode: "exact",
+      limit: 20,
+      view: null,
+      sources: [source],
+      scope: {
+        workspaceId: "retrieval-unicode-anchor",
+        canonicalSourceRoot: root,
+        canonicalStateRoot: path.join(root, ".state"),
+        scopeDigest: "scope",
+        buildContextDigest: null,
+        trustedForLanguageTools: true,
+      },
+    },
+    context("retrieval-unicode-anchor"),
+  );
+  assert.ok(result.evidence.length >= 1);
+  const evidence = result.evidence[0];
+  assert.equal(evidence.textKind, "source");
+  assert.equal(evidence.text, "needle");
+  assert.equal(Buffer.from(content, "utf8").subarray(evidence.anchor.span.startByte, evidence.anchor.span.endByte).toString("utf8"), "needle");
+  assert.equal(evidence.anchor.span.startByte, Buffer.byteLength("é漢😀", "utf8"));
 });

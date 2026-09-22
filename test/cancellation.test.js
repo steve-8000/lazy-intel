@@ -1,79 +1,70 @@
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
 import { StdioMcpClient } from "../src/mcp/client.js";
 
+const run = promisify(execFile);
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const base = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-cancel-"));
-const executable = path.join(base, "serena");
-const server = `import readline from 'node:readline';
-const active = new Set(), cancelled = [], waiting = [];
-const send = (id, result) => process.stdout.write(JSON.stringify({jsonrpc:'2.0',id,result})+'\\n');
-const text = value => ({content:[{type:'text',text:JSON.stringify(value)}]});
-readline.createInterface({input:process.stdin}).on('line', line => {
- const m=JSON.parse(line), name=m.params?.arguments?.name_path_pattern ?? m.params?.name;
- if(m.method==='notifications/cancelled') { cancelled.push(m.params.requestId);active.delete(m.params.requestId);return; }
- if(m.id == null) return;
- if(m.method==='initialize') return send(m.id,{protocolVersion:'2025-06-18'});
- if(m.method==='tools/list') return send(m.id,{tools:['find_symbol','find_referencing_symbols','find_implementations','get_symbols_overview','get_diagnostics_for_file'].map(name=>({name}))});
- if(name==='slow') { active.add(m.id);for(const id of waiting.splice(0))send(id,text({pid:process.pid,active:[...active]}));return; }
- if(name==='await-started' && !active.size) {waiting.push(m.id);return;}
- send(m.id,text({pid:process.pid,active:[...active],cancelled}));
-});`;
-await writeFile(executable, `#!${process.execPath}\n${server}`, { mode: 0o755 });
-process.env.LAZY_INTEL_SERENA_BIN = executable;
-process.env.LAZY_INTEL_ROOT = base;
-process.env.LAZY_INTEL_MAINTENANCE_MS = "0";
-const { codeIntel } = await import("../src/engine.js");
-const { closeSerena } = await import("../src/backends/serena.js");
-after(async () => { closeSerena(); await rm(base, { recursive: true, force: true }); });
-const value = result => JSON.parse(result.content[0].text);
+await writeFile(path.join(base, "package.json"), '{"type":"module"}\n');
+await run("git", ["init", "--quiet", base]);
+// A large source snapshot gives the owned retrieval worker real work to cancel;
+// this is intentionally not a fake backend or a mocked MCP transport.
+const newline = String.fromCharCode(10);
+await writeFile(path.join(base, "large.mjs"), `${("// needle keeps this source searchable" + newline).repeat(250_000)}export const value = 1;${newline}`);
+
+const serverEnv = {
+  LAZY_INTEL_ROOT: base,
+  LAZY_INTEL_ALLOWED_ROOTS: base,
+  LAZY_INTEL_AUTO_INDEX: "false",
+  LAZY_INTEL_MAINTENANCE_MS: "0",
+  LAZY_INTEL_LSP: "",
+};
 
 async function client(t) {
-  const c = new StdioMcpClient(process.execPath, ["--input-type=module", "-e", server]);
-  t.after(() => c.close()); await c.start(); return c;
+  const c = new StdioMcpClient(process.execPath, [path.join(repo, "src/cli.js"), "serve"], {
+    cwd: repo,
+    env: serverEnv,
+    timeoutMs: 120_000,
+  });
+  t.after(() => c.close());
+  await c.start();
+  return c;
 }
 
-test("abort cancels only the dispatched MCP request and keeps the connection usable", async t => {
-  const c = await client(t), controller = new AbortController();
-  const pending = c.callTool("slow", {}, { signal: controller.signal }).then(() => null, error => error);
-  const started = value(await c.callTool("await-started", {}));
+after(async () => {
+  await rm(base, { recursive: true, force: true });
+});
+
+test("aborting an in-flight owned-worker MCP request leaves the connection usable", { timeout: 900_000 }, async (t) => {
+  const c = await client(t);
+  const controller = new AbortController();
+  const pending = c.callTool("code_intel", {
+    operation: "search",
+    root: base,
+    query: "needle",
+    limit: 100,
+    maxChars: 80_000,
+    timeoutMs: 120_000,
+    indexTimeoutMs: 600_000,
+  }, { signal: controller.signal }).then(() => null, (error) => error);
+  await new Promise((resolve) => setTimeout(resolve, 10));
   controller.abort();
   assert.equal((await pending).name, "AbortError");
-  const state = value(await c.callTool("state", {}));
-  assert.deepEqual(state.cancelled, started.active);
-  assert.deepEqual(state.active, []);
-  assert.equal(state.pid, started.pid);
+
+  const ping = await c.request("ping", {});
+  assert.deepEqual(ping, {}, "cancelling a request must not tear down the MCP connection");
 });
 
-test("pre-aborted requests are not sent and timeout cancellation releases remote work", async t => {
+test("a pre-aborted MCP request is rejected before dispatch", async (t) => {
   const c = await client(t);
-  await assert.rejects(c.callTool("slow", {}, { signal: AbortSignal.abort() }), { name: "AbortError" });
-  assert.deepEqual(value(await c.callTool("state", {})).active, []);
-  const pending = c.callTool("slow", {}, { timeoutMs: 100 }).then(() => null, error => error);
-  const started = value(await c.callTool("await-started", {}));
-  assert.match((await pending).message, /MCP timeout/);
-  assert.deepEqual(value(await c.callTool("state", {})).cancelled, started.active);
-});
-
-test("engine cancellation reaches Serena without retrying or replacing a shared client", async () => {
-  const controller = new AbortController();
-  const query = symbol => ({ operation: "symbol", symbol, root: base });
-  const pending = codeIntel(query("slow"), controller.signal).then(() => null, error => error);
-  // Concurrent startup must join the same client rather than spawn one backend per caller.
-  const startedResult = await codeIntel(query("await-started"));
-  const started = JSON.parse(startedResult.text.match(/\{"pid"[^\n]+/)[0]);
-  controller.abort();
-  // Peer cancellation is now a distinct, typed cause: an AbortError name alone never
-  // proved the client cancelled, so the engine reports the reason it actually observed.
-  const cancelled = await pending;
-  assert.equal(cancelled.name, "RequestCancelledError");
-  assert.equal(cancelled.code, "CANCELLED");
-  const result = await codeIntel(query("state"));
-  const state = JSON.parse(result.text.match(/\{"pid"[^\n]+/)[0]);
-  assert.equal(state.pid, started.pid);
-  assert.deepEqual(state.cancelled, started.active);
-  assert.deepEqual(state.active, []);
-  closeSerena();
+  await assert.rejects(c.callTool("code_intel", {
+    operation: "search", root: base, query: "needle",
+  }, { signal: AbortSignal.abort() }), { name: "AbortError" });
+  assert.deepEqual(await c.request("ping", {}), {});
 });

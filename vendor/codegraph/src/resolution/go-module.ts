@@ -12,6 +12,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import type { CapturedFileAccess } from './path-aliases';
 export interface GoModule {
   /** The module path declared in `go.mod`, e.g. `github.com/example/myproject` */
   modulePath: string;
@@ -27,13 +28,15 @@ export interface GoModule {
  * (Go workspaces, monorepos with multiple modules) are not yet resolved —
  * a follow-up if a real repro shows up.
  */
-export function loadGoModule(projectRoot: string): GoModule | null {
+export function loadGoModule(projectRoot: string, access?: CapturedFileAccess): GoModule | null {
   const goModPath = path.join(projectRoot, 'go.mod');
   let content: string;
-  try {
-    content = fs.readFileSync(goModPath, 'utf-8');
-  } catch {
-    return null;
+  if (access) {
+    const captured = access.isFile(goModPath) ? access.readFile(goModPath) : null;
+    if (captured === null) return null;
+    content = captured;
+  } else {
+    try { content = fs.readFileSync(goModPath, 'utf-8'); } catch { return null; }
   }
   // `module <path>` is the first non-comment directive in any valid go.mod.
   // Strip line comments so a `// module foo` doesn't false-match.

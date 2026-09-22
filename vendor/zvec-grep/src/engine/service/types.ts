@@ -15,9 +15,11 @@ import type {
   SearchMatchedBy,
   TimingEntry,
 } from "../types.js";
+import type { PreparedSnapshotBatch, PreparedSnapshotResult } from "../pipeline/indexing/prepared.js";
 
 export type CreateZvecGrepOptions = {
   root?: string;
+  stateRoot?: string;
   home?: string;
   embeddingModel?: EmbeddingModel;
   embeddingModelOwnership?: "owned" | "borrowed";
@@ -32,6 +34,7 @@ export type CreateZvecGrepOptions = {
 
 export type ZvecGrepIndexOptions = {
   root?: string;
+  stateRoot?: string;
   rootPaths?: readonly (string | RootPath)[];
   rebuild?: boolean;
   resetPaths?: boolean;
@@ -62,6 +65,7 @@ export type ZvecGrepWriterContext = (
 
 export type ZvecGrepInfoOptions = {
   root?: string;
+  stateRoot?: string;
   includeStatus?: boolean;
 };
 
@@ -89,6 +93,7 @@ export type ZvecGrepContextOptions = {
   /** Fuse every query group into one ranked search plan. */
   fuse?: boolean;
   root?: string;
+  stateRoot?: string;
   limit?: number;
   autoUpdate?: boolean;
   onAutoUpdateProgress?: (progress: IndexProgress) => void;
@@ -246,6 +251,7 @@ export type ZvecGrep = {
   readonly root: string;
   index(options?: ZvecGrepIndexOptions): Promise<IndexResult>;
   dropIndex(options?: ZvecGrepInfoOptions): Promise<boolean>;
+  indexPrepared(options: { stateRoot: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult>;
   disableIndex(options?: ZvecGrepInfoOptions): Promise<ZvecGrepInfoResult>;
   info(options?: ZvecGrepInfoOptions): Promise<ZvecGrepInfoResult>;
   context(options: ZvecGrepContextOptions): Promise<ZvecGrepContextResult>;

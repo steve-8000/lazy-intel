@@ -22,7 +22,7 @@ import { ResolverPool, minRefsForPool } from './resolver-pool';
 import { detectFrameworks } from './frameworks';
 import { synthesizeCallbackEdges } from './callback-synthesizer';
 import { createYielder, type MaybeYield } from './cooperative-yield';
-import { loadProjectAliases, type AliasMap } from './path-aliases';
+import { loadProjectAliases, type AliasMap, type CapturedFileAccess } from './path-aliases';
 import { loadGoModule, type GoModule } from './go-module';
 import { loadWorkspacePackages, type WorkspacePackages } from './workspace-packages';
 import { logDebug } from '../errors';
@@ -270,6 +270,7 @@ export class ReferenceResolver {
   private nodesByKindCache = new Map<Node['kind'], Node[]>();
   private knownNames: Set<string> | null = null; // all known symbol names for fast pre-filtering
   private knownFiles: Set<string> | null = null;
+  private capturedSources: ReadonlyMap<string, string> | null = null;
   private cachesWarmed = false;
   // tsconfig/jsconfig path-alias map. `undefined` = not yet computed,
   // `null` = computed and absent. Treated as immutable for the
@@ -301,6 +302,16 @@ export class ReferenceResolver {
     this.methodMatchCache = new LRUCache(limit);
 
     this.context = this.createContext();
+  }
+
+  /** Use captured source bytes for resolver passes that must not read the source root. */
+  setCapturedSources(sources: ReadonlyMap<string, string> | null): void {
+    this.capturedSources = sources;
+    this.fileCache.clear();
+    this.fileLinesCache.clear();
+    this.projectAliases = undefined;
+    this.goModule = undefined;
+    this.workspacePackages = undefined;
   }
 
   /**
@@ -409,9 +420,10 @@ export class ReferenceResolver {
       clearNameMatcherMemos(this.context);
     }
   }
-
-  /** `readFile` through the LRU content cache (null = read failed, also cached). */
   private readFileCached(filePath: string): string | null {
+    if (this.capturedSources !== null) {
+      return this.capturedSources.get(filePath) ?? null;
+    }
     if (this.fileCache.has(filePath)) {
       return this.fileCache.get(filePath)!;
     }
@@ -425,6 +437,55 @@ export class ReferenceResolver {
       this.fileCache.set(filePath, null);
       return null;
     }
+  }
+  private capturedAccess(): CapturedFileAccess | undefined {
+    if (this.capturedSources === null) return undefined;
+    const root = this.projectRoot;
+    const relative = (filePath: string): string | null => {
+      const rel = path.relative(root, filePath).replace(/\\/g, '/');
+      return rel && !rel.startsWith('../') && rel !== '..' ? rel : null;
+    };
+    return {
+      readFile: (filePath) => { const rel = relative(filePath); return rel === null ? null : this.capturedSources!.get(rel) ?? null; },
+      isFile: (filePath) => { const rel = relative(filePath); return rel !== null && this.capturedSources!.has(rel); },
+      listDirectories: (relativePath) => {
+        const prefix = relativePath === '.' || relativePath === '' ? '' : relativePath.replace(/\\/g, '/').replace(/\/$/, '') + '/';
+        const directories = new Set<string>();
+        for (const filePath of this.capturedSources!.keys()) {
+          if (!filePath.startsWith(prefix)) continue;
+          const rest = filePath.slice(prefix.length); const slash = rest.indexOf('/');
+          if (slash > 0) directories.add(rest.slice(0, slash));
+        }
+        return [...directories];
+      },
+    };
+  }
+
+
+  private loadCapturedWorkspacePackages(): WorkspacePackages | null {
+    if (this.capturedSources === null) return null;
+    const root = this.capturedSources.get('package.json');
+    const patterns: string[] = [];
+    try {
+      const workspaces = root ? JSON.parse(root).workspaces : null;
+      if (Array.isArray(workspaces)) patterns.push(...workspaces.filter((value: unknown): value is string => typeof value === 'string'));
+      else if (workspaces && Array.isArray(workspaces.packages)) patterns.push(...workspaces.packages.filter((value: unknown): value is string => typeof value === 'string'));
+    } catch { /* malformed captured package metadata is absent */ }
+    const byName = new Map<string, string>();
+    for (const pattern of patterns) {
+      const prefix = pattern.endsWith('/*') ? pattern.slice(0, -2) : null;
+      if (prefix === null) continue;
+      const needle = prefix ? prefix + '/' : '';
+      for (const [filePath, content] of this.capturedSources.entries()) {
+        if (!filePath.startsWith(needle) || !filePath.endsWith('/package.json')) continue;
+        try {
+          const name = JSON.parse(content).name;
+          const dir = filePath.slice(0, -'/package.json'.length);
+          if (typeof name === 'string' && name && !byName.has(name)) byName.set(name, dir);
+        } catch { /* malformed member metadata is absent */ }
+      }
+    }
+    return byName.size > 0 ? { byName } : null;
   }
 
   /**
@@ -531,6 +592,10 @@ export class ReferenceResolver {
       iterateNodesByKind: (kind: Node['kind']) => this.queries.iterateNodesByKind(kind),
 
       fileExists: (filePath: string) => {
+        if (this.capturedSources !== null) {
+          const normalized = filePath.replace(/\\/g, '/');
+          return this.capturedSources.has(normalized);
+        }
         // Check pre-built known files set first (O(1))
         if (this.knownFiles) {
           const normalized = filePath.replace(/\\/g, '/');
@@ -564,21 +629,23 @@ export class ReferenceResolver {
       getAllFiles: () => {
         return this.queries.getAllFilePaths();
       },
-
       listDirectories: (relativePath: string) => {
-        const target = relativePath === '.' || relativePath === ''
-          ? this.projectRoot
-          : path.join(this.projectRoot, relativePath);
+        if (this.capturedSources !== null) {
+          const prefix = relativePath === '.' || relativePath === '' ? '' : relativePath.replace(/\\/g, '/').replace(/\/$/, '') + '/';
+          const directories = new Set<string>();
+          for (const filePath of this.capturedSources.keys()) {
+            if (!filePath.startsWith(prefix)) continue;
+            const rest = filePath.slice(prefix.length);
+            const slash = rest.indexOf('/');
+            if (slash > 0) directories.add(rest.slice(0, slash));
+          }
+          return [...directories];
+        }
+        const target = relativePath === '.' || relativePath === '' ? this.projectRoot : path.join(this.projectRoot, relativePath);
         try {
-          return fs
-            .readdirSync(target, { withFileTypes: true })
-            .filter((entry) => entry.isDirectory())
-            .map((entry) => entry.name);
+          return fs.readdirSync(target, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name);
         } catch (error) {
-          logDebug('Failed to list directory for resolution', {
-            relativePath,
-            error: String(error),
-          });
+          logDebug('Failed to list directory for resolution', { relativePath, error: String(error) });
           return [];
         }
       },
@@ -645,21 +712,20 @@ export class ReferenceResolver {
 
       getProjectAliases: () => {
         if (this.projectAliases === undefined) {
-          this.projectAliases = loadProjectAliases(this.projectRoot);
+          this.projectAliases = loadProjectAliases(this.projectRoot, this.capturedAccess());
         }
         return this.projectAliases;
       },
 
       getGoModule: () => {
         if (this.goModule === undefined) {
-          this.goModule = loadGoModule(this.projectRoot);
+          this.goModule = loadGoModule(this.projectRoot, this.capturedAccess());
         }
         return this.goModule;
       },
-
       getWorkspacePackages: () => {
         if (this.workspacePackages === undefined) {
-          this.workspacePackages = loadWorkspacePackages(this.projectRoot);
+          this.workspacePackages = this.capturedSources !== null ? this.loadCapturedWorkspacePackages() : loadWorkspacePackages(this.projectRoot);
         }
         return this.workspacePackages;
       },

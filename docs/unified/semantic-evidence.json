@@ -1,0 +1,1324 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "criteria": {
+    "SEM-01": {
+      "status": "PASS",
+      "observations": {
+        "scoped": {
+          "outcome": "ok",
+          "evidence": [
+            {
+              "id": "serena-0-parse[0]",
+              "kind": "definition",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 0,
+                  "endByte": 45
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:0:0:parse[0]"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[0]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "source",
+              "text": "export function parse(value: string): string;",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              }
+            },
+            {
+              "id": "serena-1-parse[1]",
+              "kind": "definition",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 47,
+                  "endByte": 92
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:1:0:parse[1]"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[1]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "source",
+              "text": "export function parse(value: number): number;",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              }
+            },
+            {
+              "id": "serena-2-parse[2]",
+              "kind": "definition",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 94,
+                  "endByte": 141
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:2:0:parse[2]"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[2]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "source",
+              "text": "export function parse(value: boolean): boolean;",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              }
+            },
+            {
+              "id": "serena-3-parse[3]",
+              "kind": "definition",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 143,
+                  "endByte": 243
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:3:0:parse[3]"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[3]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "source",
+              "text": "export function parse(value: string | number | boolean): string | number | boolean { return value; }",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              }
+            }
+          ],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 4,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+              "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+              "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+              "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "overloads.ts",
+              "diagnosticsStatus": "not_reported"
+            }
+          ]
+        },
+        "ambiguity_probe": {
+          "outcome": "partial",
+          "evidence": [
+            {
+              "id": "serena-0-parse[0]",
+              "kind": "definition",
+              "anchor": null,
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[0]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "3adc5fcf88b148ec950b4a12a13ca64d",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": null,
+                "bufferHash": null,
+                "documentVersion": null,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "unknown",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "parse",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": false,
+                "scopeDescription": "Serena semantic result",
+                "returned": 1,
+                "omitted": 1
+              }
+            },
+            {
+              "id": "serena-1-parse[1]",
+              "kind": "definition",
+              "anchor": null,
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[1]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "3adc5fcf88b148ec950b4a12a13ca64d",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": null,
+                "bufferHash": null,
+                "documentVersion": null,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "unknown",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "parse",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": false,
+                "scopeDescription": "Serena semantic result",
+                "returned": 1,
+                "omitted": 1
+              }
+            },
+            {
+              "id": "serena-2-parse[2]",
+              "kind": "definition",
+              "anchor": null,
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[2]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "3adc5fcf88b148ec950b4a12a13ca64d",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": null,
+                "bufferHash": null,
+                "documentVersion": null,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "unknown",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "parse",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": false,
+                "scopeDescription": "Serena semantic result",
+                "returned": 1,
+                "omitted": 1
+              }
+            },
+            {
+              "id": "serena-3-parse[3]",
+              "kind": "definition",
+              "anchor": null,
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "parse[3]"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "3adc5fcf88b148ec950b4a12a13ca64d",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": null,
+                "bufferHash": null,
+                "documentVersion": null,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "unknown",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "parse",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": false,
+                "scopeDescription": "Serena semantic result",
+                "returned": 1,
+                "omitted": 1
+              }
+            }
+          ],
+          "issues": [
+            {
+              "code": "worker_failed",
+              "component": "semantic",
+              "message": "semantic coverage is incomplete: missing semantic path",
+              "retryable": true
+            }
+          ],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": false,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 4,
+            "omitted": 1
+          },
+          "consistency": "unknown",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "3adc5fcf88b148ec950b4a12a13ca64d",
+              "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+              "fileHash": null,
+              "bufferHash": null,
+              "documentVersion": null,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "unknown",
+              "diagnosticsStatus": "not_reported"
+            }
+          ]
+        },
+        "overload_count": 4,
+        "public": {
+          "backends": [
+            {
+              "backend": "serena",
+              "ok": true,
+              "outcome": "ok",
+              "latencyMs": 720
+            }
+          ],
+          "evidence": [
+            {
+              "id": "semantic-ad332e55-77a9-4901-a1f3-87ae2c372872-0",
+              "locator": {
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-semantic-live-nJotIl",
+                "relativePath": "overloads.ts",
+                "range": {
+                  "startLine": 0,
+                  "endLineExclusive": 1
+                }
+              },
+              "method": "lsp",
+              "textKind": "source",
+              "sourceCheck": "matched",
+              "anchor": {
+                "workspaceId": "workspace-32f4ccdb168baed40632e60eae94d320",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 0,
+                  "endByte": 45
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:0:0:parse[0]"
+              },
+              "semanticObservation": {
+                "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              },
+              "provenance": [
+                {
+                  "backend": "serena",
+                  "operation": "symbol",
+                  "backendVersion": "unknown",
+                  "adapterVersion": "0.3.0",
+                  "executionId": "semantic-ad332e55-77a9-4901-a1f3-87ae2c372872"
+                }
+              ]
+            },
+            {
+              "id": "semantic-a0d75b50-c758-48a4-9900-64571a838a1f-1",
+              "locator": {
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-semantic-live-nJotIl",
+                "relativePath": "overloads.ts",
+                "range": {
+                  "startLine": 1,
+                  "endLineExclusive": 2
+                }
+              },
+              "method": "lsp",
+              "textKind": "source",
+              "sourceCheck": "matched",
+              "anchor": {
+                "workspaceId": "workspace-32f4ccdb168baed40632e60eae94d320",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 47,
+                  "endByte": 92
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:1:0:parse[1]"
+              },
+              "semanticObservation": {
+                "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              },
+              "provenance": [
+                {
+                  "backend": "serena",
+                  "operation": "symbol",
+                  "backendVersion": "unknown",
+                  "adapterVersion": "0.3.0",
+                  "executionId": "semantic-a0d75b50-c758-48a4-9900-64571a838a1f"
+                }
+              ]
+            },
+            {
+              "id": "semantic-4f1c9095-2b66-4588-85d3-fead5208dbbe-2",
+              "locator": {
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-semantic-live-nJotIl",
+                "relativePath": "overloads.ts",
+                "range": {
+                  "startLine": 2,
+                  "endLineExclusive": 3
+                }
+              },
+              "method": "lsp",
+              "textKind": "source",
+              "sourceCheck": "matched",
+              "anchor": {
+                "workspaceId": "workspace-32f4ccdb168baed40632e60eae94d320",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 94,
+                  "endByte": 141
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:2:0:parse[2]"
+              },
+              "semanticObservation": {
+                "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              },
+              "provenance": [
+                {
+                  "backend": "serena",
+                  "operation": "symbol",
+                  "backendVersion": "unknown",
+                  "adapterVersion": "0.3.0",
+                  "executionId": "semantic-4f1c9095-2b66-4588-85d3-fead5208dbbe"
+                }
+              ]
+            },
+            {
+              "id": "semantic-0cafb054-4940-48b0-8790-951c22f4e39a-3",
+              "locator": {
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-semantic-live-nJotIl",
+                "relativePath": "overloads.ts",
+                "range": {
+                  "startLine": 3,
+                  "endLineExclusive": 4
+                }
+              },
+              "method": "lsp",
+              "textKind": "source",
+              "sourceCheck": "matched",
+              "anchor": {
+                "workspaceId": "workspace-32f4ccdb168baed40632e60eae94d320",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 143,
+                  "endByte": 243
+                },
+                "kind": "Function",
+                "occurrenceId": "overloads.ts:3:0:parse[3]"
+              },
+              "semanticObservation": {
+                "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              },
+              "provenance": [
+                {
+                  "backend": "serena",
+                  "operation": "symbol",
+                  "backendVersion": "unknown",
+                  "adapterVersion": "0.3.0",
+                  "executionId": "semantic-0cafb054-4940-48b0-8790-951c22f4e39a"
+                }
+              ]
+            }
+          ],
+          "semanticObservations": [
+            {
+              "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+              "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+              "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+              "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "overloads.ts",
+              "diagnosticsStatus": "not_reported"
+            }
+          ],
+          "issues": []
+        }
+      }
+    },
+    "SEM-02": {
+      "status": "PASS",
+      "observations": {
+        "result": {
+          "outcome": "ok",
+          "evidence": [
+            {
+              "id": "serena-0-use/marker",
+              "kind": "reference",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 143,
+                  "endByte": 325
+                },
+                "kind": "Constant",
+                "occurrenceId": "overloads.ts:3:0:use/marker"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "use/marker"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "relevanceScore": null,
+              "relatedAnchors": [
+                {
+                  "role": "containing-symbol",
+                  "anchor": {
+                    "workspaceId": "semantic-live-proof",
+                    "fileId": "overloads.ts",
+                    "relativePath": "overloads.ts",
+                    "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                    "span": {
+                      "coordinateSystem": "utf8-bytes",
+                      "startByte": 245,
+                      "endByte": 323
+                    },
+                    "kind": "Constant",
+                    "occurrenceId": "overloads.ts:4:0:use/marker"
+                  }
+                }
+              ],
+              "textKind": "source",
+              "text": "export function parse(value: string | number | boolean): string | number | boolean { return value; }\r\nexport function use(): string { const marker = \"😀\"; return parse(marker); }\r\n",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              }
+            }
+          ],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 1,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+              "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+              "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+              "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "overloads.ts",
+              "diagnosticsStatus": "not_reported"
+            }
+          ]
+        },
+        "exact_excerpt": "export function parse(value: string | number | boolean): string | number | boolean { return value; }\r\nexport function use(): string { const marker = \"😀\"; return parse(marker); }\r\n",
+        "public": {
+          "backends": [
+            {
+              "backend": "serena",
+              "ok": true,
+              "outcome": "ok",
+              "latencyMs": 5044
+            }
+          ],
+          "evidence": [
+            {
+              "id": "semantic-e2bf9dbb-c8be-4819-9a93-3451c8e4de2d-0",
+              "locator": {
+                "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-semantic-live-nJotIl",
+                "relativePath": "overloads.ts",
+                "range": {
+                  "startLine": 3,
+                  "endLineExclusive": 5
+                }
+              },
+              "method": "lsp",
+              "textKind": "source",
+              "sourceCheck": "matched",
+              "anchor": {
+                "workspaceId": "workspace-32f4ccdb168baed40632e60eae94d320",
+                "fileId": "overloads.ts",
+                "relativePath": "overloads.ts",
+                "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 143,
+                  "endByte": 325
+                },
+                "kind": "Constant",
+                "occurrenceId": "overloads.ts:3:0:use/marker"
+              },
+              "semanticObservation": {
+                "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+                "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+                "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "overloads.ts",
+                "diagnosticsStatus": "not_reported"
+              },
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in overloads.ts",
+                "returned": 1,
+                "omitted": 0
+              },
+              "relatedAnchors": [
+                {
+                  "role": "containing-symbol",
+                  "anchor": {
+                    "workspaceId": "workspace-32f4ccdb168baed40632e60eae94d320",
+                    "fileId": "overloads.ts",
+                    "relativePath": "overloads.ts",
+                    "contentHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+                    "span": {
+                      "coordinateSystem": "utf8-bytes",
+                      "startByte": 245,
+                      "endByte": 323
+                    },
+                    "kind": "Constant",
+                    "occurrenceId": "overloads.ts:4:0:use/marker"
+                  }
+                }
+              ],
+              "provenance": [
+                {
+                  "backend": "serena",
+                  "operation": "references",
+                  "backendVersion": "unknown",
+                  "adapterVersion": "0.3.0",
+                  "executionId": "semantic-e2bf9dbb-c8be-4819-9a93-3451c8e4de2d"
+                }
+              ]
+            }
+          ],
+          "semanticObservations": [
+            {
+              "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+              "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+              "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+              "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "overloads.ts",
+              "diagnosticsStatus": "not_reported"
+            }
+          ],
+          "issues": []
+        }
+      }
+    },
+    "SEM-03": {
+      "status": "PASS",
+      "observations": {
+        "observation": {
+          "sessionEpoch": "12eed13d2b644488842b599eeedf670b",
+          "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+          "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+          "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+          "documentVersion": 0,
+          "buildContextDigest": null,
+          "positionEncoding": "utf-16",
+          "scope": "own-buffer",
+          "relativePath": "overloads.ts",
+          "diagnosticsStatus": "not_reported"
+        },
+        "public_observation": {
+          "sessionEpoch": "193325720707467ba20a53dc96a16e2c",
+          "serverProfileDigest": "1b7c2057bc4695e252159cc9816f73db634b67786a9a498f429faa8dfb1d6741",
+          "fileHash": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+          "bufferHash": "18c95dcb6bcb0c248dc5bab725ed8d11d2fe764596e58eae772cf427b4480aeb",
+          "documentVersion": 0,
+          "buildContextDigest": null,
+          "positionEncoding": "utf-16",
+          "scope": "own-buffer",
+          "relativePath": "overloads.ts",
+          "diagnosticsStatus": "not_reported"
+        },
+        "scope_claim": "own-buffer; owned LSP version and UTF-8 hash observed",
+        "language_server": {
+          "path": "/opt/homebrew/lib/node_modules/typescript-language-server/lib/cli.mjs",
+          "sha256": "3c2a7818315bd8399e56f461fe7da01c0f8f67a9c66108af0b655605b088dd77"
+        }
+      }
+    },
+    "SEM-04": {
+      "status": "PASS",
+      "observations": {
+        "line_ending": "CRLF",
+        "position_encoding": "utf-16",
+        "fixture_sha256": "a3d05bbd9cec673ee137d0ab016310d0562acd0b98bdbd15ec0d00812ff8c157",
+        "exact_excerpt": "export function use(): string { const marker = \"😀\"; return parse(marker); }",
+        "reference_excerpt": "export function parse(value: string | number | boolean): string | number | boolean { return value; }\r\nexport function use(): string { const marker = \"😀\"; return parse(marker); }\r\n",
+        "emoji_utf8": "f09f9880"
+      }
+    },
+    "SEM-08-controlled": {
+      "status": "PASS",
+      "observations": {
+        "error_push": {
+          "outcome": "ok",
+          "evidence": [
+            {
+              "id": "serena-0-clean.py:0",
+              "kind": "diagnostic",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "clean.py",
+                "relativePath": "clean.py",
+                "contentHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 0,
+                  "endByte": 1
+                },
+                "kind": "diagnostic",
+                "occurrenceId": "clean.py:0:0:clean.py:0"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "clean.py:0"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "9e5ec09fa03148b99d1ea2b672ad6e3d",
+                "serverProfileDigest": "f12aa0907ad40bae0b9d757129221269ce6d96574b2fb0245893f6df5aeefc43",
+                "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+                "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "clean.py",
+                "diagnosticsStatus": "complete"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "controlled error",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in clean.py",
+                "returned": 1,
+                "omitted": 0
+              }
+            }
+          ],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 1,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "9e5ec09fa03148b99d1ea2b672ad6e3d",
+              "serverProfileDigest": "f12aa0907ad40bae0b9d757129221269ce6d96574b2fb0245893f6df5aeefc43",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        },
+        "empty_push": {
+          "outcome": "empty",
+          "evidence": [],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 0,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "9e5ec09fa03148b99d1ea2b672ad6e3d",
+              "serverProfileDigest": "f12aa0907ad40bae0b9d757129221269ce6d96574b2fb0245893f6df5aeefc43",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        },
+        "pull_error": {
+          "outcome": "ok",
+          "evidence": [
+            {
+              "id": "serena-0-clean.py:0",
+              "kind": "diagnostic",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "clean.py",
+                "relativePath": "clean.py",
+                "contentHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 0,
+                  "endByte": 1
+                },
+                "kind": "diagnostic",
+                "occurrenceId": "clean.py:0:0:clean.py:0"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "clean.py:0"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "5bbf3a1107464aabad5cbf28fab5f0ba",
+                "serverProfileDigest": "e753103bbefda6829a39788ad2f3bc3e1d64935c35cfac97855030efe2805ed5",
+                "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+                "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "clean.py",
+                "diagnosticsStatus": "complete"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "pull error",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in clean.py",
+                "returned": 1,
+                "omitted": 0
+              }
+            }
+          ],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 1,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "5bbf3a1107464aabad5cbf28fab5f0ba",
+              "serverProfileDigest": "e753103bbefda6829a39788ad2f3bc3e1d64935c35cfac97855030efe2805ed5",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        },
+        "pull_empty": {
+          "outcome": "empty",
+          "evidence": [],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 0,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "5bbf3a1107464aabad5cbf28fab5f0ba",
+              "serverProfileDigest": "e753103bbefda6829a39788ad2f3bc3e1d64935c35cfac97855030efe2805ed5",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        },
+        "pull_profile": "e753103bbefda6829a39788ad2f3bc3e1d64935c35cfac97855030efe2805ed5"
+      }
+    },
+    "SEM-08": {
+      "status": "PASS",
+      "observations": {
+        "no_diagnostic_message": {
+          "outcome": "unavailable",
+          "evidence": [],
+          "issues": [
+            {
+              "code": "unsupported_capability",
+              "component": "semantic",
+              "message": "language server did not publish or return diagnostics",
+              "retryable": false
+            }
+          ],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": false,
+            "scopeDescription": "none",
+            "returned": 0,
+            "omitted": 0
+          },
+          "consistency": "unknown",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "16bdb687732e4713be12a2d2bcecdaf7",
+              "serverProfileDigest": "ad943a59ada56c8810a44ca7a73e7d8aa023ecea452232a48be2e7f6e9a88da0",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "not_reported"
+            }
+          ]
+        },
+        "controlled_protocol_fixture": "silent push-only LSP: no publishDiagnostics and pull request rejected",
+        "completed_empty": {
+          "outcome": "empty",
+          "evidence": [],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 0,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "c21e8b8f220848bebc5d6f007756d908",
+              "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        },
+        "error_report": {
+          "outcome": "ok",
+          "evidence": [
+            {
+              "id": "serena-0-clean.py:0",
+              "kind": "diagnostic",
+              "anchor": {
+                "workspaceId": "semantic-live-proof",
+                "fileId": "clean.py",
+                "relativePath": "clean.py",
+                "contentHash": "291d3185a0693e8e355c4a02be205ac0c4302ac1450afd7f49132142dc07e5cd",
+                "span": {
+                  "coordinateSystem": "utf8-bytes",
+                  "startByte": 62,
+                  "endByte": 67
+                },
+                "kind": "diagnostic",
+                "occurrenceId": "clean.py:1:32:clean.py:0"
+              },
+              "aliases": [
+                {
+                  "engine": "serena",
+                  "engineRevision": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+                  "nativeId": "clean.py:0"
+                }
+              ],
+              "method": "lsp",
+              "sourceCheck": "unchecked",
+              "projectionView": null,
+              "semanticObservation": {
+                "sessionEpoch": "c21e8b8f220848bebc5d6f007756d908",
+                "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+                "fileHash": "291d3185a0693e8e355c4a02be205ac0c4302ac1450afd7f49132142dc07e5cd",
+                "bufferHash": "f37fe778ac7302a783fdb17a48449d104e46a3fac96c4d095690fa908d46099d",
+                "documentVersion": 0,
+                "buildContextDigest": null,
+                "positionEncoding": "utf-16",
+                "scope": "own-buffer",
+                "relativePath": "clean.py",
+                "diagnosticsStatus": "complete"
+              },
+              "relevanceScore": null,
+              "textKind": "description",
+              "text": "Type \"Literal['bad']\" is not assignable to declared type \"int\"\n  \"Literal['bad']\" is not assignable to \"int\"",
+              "coverage": {
+                "kind": "semantic_scope",
+                "completeWithinScope": true,
+                "scopeDescription": "Serena semantic result in clean.py",
+                "returned": 1,
+                "omitted": 0
+              }
+            }
+          ],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 1,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "c21e8b8f220848bebc5d6f007756d908",
+              "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+              "fileHash": "291d3185a0693e8e355c4a02be205ac0c4302ac1450afd7f49132142dc07e5cd",
+              "bufferHash": "f37fe778ac7302a783fdb17a48449d104e46a3fac96c4d095690fa908d46099d",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        },
+        "real_pyright_clean": {
+          "outcome": "empty",
+          "evidence": [],
+          "issues": [],
+          "coverage": {
+            "kind": "semantic_scope",
+            "completeWithinScope": true,
+            "scopeDescription": "Serena semantic scope",
+            "returned": 0,
+            "omitted": 0
+          },
+          "consistency": "live-observation",
+          "semanticObservations": [
+            {
+              "sessionEpoch": "c21e8b8f220848bebc5d6f007756d908",
+              "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
+              "fileHash": "a3e39d5ad11e24df37aca1241340d49feb8d3f2c266de007c0b8bdf1266141c3",
+              "bufferHash": "d99fd85a1a9b156db9e9251d41b81b653c305dcc983d5670bc9fdd0ca93766bb",
+              "documentVersion": 0,
+              "buildContextDigest": null,
+              "positionEncoding": "utf-16",
+              "scope": "own-buffer",
+              "relativePath": "clean.py",
+              "diagnosticsStatus": "complete"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "pre_fix_failures": [
+    {
+      "case": "SEM02",
+      "observed": {
+        "outcome": "error",
+        "issue": "worker_failed: Found multiple 4 symbols matching 'parse'"
+      }
+    },
+    {
+      "case": "SEM02-containing-anchor",
+      "observed": {
+        "outcome": "ok",
+        "evidence_count": 1,
+        "related_anchors": []
+      }
+    }
+  ],
+  "commands": [
+    "npm --prefix packages/core run build",
+    "node --test test/semantic-negative.test.js",
+    "node scripts/verify-semantic.mjs --write"
+  ],
+  "source_identity": {
+    "serena_commit": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+    "typescript_language_server": "/opt/homebrew/lib/node_modules/typescript-language-server/lib/cli.mjs",
+    "pyright_language_server": "/opt/homebrew/lib/node_modules/pyright/langserver.index.js"
+  },
+  "source_integrity": {
+    "semantic_adapter_sha256": "3d2c784cb38bd5bf0ca5872646617cdab400c1bdf2d73ff7d6689d3b59948dd7",
+    "serena_facade_sha256": "641e21e33a618c3786173d68c08f88528d62a83c6a01a1656f6bfd1068271b88"
+  },
+  "cleanup": "temporary fixture removed after live calls"
+}

@@ -44,6 +44,16 @@ class Bridge:
                 include_kinds=[int(x) for x in payload.get("includeKinds", [])],
                 exclude_kinds=[int(x) for x in payload.get("excludeKinds", [])],
             )
+        if operation == "implementations":
+            return session.find_implementations(
+                str(payload["namePath"]),
+                str(payload.get("relativePath", "")),
+                include_body=bool(payload.get("includeBody", False)),
+                include_kinds=[int(x) for x in payload.get("includeKinds", [])],
+                exclude_kinds=[int(x) for x in payload.get("excludeKinds", [])],
+            )
+        if operation == "diagnostics":
+            return session.get_diagnostics(str(payload.get("relativePath", "")))
         if operation == "overview":
             return session.symbols_overview(str(payload["relativePath"]), depth=int(payload.get("depth", 0)))
         raise ValueError(f"unsupported semantic operation: {operation}")

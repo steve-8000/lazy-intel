@@ -23,13 +23,13 @@ export function workspaceHome(root: string): string {
   return join(resolve(root), ZVEC_GREP_DIR);
 }
 
-export function workspaceIndexLocation(root: string): WorkspaceIndexLocation {
+export function workspaceIndexLocation(root: string, stateRoot?: string): WorkspaceIndexLocation {
   const resolvedRoot = resolve(root);
-  const requestedHome = workspaceHome(resolvedRoot);
+  const requestedHome = stateRoot === undefined ? workspaceHome(resolvedRoot) : resolve(stateRoot);
   const home = existsSync(requestedHome)
     ? realpathSync(requestedHome)
     : requestedHome;
-  const canonicalRoot = dirname(home);
+  const canonicalRoot = stateRoot === undefined ? dirname(home) : resolvedRoot;
 
   return {
     root: canonicalRoot,

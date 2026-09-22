@@ -25,9 +25,8 @@ test("a byte span renders as exactly the lines it covers", () => {
   assert.deepEqual(__internals.lineRangeForSpan(bytes, { coordinateSystem: "utf8-bytes", startByte: beta, endByte: gamma + 5 }), { startLine: 1, endLineExclusive: 3 });
   // The first line is line zero, not line one.
   assert.deepEqual(__internals.lineRangeForSpan(bytes, { coordinateSystem: "utf8-bytes", startByte: 0, endByte: 5 }), { startLine: 0, endLineExclusive: 1 });
-  // A span past the end of the file is clamped rather than producing a line count
-  // larger than the file has lines.
-  assert.deepEqual(__internals.lineRangeForSpan(bytes, { coordinateSystem: "utf8-bytes", startByte: 0, endByte: bytes.length + 500 }), { startLine: 0, endLineExclusive: 5 });
+  // A trailing newline does not add an evidence-bearing empty line.
+  assert.deepEqual(__internals.lineRangeForSpan(bytes, { coordinateSystem: "utf8-bytes", startByte: 0, endByte: bytes.length + 500 }), { startLine: 0, endLineExclusive: 4 });
 });
 
 test("multi-byte characters do not shift the reported line", () => {
@@ -61,8 +60,7 @@ test("the unified engine serves a real search through the vendored library", { s
     await writeFile(path.join(workspace, "discount.mjs"), "// Percentage discounts reduce an invoice amount in integer cents.\nexport function applyDiscount(cents, percent) { return Math.round(cents * (100 - percent) / 100); }\n");
     await writeFile(path.join(workspace, "invoice.mjs"), "import { applyDiscount } from './discount.mjs';\nexport function invoiceTotal(cents, percent) { return applyDiscount(cents, percent); }\n");
 
-    // A child process, because the unified path starts long-lived workers and the
-    // engine module reads LAZY_INTEL_ENGINE once at import.
+    // A child process owns the workers and workspace lifecycle for this probe.
     const probe = `
       const { codeIntel } = await import(${JSON.stringify(path.join(ROOT, "src/engine.js"))});
       const { closeUnified } = await import(${JSON.stringify(path.join(ROOT, "src/unified.js"))});
@@ -74,7 +72,7 @@ test("the unified engine serves a real search through the vendored library", { s
       cwd: ROOT,
       timeout: 540_000,
       maxBuffer: 32 * 1024 * 1024,
-      env: { ...process.env, LAZY_INTEL_ENGINE: "unified", LAZY_INTEL_ROOT: workspace, LAZY_INTEL_ALLOWED_ROOTS: workspace, LAZY_INTEL_AUTO_INDEX: "false", LAZY_INTEL_MAINTENANCE_MS: "0" },
+      env: { ...process.env, LAZY_INTEL_ROOT: workspace, LAZY_INTEL_ALLOWED_ROOTS: workspace, LAZY_INTEL_AUTO_INDEX: "false", LAZY_INTEL_MAINTENANCE_MS: "0" },
     });
 
     const line = stdout.split("\n").find((entry) => entry.startsWith("RESULT:"));
@@ -83,22 +81,54 @@ test("the unified engine serves a real search through the vendored library", { s
 
     assert.equal(result.isError, false, JSON.stringify(result));
     assert.deepEqual(result.backends.map((row) => row.backend), ["zvec"]);
-    assert.ok(["ok", "empty"].includes(result.backends[0].outcome), `unexpected outcome ${result.backends[0].outcome}`);
-    // The whole point of the unified path: retrieval evidence is anchored, not one
-    // opaque block of CLI prose the way the legacy adapter had to emit it.
-    if (result.backends[0].outcome === "ok") {
-      assert.ok(result.evidence.length > 0, "an ok retrieval read must carry evidence");
-      assert.ok(
-        result.evidence.some((descriptor) => descriptor.method !== "opaque" && descriptor.locator?.relativePath),
-        `unified retrieval produced no anchored evidence: ${JSON.stringify(result.evidence)}`,
-      );
-    }
+    assert.equal(result.backends[0].outcome, "ok", JSON.stringify(result));
+    assert.ok(result.evidence.some((descriptor) => descriptor.method !== "opaque" && descriptor.locator?.relativePath === "discount.mjs"),
+      `the real discount fixture must have anchored evidence: ${JSON.stringify(result.evidence)}`);
   } finally {
     await rm(workspace, { recursive: true, force: true });
   }
 });
 
 
+test("public unified retrieval returns a valid empty result after deleting the last indexed file", { skip: BUILT ? false : "run npm run build first", timeout: 600_000 }, async () => {
+  const workspace = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-unified-empty-"));
+  try {
+    await writeFile(path.join(workspace, "only.txt"), "public_empty_unique_marker_7f5b\n", "utf8");
+    const probe = `
+      import { rm } from "node:fs/promises";
+      const { codeIntel } = await import(${JSON.stringify(path.join(ROOT, "src/engine.js"))});
+      const { closeUnified } = await import(${JSON.stringify(path.join(ROOT, "src/unified.js"))});
+      try {
+        const first = await codeIntel({ operation: "sync", backend: "zvec", root: ${JSON.stringify(workspace)}, timeoutMs: 120000, indexTimeoutMs: 300000 });
+        await rm(${JSON.stringify(path.join(workspace, "only.txt"))});
+        const deleted = await codeIntel({ operation: "sync", backend: "zvec", root: ${JSON.stringify(workspace)}, timeoutMs: 120000, indexTimeoutMs: 300000 });
+        const result = await codeIntel({ operation: "search", backend: "zvec", root: ${JSON.stringify(workspace)}, query: "public_empty_unique_marker_7f5b", freshness: "strict", limit: 20, maxChars: 32000, timeoutMs: 120000, indexTimeoutMs: 300000 });
+        process.stdout.write("RESULT:" + JSON.stringify({ first: first.meta, deleted: deleted.meta, result: { isError: result.isError, meta: result.meta } }) + "\\n");
+      } finally {
+        await closeUnified();
+      }
+    `;
+    const { stdout } = await run(process.execPath, ["--input-type=module", "-e", probe], {
+      cwd: ROOT,
+      timeout: 540_000,
+      maxBuffer: 32 * 1024 * 1024,
+      env: { ...process.env, LAZY_INTEL_ROOT: workspace, LAZY_INTEL_ALLOWED_ROOTS: workspace, LAZY_INTEL_AUTO_INDEX: "false", LAZY_INTEL_MAINTENANCE_MS: "0" },
+    });
+    const line = stdout.split("\n").find((entry) => entry.startsWith("RESULT:"));
+    assert.ok(line, `unified empty probe produced no result:\n${stdout}`);
+    const result = JSON.parse(line.slice("RESULT:".length));
+    assert.equal(result.first.status, "ok", JSON.stringify(result));
+    assert.equal(result.deleted.status, "ok", JSON.stringify(result));
+    assert.equal(result.result.isError, false, JSON.stringify(result));
+    assert.equal(result.result.meta.status, "empty", JSON.stringify(result));
+    assert.deepEqual(result.result.meta.evidence, [], JSON.stringify(result));
+    assert.deepEqual(result.result.meta.issues, [], JSON.stringify(result));
+    assert.equal(result.result.meta.backends[0].outcome, "empty", JSON.stringify(result));
+    assert.ok(result.result.meta.views.every((view) => view.state === "clean"), JSON.stringify(result));
+  } finally {
+    await rm(workspace, { recursive: true, force: true });
+  }
+});
 /** Never discovered, never installed: the operator names the executable or there is none. */
 const PYRIGHT = process.env.LAZY_INTEL_TEST_PYRIGHT ?? "/opt/homebrew/bin/pyright-langserver";
 
