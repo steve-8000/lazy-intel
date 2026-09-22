@@ -168,7 +168,7 @@ export async function indexWorkspacePrepared(
   batch: PreparedSnapshotBatch,
 ): Promise<PreparedSnapshotResult> {
   try {
-    return await ingestPreparedSnapshots(ctx.storage, ctx.embeddingModel, batch);
+    return await ingestPreparedSnapshots(ctx.storage, ctx.embeddingModel, batch, ctx.signal);
   } catch (error) {
     throw toEngineError(error, "Prepared snapshot ingestion failed", {
       code: "ZVEC_GREP.ENGINE.INDEXING.WORKSPACE_FAILED",

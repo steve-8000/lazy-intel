@@ -98,7 +98,7 @@ export class WorkspaceIndex {
       : indexWorkspace(context);
   }
 
-  indexPrepared(batch: PreparedSnapshotBatch): Promise<PreparedSnapshotResult> {
+  indexPrepared(batch: PreparedSnapshotBatch, signal?: AbortSignal): Promise<PreparedSnapshotResult> {
     if (this.storage.readOnly) {
       throw new EngineError("Cannot update a read-only workspace index", {
         code: "ZVEC_GREP.ENGINE.WORKSPACE_INDEX.READ_ONLY",
@@ -111,6 +111,7 @@ export class WorkspaceIndex {
         workspaceIndex: this.info,
         embeddingModel,
         storage: this.storage,
+        signal,
       },
       batch,
     );

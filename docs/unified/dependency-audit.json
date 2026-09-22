@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "unit": "U00",
-  "generated_at": "2026-09-22T22:52:20.279Z",
+  "generated_at": "2026-09-22T23:29:23.326Z",
   "method": {
     "node": "Enumerated only the explicit installed roots vendor/zvec-grep/node_modules, vendor/codegraph/node_modules, packages/core/node_modules (runtime), and root node_modules (separate dev baseline). Traversal follows package/node_modules boundaries; fixture subtrees and arbitrary package.json files are excluded.",
     "python": "Read importlib.metadata from workers/semantic/.venv. License-Expression, License, License classifiers, and existing .dist-info license/notice files are retained with resolved paths and SHA-256 hashes.",

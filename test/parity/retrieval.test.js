@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
-import { mkdtemp, rm, rename, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, rename, writeFile, readFile, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { createZvecGrep } from "../../vendor/zvec-grep/dist/lazy-entry.js";
@@ -238,6 +238,72 @@ test("oversized unicode code chunks preserve UTF16 native and UTF8 source bounda
     assert.ok(later);
     assert.match(later.content.text, /é漢😀/);
   } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("full prepared builds compact the shared embedding cache and incremental builds retain unrelated keys", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "lazy-intel-retrieval-cache-gc-"));
+  const stateRoot = path.join(root, ".lazy-intel", "state");
+  const cache = cachePath(stateRoot);
+  const calls = [];
+  const embeddingModel = model(calls);
+  const alpha = snapshot(root, "alpha.txt", "cache_alpha_unique_marker\n", "text");
+  const beta = snapshot(root, "beta.txt", "cache_beta_unique_marker\n", "text");
+  const gamma = snapshot(root, "gamma.txt", "cache_gamma_unique_marker\n", "text");
+  const service = await createZvecGrep({ root, stateRoot, embeddingModel, embeddingModelOwnership: "borrowed" });
+  const keysFor = async (item) => {
+    const prepared = await prepareSnapshot(item, embeddingModel);
+    const identity = JSON.stringify({
+      reference: embeddingModel.info.reference,
+      provider: embeddingModel.info.provider,
+      name: embeddingModel.info.name,
+      dimension: embeddingModel.info.dimension,
+      metric: embeddingModel.info.metric,
+      inputKinds: embeddingModel.info.inputKinds,
+      maxInputTokens: embeddingModel.info.limits.maxInputTokens,
+    });
+    return prepared.embeddingInputs.map(({ text }) => createHash("sha256").update(identity + "\n" + text.normalize("NFC").replace(/\r\n?/g, "\n")).digest("hex"));
+  };
+  const records = async () => (await readFile(cache, "utf8")).trim().split("\n").filter(Boolean).map((line) => JSON.parse(line));
+  const embeddedCount = () => calls.reduce((total, batch) => total + batch.length, 0);
+  try {
+    for (const item of [alpha, beta, gamma]) await writeFile(item.file.absolutePath, item.content.text, "utf8");
+    await service.indexPrepared({ stateRoot, embeddingCachePath: cache, batch: { upserts: [alpha], full: true, batchId: "full-corpus", part: 0, final: false } });
+    assert.deepEqual(new Set((await records()).map(({ key }) => key)), new Set(await keysFor(alpha)), "first part records keys without compacting");
+    await service.indexPrepared({ stateRoot, embeddingCachePath: cache, batch: { upserts: [beta], full: true, batchId: "full-corpus", part: 1, final: true } });
+    const originalKeys = new Set((await records()).map(({ key }) => key));
+    const sizeWithAlphaAndBeta = (await stat(cache)).size;
+    assert.deepEqual(originalKeys, new Set([...(await keysFor(alpha)), ...(await keysFor(beta))]));
+
+    await service.indexPrepared({ stateRoot, embeddingCachePath: cache, batch: { upserts: [gamma] } });
+    const afterIncremental = new Set((await records()).map(({ key }) => key));
+    assert.ok([...originalKeys].every((key) => afterIncremental.has(key)), "incremental builds retain cached chunks outside the changed files");
+    assert.ok((await keysFor(gamma)).every((key) => afterIncremental.has(key)));
+
+    const cacheBeforeCancelledBuild = await readFile(cache);
+    const cancelled = new AbortController();
+    cancelled.abort();
+    await assert.rejects(service.indexPrepared({
+      stateRoot,
+      embeddingCachePath: cache,
+      batch: { upserts: [alpha], full: true, batchId: "cancelled-full", part: 0, final: true },
+      signal: cancelled.signal,
+    }));
+    assert.deepEqual(await readFile(cache), cacheBeforeCancelledBuild, "cancelled full builds leave the cache unchanged");
+
+    await service.indexPrepared({ stateRoot, embeddingCachePath: cache, batch: { upserts: [alpha], deletedFileIds: [beta.file.id, gamma.file.id], full: true } });
+    const compacted = await records();
+    const sizeWithAlphaOnly = (await stat(cache)).size;
+    assert.deepEqual(new Set(compacted.map(({ key }) => key)), new Set(await keysFor(alpha)));
+    assert.ok(sizeWithAlphaOnly < sizeWithAlphaAndBeta, "full rebuild reduces cache bytes to the active corpus");
+
+    const embeddingsBeforeReuse = embeddedCount();
+    await service.indexPrepared({ stateRoot, embeddingCachePath: cache, batch: { upserts: [alpha], full: true } });
+    assert.equal(embeddedCount(), embeddingsBeforeReuse, "the next full build reuses every compacted embedding");
+    console.log(`embedding cache bytes: ${sizeWithAlphaAndBeta} -> ${sizeWithAlphaOnly}; incremental retained ${afterIncremental.size} keys; reuse embeds=${embeddedCount() - embeddingsBeforeReuse}`);
+  } finally {
+    await service.close();
     await rm(root, { recursive: true, force: true });
   }
 });

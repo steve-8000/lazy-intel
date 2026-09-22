@@ -24,7 +24,7 @@
     {
       "path": "src/engine/pipeline/indexing/index.ts",
       "original_blob": "90f61d994d7284834a08151b2c6766c4a5bbde8b",
-      "resulting_blob": "88f9e28742519930bc7b3d4dd3c2fffb7c16e085",
+      "resulting_blob": "e439547aa4d5695da557edb6b1da7c24f113b6bb",
       "unit": "U07",
       "reason": "Added the prepared snapshot indexing entrypoint while retaining the stock storage lifecycle and finalizeWrites durability boundary.",
       "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
@@ -49,7 +49,6 @@
       "path": "src/engine/service/types.ts",
       "original_blob": "1017431714998992853136dbfc5f9b4d959899e9",
       "resulting_blob": "add9a8fc9e94306340a4a9e0f467033d52ff4e9f",
-      "unit": "BUILD05,MEM01",
       "reason": "Expose explicit stateRoot and prepared snapshot apply service types for the headless worker. Expose releaseEmbeddingResources on the public ZvecGrep service type.",
       "test_evidence": "vendor build; prepared retrieval smoke. vendor build; memory release proof; verify-vendor."
     },
@@ -88,10 +87,10 @@
     {
       "path": "src/engine/storage/index.ts",
       "original_blob": "0d37b8c41162b8b4fdb2620f22c2056b4bc2d4f8",
-      "resulting_blob": "ceb15bbce7db25523b6d4409a39089f550370a80",
+      "resulting_blob": "b8e2be8125361e8500d1d487f670b999e8026f71",
       "unit": "U12",
-      "reason": "Stores the content-addressed embedding cache outside rotating publication stores while preserving model- and normalized-chunk-key validity.",
-      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+      "reason": "Stores the content-addressed embedding cache outside rotating publication stores and exposes build-scoped cache usage/compaction operations.",
+      "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
     },
     {
       "path": "src/engine/storage/layout.ts",
@@ -104,15 +103,15 @@
     {
       "path": "src/engine/storage/zvec.ts",
       "original_blob": "c1040e6a5555224e9dc57e7bda554039d1e71a5d",
-      "resulting_blob": "776e63a477186bb11e5c552aa3c660338964b8e4",
+      "resulting_blob": "2b0fa5f0067b76eb2708741ddbc835d27361adfc",
       "unit": "U12",
-      "reason": "Opens the embedding cache at the explicit workspace location, creating its parent without coupling cache lifetime to a publication store.",
-      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+      "reason": "Opens the shared workspace embedding cache and tracks build-used keys for crash-safe atomic full-build compaction with rebuilt read offsets.",
+      "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
     },
     {
       "path": "src/engine/service/workspace-index.ts",
       "original_blob": "b82bb1a5e54747d944a98941fd22fab9eb382591",
-      "resulting_blob": "d18757e4f1c03023ce311697ab4f2caef9200458",
+      "resulting_blob": "0aade6bba2ff1250dc8626d3bf6d509223da67c2",
       "unit": "U12",
       "reason": "Requires writable workspace index construction to receive the explicit shared embedding-cache path.",
       "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
@@ -120,7 +119,7 @@
     {
       "path": "src/engine/service/types.ts",
       "original_blob": "1017431714998992853136dbfc5f9b4d959899e9",
-      "resulting_blob": "ef1e96f6d9d71ff3e5888f1b52b4d9cd6d3522ba",
+      "resulting_blob": "344ad90890a9bf96d45f6c0fe9ebdcb54caa895b",
       "unit": "U12",
       "reason": "Exposes the explicit shared embedding-cache path on prepared apply and service options.",
       "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
@@ -128,13 +127,13 @@
     {
       "path": "src/engine/service/zvec-grep.ts",
       "original_blob": "11e6a763c325a7b882631710b08a87f9ebb2f084",
-      "resulting_blob": "92e91af74c3058adefe2f0ff58efdb9523fda84e",
+      "resulting_blob": "ce25ef73c006b6efdbf03cb79a611d1f2427e561",
       "unit": "U12",
       "reason": "Threads the explicit shared embedding-cache path through prepared and regular writable workspace-index creation.",
       "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
     }
   ],
-  "patch_revision": 5,
+  "patch_revision": 7,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
@@ -146,7 +145,7 @@
   ],
   "added_files_sha256": {
     "src/lazy-entry.ts": "dae498d7e51d7171bb76f9a97e8918e8e539f7eb26b5a205f21e19cfe70ec85d",
-    "src/engine/pipeline/indexing/prepared.ts": "91a7b02c039d54cf33757a7523a9395e323f1c6d80df1771f004358b9a189d96"
+    "src/engine/pipeline/indexing/prepared.ts": "11c69c9aba1052cd254ec9117ea89b3385f113ae06440db65f96d2a618c1ea5e"
   },
   "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
   "manifest": [

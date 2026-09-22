@@ -15,12 +15,16 @@ import {
 import {
   closeSync,
   existsSync,
+  fsyncSync,
   mkdirSync,
   openSync,
   readFileSync,
   readSync,
+  renameSync,
+  rmSync,
   writeSync,
 } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
 import { EngineError } from "../errors.js";
 import type {
@@ -56,10 +60,14 @@ type IndexedFragment = {
   fragment: EntityFragment;
   vector: readonly number[];
 };
+const embeddingCacheBuildKeys = new Map<string, Set<string>>();
+
 class EmbeddingCache {
   private readonly locations = new Map<string, { offset: number; length: number }>();
-  private readonly fileDescriptor: number | null;
+  private fileDescriptor: number | null;
   private fileSize: number;
+  private usedKeys = new Set<string>();
+  private buildKey?: string;
 
   constructor(private readonly path: string, readOnly: boolean) {
     if (!readOnly && existsSync(path)) this.indexExistingEntries();
@@ -73,6 +81,7 @@ class EmbeddingCache {
     for (const key of keys) {
       const location = this.locations.get(key);
       if (!location || fileDescriptor === null) continue;
+      this.usedKeys.add(key);
       const bytes = Buffer.allocUnsafe(location.length);
       readSync(fileDescriptor, bytes, 0, location.length, location.offset);
       const entry = JSON.parse(bytes.toString("utf8")) as EmbeddingCacheEntry;
@@ -85,11 +94,82 @@ class EmbeddingCache {
     const fileDescriptor = this.fileDescriptor;
     if (fileDescriptor === null) return;
     for (const entry of entries) {
-      if (this.locations.has(entry.key)) continue;
+      if (this.locations.has(entry.key)) {
+        this.usedKeys.add(entry.key);
+        continue;
+      }
       const bytes = Buffer.from(JSON.stringify(entry) + "\n");
       writeSync(fileDescriptor, bytes, 0, bytes.length, this.fileSize);
       this.locations.set(entry.key, { offset: this.fileSize, length: bytes.length - 1 });
+      this.usedKeys.add(entry.key);
       this.fileSize += bytes.length;
+    }
+  }
+
+  beginBuild(batchId?: string, firstPart = true): void {
+    if (batchId === undefined) {
+      this.buildKey = undefined;
+      this.usedKeys = new Set();
+      return;
+    }
+    this.buildKey = `${this.path}\0${batchId}`;
+    let keys = embeddingCacheBuildKeys.get(this.buildKey);
+    if (!keys || firstPart) {
+      keys = new Set();
+      embeddingCacheBuildKeys.set(this.buildKey, keys);
+    }
+    this.usedKeys = keys;
+  }
+
+  discardBuild(batchId?: string): void {
+    if (batchId !== undefined) embeddingCacheBuildKeys.delete(`${this.path}\0${batchId}`);
+    if (this.buildKey === undefined || batchId === undefined || this.buildKey.endsWith(`\0${batchId}`)) {
+      this.usedKeys.clear();
+      this.buildKey = undefined;
+    }
+  }
+
+  compact(batchId?: string): void {
+    const source = this.fileDescriptor;
+    if (source === null) return;
+    const temporaryPath = `${this.path}.${process.pid}.${randomUUID()}.tmp`;
+    const temporary = openSync(temporaryPath, "wx", 0o600);
+    let temporaryOpen = true;
+    try {
+      let offset = 0;
+      const locations = new Map<string, { offset: number; length: number }>();
+      for (const key of this.usedKeys) {
+        const location = this.locations.get(key);
+        if (!location) continue;
+        const bytes = Buffer.allocUnsafe(location.length);
+        readSync(source, bytes, 0, location.length, location.offset);
+        const record = Buffer.concat([bytes, Buffer.from("\n")]);
+        writeSync(temporary, record, 0, record.length, offset);
+        locations.set(key, { offset, length: bytes.length });
+        offset += record.length;
+      }
+      fsyncSync(temporary);
+      closeSync(temporary);
+      temporaryOpen = false;
+      renameSync(temporaryPath, this.path);
+      const directory = openSync(dirname(this.path), "r");
+      try {
+        fsyncSync(directory);
+      } finally {
+        closeSync(directory);
+      }
+      closeSync(source);
+      this.fileDescriptor = openSync(this.path, "a+");
+      this.fileSize = offset;
+      this.locations.clear();
+      for (const [key, location] of locations) this.locations.set(key, location);
+      if (batchId !== undefined) embeddingCacheBuildKeys.delete(`${this.path}\0${batchId}`);
+      this.usedKeys = new Set();
+      this.buildKey = undefined;
+    } catch (error) {
+      if (temporaryOpen) closeSync(temporary);
+      rmSync(temporaryPath, { force: true });
+      throw error;
     }
   }
 
@@ -319,6 +399,28 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
     this.persistFile(indexedFile);
   }
 
+  getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]> {
+    return this.embeddingCache.get(keys);
+  }
+
+  putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void {
+    this.assertWritable("putCachedEmbeddings");
+    this.embeddingCache.put(entries);
+  }
+
+  beginEmbeddingCacheBuild(batchId?: string, firstPart?: boolean): void {
+    this.embeddingCache.beginBuild(batchId, firstPart);
+  }
+
+  compactEmbeddingCache(batchId?: string): void {
+    this.assertWritable("compactEmbeddingCache");
+    this.embeddingCache.compact(batchId);
+  }
+
+  discardEmbeddingCacheBuild(batchId?: string): void {
+    this.embeddingCache.discardBuild(batchId);
+  }
+
   private upsertDocs(fileId: string, docs: readonly ZVecDocInput[]): void {
     for (let start = 0; start < docs.length; start += ZVEC_UPSERT_BATCH_SIZE) {
       const batch = docs.slice(start, start + ZVEC_UPSERT_BATCH_SIZE);
@@ -334,14 +436,6 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
     }
   }
 
-  getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]> {
-    return this.embeddingCache.get(keys);
-  }
-
-  putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void {
-    this.assertWritable("putCachedEmbeddings");
-    this.embeddingCache.put(entries);
-  }
 
   markFileFailed(file: FileInfo, error: string): void {
     this.assertWritable("markFileFailed");

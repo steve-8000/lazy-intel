@@ -24,6 +24,10 @@ export interface PreparedSnapshotBatch {
   readonly upserts: readonly PreparedSnapshot[];
   readonly deletedFileIds?: readonly string[];
   readonly deletedPaths?: readonly string[];
+  readonly full?: boolean;
+  readonly batchId?: string;
+  readonly part?: number;
+  readonly final?: boolean;
 }
 
 export interface PreparedSnapshotFile {
@@ -99,7 +103,14 @@ export async function ingestPreparedSnapshots(
   storage: WorkspaceIndexStorage,
   embeddingModel: EmbeddingModel,
   batch: PreparedSnapshotBatch,
+  signal?: AbortSignal,
 ): Promise<PreparedSnapshotResult> {
+  storage.beginEmbeddingCacheBuild(
+    batch.full === true ? batch.batchId : undefined,
+    batch.part === 0,
+  );
+  try {
+    signal?.throwIfAborted();
   let filesDeleted = 0;
   for (const fileId of batch.deletedFileIds ?? []) {
     storage.deleteFile(fileId);
@@ -144,15 +155,16 @@ export async function ingestPreparedSnapshots(
       start < pendingContents.length;
       start += embeddingModel.info.limits.maxBatchSize
     ) {
-      const batch = pendingContents.slice(
+      const embedBatch = pendingContents.slice(
         start,
         start + embeddingModel.info.limits.maxBatchSize,
       );
       const result = await embeddingModel.embed(
-        batch.map(({ content }) => content),
+        embedBatch.map(({ content }) => content),
       );
+      signal?.throwIfAborted();
       const cacheEntries: { key: string; vector: readonly number[] }[] = [];
-      for (const [batchIndex, entry] of batch.entries()) {
+      for (const [batchIndex, entry] of embedBatch.entries()) {
         const vector = result.vectors[batchIndex] ?? [];
         for (const duplicate of pending.get(keys[entry.index] ?? "uncached:" + entry.index) ?? []) {
           vectors[duplicate.index] = vector;
@@ -172,11 +184,21 @@ export async function ingestPreparedSnapshots(
     prepared.push(file);
   }
 
+  signal?.throwIfAborted();
+
   await storage.finalizeWrites();
+  signal?.throwIfAborted();
+  if (batch.full === true && batch.final !== false) {
+    storage.compactEmbeddingCache(batch.batchId);
+  }
   return {
     filesIndexed: prepared.length,
     fragmentsIndexed: prepared.reduce((total, file) => total + file.fragments.length, 0),
     filesDeleted,
     files: prepared,
   };
+  } catch (error) {
+    if (batch.full === true) storage.discardEmbeddingCacheBuild(batch.batchId);
+    throw error;
+  }
 }

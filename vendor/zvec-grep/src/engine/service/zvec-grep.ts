@@ -369,7 +369,7 @@ class ZvecGrepService implements ZvecGrep {
     }
   }
 
-  async indexPrepared(options: { stateRoot: string; embeddingCachePath: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult> {
+  async indexPrepared(options: { stateRoot: string; embeddingCachePath: string; batch: PreparedSnapshotBatch; signal?: AbortSignal }): Promise<PreparedSnapshotResult> {
     this.ensureOpen();
     const root = this.root;
     const location = workspaceIndexLocation(root, options.stateRoot);
@@ -396,7 +396,7 @@ class ZvecGrepService implements ZvecGrep {
         );
         const workspaceIndex = new WorkspaceIndex(manifest, { mode: "write", embeddingModel, embeddingCachePath: options.embeddingCachePath });
         try {
-          const result = await workspaceIndex.indexPrepared(options.batch);
+          const result = await workspaceIndex.indexPrepared(options.batch, options.signal);
           writeWorkspaceManifest(location.home, { ...manifest, updatedTime: Date.now() });
           return result;
         } finally {

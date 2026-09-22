@@ -78,6 +78,9 @@ export interface WorkspaceIndexStorage {
   ): void;
   getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]>;
   putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void;
+  beginEmbeddingCacheBuild(batchId?: string, firstPart?: boolean): void;
+  compactEmbeddingCache(batchId?: string): void;
+  discardEmbeddingCacheBuild(batchId?: string): void;
   markFileFailed(file: FileInfo, error: string): void;
   deleteFile(fileId: string): void;
   finalizeWrites(): Promise<void>;

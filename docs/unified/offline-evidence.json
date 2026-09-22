@@ -1,7 +1,7 @@
 {
   "schemaVersion": "lazy-intel.offline-evidence.v1",
   "status": "PASS",
-  "generatedAt": "2026-09-22T22:53:58.824Z",
+  "generatedAt": "2026-09-22T23:31:12.864Z",
   "platform": {
     "platform": "darwin",
     "arch": "arm64",
@@ -31,7 +31,7 @@
     "buildRequired": "npm run build (does not download or change models)"
   },
   "compile": {
-    "library": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/offline-interposer.dylib",
+    "library": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/offline-interposer.dylib",
     "result": {
       "code": 0,
       "signal": null,
@@ -47,14 +47,14 @@
       "-Wall",
       "-Wextra",
       "-o",
-      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/offline-interposer.dylib",
+      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/offline-interposer.dylib",
       "/Users/steve/lazy-project/lazy-intel/scripts/native/offline_interposer.c"
     ]
   },
   "positiveControl": {
     "status": "PASS",
     "child": {
-      "pid": 98007,
+      "pid": 4281,
       "code": 0,
       "signal": null
     },
@@ -63,26 +63,26 @@
       {
         "kind": "attempt",
         "operation": "connect$NOCANCEL",
-        "pid": 98007,
-        "ppid": 97957,
+        "pid": 4281,
+        "ppid": 4220,
         "family": 2,
         "blocked": true,
         "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
-        "timeMs": 1790117626547
+        "timeMs": 1790119860810
       }
     ],
     "rawEvents": [
-      "{\"kind\":\"boot\",\"pid\":98007,\"ppid\":97957,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
-      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":98007,\"ppid\":97957,\"family\":2,\"blocked\":false,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\",\"timeMs\":1790117626546}",
-      "{\"kind\":\"attempt\",\"operation\":\"connect$NOCANCEL\",\"pid\":98007,\"ppid\":97957,\"family\":2,\"blocked\":true,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\",\"timeMs\":1790117626547}"
+      "{\"kind\":\"boot\",\"pid\":4281,\"ppid\":4220,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":4281,\"ppid\":4220,\"family\":2,\"blocked\":false,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\",\"timeMs\":1790119860809}",
+      "{\"kind\":\"attempt\",\"operation\":\"connect$NOCANCEL\",\"pid\":4281,\"ppid\":4220,\"family\":2,\"blocked\":true,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\",\"timeMs\":1790119860810}"
     ],
-    "stdout": "POSITIVE_RESULT:{\"pid\":98007,\"blocked\":true}\n",
+    "stdout": "POSITIVE_RESULT:{\"pid\":4281,\"blocked\":true}\n",
     "stderr": ""
   },
   "nativeControl": {
     "status": "PASS",
     "child": {
-      "pid": 98084,
+      "pid": 4358,
       "code": 0,
       "signal": null
     },
@@ -90,33 +90,33 @@
       {
         "kind": "attempt",
         "operation": "connect$NOCANCEL",
-        "pid": 98084,
-        "ppid": 97957,
+        "pid": 4358,
+        "ppid": 4220,
         "family": 2,
         "blocked": true,
-        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control",
-        "timeMs": 1790117628372
+        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control",
+        "timeMs": 1790119862468
       },
       {
         "kind": "attempt",
         "operation": "sendto",
-        "pid": 98084,
-        "ppid": 97957,
+        "pid": 4358,
+        "ppid": 4220,
         "family": 2,
         "blocked": true,
-        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control",
-        "timeMs": 1790117628372
+        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control",
+        "timeMs": 1790119862468
       },
       {
         "kind": "attempt",
         "operation": "getaddrinfo",
-        "pid": 98084,
-        "ppid": 97957,
+        "pid": 4358,
+        "ppid": 4220,
         "family": 0,
         "blocked": true,
-        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control",
+        "executable": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control",
         "host": "localhost",
-        "timeMs": 1790117628372
+        "timeMs": 1790119862468
       }
     ],
     "operations": [
@@ -125,11 +125,11 @@
       "getaddrinfo"
     ],
     "rawEvents": [
-      "{\"kind\":\"boot\",\"pid\":98084,\"ppid\":97957,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control\"}",
-      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":98084,\"ppid\":97957,\"family\":2,\"blocked\":false,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control\",\"timeMs\":1790117628372}",
-      "{\"kind\":\"attempt\",\"operation\":\"connect$NOCANCEL\",\"pid\":98084,\"ppid\":97957,\"family\":2,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control\",\"timeMs\":1790117628372}",
-      "{\"kind\":\"attempt\",\"operation\":\"sendto\",\"pid\":98084,\"ppid\":97957,\"family\":2,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control\",\"timeMs\":1790117628372}",
-      "{\"kind\":\"attempt\",\"operation\":\"getaddrinfo\",\"pid\":98084,\"ppid\":97957,\"family\":0,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/native-control\",\"host\":\"localhost\",\"timeMs\":1790117628372}"
+      "{\"kind\":\"boot\",\"pid\":4358,\"ppid\":4220,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control\"}",
+      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":4358,\"ppid\":4220,\"family\":2,\"blocked\":false,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control\",\"timeMs\":1790119862468}",
+      "{\"kind\":\"attempt\",\"operation\":\"connect$NOCANCEL\",\"pid\":4358,\"ppid\":4220,\"family\":2,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control\",\"timeMs\":1790119862468}",
+      "{\"kind\":\"attempt\",\"operation\":\"sendto\",\"pid\":4358,\"ppid\":4220,\"family\":2,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control\",\"timeMs\":1790119862468}",
+      "{\"kind\":\"attempt\",\"operation\":\"getaddrinfo\",\"pid\":4358,\"ppid\":4220,\"family\":0,\"blocked\":true,\"executable\":\"/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/native-control\",\"host\":\"localhost\",\"timeMs\":1790119862468}"
     ],
     "stdout": "",
     "stderr": ""
@@ -137,7 +137,7 @@
   "sandboxControl": {
     "status": "PASS",
     "child": {
-      "pid": 98096,
+      "pid": 4359,
       "code": 0,
       "signal": null
     },
@@ -146,10 +146,10 @@
     "stderr": ""
   },
   "runtime": {
-    "workspace": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+    "workspace": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
     "status": "PASS",
     "child": {
-      "pid": 98165,
+      "pid": 4441,
       "code": 0,
       "signal": null
     },
@@ -167,14 +167,14 @@
             "backend": "zvec",
             "ok": true,
             "outcome": "ok",
-            "latencyMs": 136
+            "latencyMs": 95
           }
         ],
         "evidence": [
           {
-            "id": "retrieval-e282919d-e3b4-4ecb-9b85-a0c8bcf8307e-3",
+            "id": "retrieval-6c5cf2af-cd11-4179-91ad-878a1b6319cb-3",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "discount.mjs",
               "range": {
                 "startLine": 0,
@@ -185,8 +185,8 @@
             "textKind": "source",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "21310d7cc1977ff67e9ee5f34bbc8b51",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
+              "fileId": "cc96f38de6288e9984bdab152c842246",
               "relativePath": "discount.mjs",
               "contentHash": "d0f9e77a2c38c20b83679aa66c7758e8d27ebfca219295242bd10c67220bfbb8",
               "span": {
@@ -196,15 +196,15 @@
               },
               "kind": "indexed_entity",
               "occurrenceId": "aecdf4a39da178c28c78342c6015b9497826bbdfc535e8ffff7e3d1740df1ac6",
-              "stableEntityId": "5fe169b2415dedd7eae4da1f870e00aa555d38f7b3ac7a64147a81f76e04befd"
+              "stableEntityId": "79cb6c4b412086957ad01c1f009a4062e0309a6c16a2c2bbc53a61d552f4e93b"
             },
             "projectionView": {
               "projection": "retrieval",
-              "viewId": "7afef09d84b676752a0aaaf1772f8c9d",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
+              "viewId": "48bbaa6143d1e333235f225230bf0468",
+              "appliedManifestId": "dd4f6b25f61d5a11ec98e5fc48a42337c6321d9d40a0004765c7a2b8717dd99f",
+              "profileDigest": "6f2f2f443b50709e9e318f792a464127779334ece9f5b9fa09d2915602aaa62a",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7bc90f9-b7fa-42f3-9249-8460b82bbb00"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL/.lazy-intel/stores/ab291e99-5732-4d00-bdef-42af57dfb086"
             },
             "coverage": {
               "kind": "ranked_sample",
@@ -219,14 +219,14 @@
                 "operation": "search",
                 "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                 "adapterVersion": "0.3.0",
-                "executionId": "retrieval-e282919d-e3b4-4ecb-9b85-a0c8bcf8307e"
+                "executionId": "retrieval-6c5cf2af-cd11-4179-91ad-878a1b6319cb"
               }
             ]
           },
           {
-            "id": "retrieval-d83807ce-fe66-4391-8080-1bd12de93ae6-1",
+            "id": "retrieval-4af5654f-4882-433f-9f2d-276bec14b4b8-2",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "discount.py",
               "range": {
                 "startLine": 0,
@@ -237,8 +237,8 @@
             "textKind": "source",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "4e9ff5a4bab6c753abb9229465ff2dbe",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
+              "fileId": "55c5b33372af3427f9798867d42b4fa1",
               "relativePath": "discount.py",
               "contentHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
               "span": {
@@ -248,15 +248,15 @@
               },
               "kind": "indexed_entity",
               "occurrenceId": "71e9e5e0bfe846a7b3f75d0f86bb775aa93b7a136af0d7968d37e8d59b801861",
-              "stableEntityId": "127639e3acfee66b36e6b9dd1bcbe74c3db4946caa1bd281bd68edfdfe64d9eb"
+              "stableEntityId": "aa460006c4564850cd6fa214e1228604316df3e664d5ca1d8f219fa491bc5204"
             },
             "projectionView": {
               "projection": "retrieval",
-              "viewId": "7afef09d84b676752a0aaaf1772f8c9d",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
+              "viewId": "48bbaa6143d1e333235f225230bf0468",
+              "appliedManifestId": "dd4f6b25f61d5a11ec98e5fc48a42337c6321d9d40a0004765c7a2b8717dd99f",
+              "profileDigest": "6f2f2f443b50709e9e318f792a464127779334ece9f5b9fa09d2915602aaa62a",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7bc90f9-b7fa-42f3-9249-8460b82bbb00"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL/.lazy-intel/stores/ab291e99-5732-4d00-bdef-42af57dfb086"
             },
             "coverage": {
               "kind": "ranked_sample",
@@ -271,14 +271,14 @@
                 "operation": "search",
                 "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                 "adapterVersion": "0.3.0",
-                "executionId": "retrieval-d83807ce-fe66-4391-8080-1bd12de93ae6"
+                "executionId": "retrieval-4af5654f-4882-433f-9f2d-276bec14b4b8"
               }
             ]
           },
           {
-            "id": "retrieval-3e43c0ce-11f2-4ac7-9425-6b524b3333c2-4",
+            "id": "retrieval-b9aa91ff-f3dc-40f2-abc0-1f181bcd5e86-4",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "flow.mjs",
               "range": {
                 "startLine": 0,
@@ -289,8 +289,8 @@
             "textKind": "source",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "ee551cd2606edf8c50189c671b7f16cf",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
+              "fileId": "3fb442e1b718176535eb8fcca97dfae8",
               "relativePath": "flow.mjs",
               "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
               "span": {
@@ -300,15 +300,15 @@
               },
               "kind": "indexed_entity",
               "occurrenceId": "637efd3a80cea6ea983acce09eae61d6ce2012ddf63dad94f5c0cdbf99d8edb6",
-              "stableEntityId": "47748940b3e1ce44bae27e30752527b7cf2cc8804693d884e70ccbaff1e96352"
+              "stableEntityId": "c8913a4b190d947b6cdb2cf468c157c262a9283cbe665c1f59a9816b04a56a43"
             },
             "projectionView": {
               "projection": "retrieval",
-              "viewId": "7afef09d84b676752a0aaaf1772f8c9d",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
+              "viewId": "48bbaa6143d1e333235f225230bf0468",
+              "appliedManifestId": "dd4f6b25f61d5a11ec98e5fc48a42337c6321d9d40a0004765c7a2b8717dd99f",
+              "profileDigest": "6f2f2f443b50709e9e318f792a464127779334ece9f5b9fa09d2915602aaa62a",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7bc90f9-b7fa-42f3-9249-8460b82bbb00"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL/.lazy-intel/stores/ab291e99-5732-4d00-bdef-42af57dfb086"
             },
             "coverage": {
               "kind": "ranked_sample",
@@ -323,59 +323,7 @@
                 "operation": "search",
                 "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                 "adapterVersion": "0.3.0",
-                "executionId": "retrieval-3e43c0ce-11f2-4ac7-9425-6b524b3333c2"
-              }
-            ]
-          },
-          {
-            "id": "retrieval-e355431d-6c40-4f0e-b7fe-dbbcd42039a5-5",
-            "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
-              "relativePath": "package.json",
-              "range": {
-                "startLine": 0,
-                "endLineExclusive": 1
-              }
-            },
-            "method": "hybrid_retrieval",
-            "textKind": "source",
-            "sourceCheck": "matched",
-            "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "9eb2c824d522ca930f4dac633235b055",
-              "relativePath": "package.json",
-              "contentHash": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
-              "span": {
-                "coordinateSystem": "utf8-bytes",
-                "startByte": 0,
-                "endByte": 18
-              },
-              "kind": "indexed_entity",
-              "occurrenceId": "cbe77415c235b3e1abd6b1e73ee711ee985e0d9023221979fa365a9859f56cd9",
-              "stableEntityId": "9de4af14af24081ad596201e9b4222bb3055264d554d046e477e4659b1bb25a2"
-            },
-            "projectionView": {
-              "projection": "retrieval",
-              "viewId": "7afef09d84b676752a0aaaf1772f8c9d",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
-              "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7bc90f9-b7fa-42f3-9249-8460b82bbb00"
-            },
-            "coverage": {
-              "kind": "ranked_sample",
-              "completeWithinScope": false,
-              "scopeDescription": "source=index; zvec-grep ranked_sample",
-              "returned": 6,
-              "omitted": null
-            },
-            "provenance": [
-              {
-                "backend": "zvec",
-                "operation": "search",
-                "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
-                "adapterVersion": "0.3.0",
-                "executionId": "retrieval-e355431d-6c40-4f0e-b7fe-dbbcd42039a5"
+                "executionId": "retrieval-b9aa91ff-f3dc-40f2-abc0-1f181bcd5e86"
               }
             ]
           }
@@ -395,14 +343,14 @@
             "backend": "codegraph",
             "ok": true,
             "outcome": "ok",
-            "latencyMs": 2
+            "latencyMs": 1
           }
         ],
         "evidence": [
           {
-            "id": "graph-824ca79e-5cbb-4649-a582-297a13264d56-0",
+            "id": "graph-f54e208d-6396-4636-bcde-e0daba3a90a5-0",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "flow.mjs",
               "range": {
                 "startLine": 0,
@@ -413,8 +361,8 @@
             "textKind": "description",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "ee551cd2606edf8c50189c671b7f16cf",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
+              "fileId": "3fb442e1b718176535eb8fcca97dfae8",
               "relativePath": "flow.mjs",
               "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
               "span": {
@@ -427,11 +375,11 @@
             },
             "projectionView": {
               "projection": "graph",
-              "viewId": "707e635714f6273f9d29f1bbe87939f8",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
+              "viewId": "33a178762b70cee7a2edd5a00d39c7c6",
+              "appliedManifestId": "dd4f6b25f61d5a11ec98e5fc48a42337c6321d9d40a0004765c7a2b8717dd99f",
+              "profileDigest": "6f2f2f443b50709e9e318f792a464127779334ece9f5b9fa09d2915602aaa62a",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7679d33-60a4-4e1e-9f4c-2f77869c7ff5"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL/.lazy-intel/stores/0a03d9ec-e661-48b3-90ee-2e0b2722e054"
             },
             "coverage": {
               "kind": "bounded_graph",
@@ -446,14 +394,14 @@
                 "operation": "architecture",
                 "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                 "adapterVersion": "0.3.0",
-                "executionId": "graph-824ca79e-5cbb-4649-a582-297a13264d56"
+                "executionId": "graph-f54e208d-6396-4636-bcde-e0daba3a90a5"
               }
             ]
           },
           {
-            "id": "graph-b8d444a7-ddfa-438a-b5f9-1824ab4e8158-2",
+            "id": "graph-e7c406c1-a56d-47e6-a44d-7b5384497537-2",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "flow.mjs",
               "range": {
                 "startLine": 0,
@@ -464,8 +412,8 @@
             "textKind": "description",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "ee551cd2606edf8c50189c671b7f16cf",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
+              "fileId": "3fb442e1b718176535eb8fcca97dfae8",
               "relativePath": "flow.mjs",
               "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
               "span": {
@@ -478,11 +426,11 @@
             },
             "projectionView": {
               "projection": "graph",
-              "viewId": "707e635714f6273f9d29f1bbe87939f8",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
+              "viewId": "33a178762b70cee7a2edd5a00d39c7c6",
+              "appliedManifestId": "dd4f6b25f61d5a11ec98e5fc48a42337c6321d9d40a0004765c7a2b8717dd99f",
+              "profileDigest": "6f2f2f443b50709e9e318f792a464127779334ece9f5b9fa09d2915602aaa62a",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7679d33-60a4-4e1e-9f4c-2f77869c7ff5"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL/.lazy-intel/stores/0a03d9ec-e661-48b3-90ee-2e0b2722e054"
             },
             "coverage": {
               "kind": "bounded_graph",
@@ -497,14 +445,14 @@
                 "operation": "architecture",
                 "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                 "adapterVersion": "0.3.0",
-                "executionId": "graph-b8d444a7-ddfa-438a-b5f9-1824ab4e8158"
+                "executionId": "graph-e7c406c1-a56d-47e6-a44d-7b5384497537"
               }
             ]
           },
           {
-            "id": "graph-64de0fd2-cd90-4e8f-86af-3ae2083718a8-1",
+            "id": "graph-0a802397-6777-4171-82e9-b9518a8c8670-1",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "flow.mjs",
               "range": {
                 "startLine": 0,
@@ -515,8 +463,8 @@
             "textKind": "description",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
-              "fileId": "ee551cd2606edf8c50189c671b7f16cf",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
+              "fileId": "3fb442e1b718176535eb8fcca97dfae8",
               "relativePath": "flow.mjs",
               "contentHash": "e480a7bf3fc5448fb8db5b77d13f84baa34356ecccefd72eb1e6aedd068ea5b4",
               "span": {
@@ -529,11 +477,11 @@
             },
             "projectionView": {
               "projection": "graph",
-              "viewId": "707e635714f6273f9d29f1bbe87939f8",
-              "appliedManifestId": "daceea8d45b0a3640d23fe6c2eae7e31b53ead494ba41e995eb59c619597782b",
-              "profileDigest": "62c70ca0c3185d8f3644396174cec455b3fb5bdfd00ffc5fed550c4d33c364b8",
+              "viewId": "33a178762b70cee7a2edd5a00d39c7c6",
+              "appliedManifestId": "dd4f6b25f61d5a11ec98e5fc48a42337c6321d9d40a0004765c7a2b8717dd99f",
+              "profileDigest": "6f2f2f443b50709e9e318f792a464127779334ece9f5b9fa09d2915602aaa62a",
               "state": "clean",
-              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9/.lazy-intel/stores/f7679d33-60a4-4e1e-9f4c-2f77869c7ff5"
+              "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL/.lazy-intel/stores/0a03d9ec-e661-48b3-90ee-2e0b2722e054"
             },
             "coverage": {
               "kind": "bounded_graph",
@@ -548,7 +496,7 @@
                 "operation": "architecture",
                 "backendVersion": "dfccdf62547fcd76d343344d823a0e1998d3a89f",
                 "adapterVersion": "0.3.0",
-                "executionId": "graph-64de0fd2-cd90-4e8f-86af-3ae2083718a8"
+                "executionId": "graph-0a802397-6777-4171-82e9-b9518a8c8670"
               }
             ]
           }
@@ -568,14 +516,14 @@
             "backend": "serena",
             "ok": true,
             "outcome": "ok",
-            "latencyMs": 714
+            "latencyMs": 661
           }
         ],
         "evidence": [
           {
-            "id": "semantic-9ee9dcb2-3dec-4938-b9b5-c6b9d1b3f2b5-0",
+            "id": "semantic-a0d440d9-5bf6-4daf-9184-7d4c528717a0-0",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "discount.py",
               "range": {
                 "startLine": 0,
@@ -586,7 +534,7 @@
             "textKind": "description",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
               "fileId": "discount.py",
               "relativePath": "discount.py",
               "contentHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
@@ -599,7 +547,7 @@
               "occurrenceId": "discount.py:0:0:apply_discount"
             },
             "semanticObservation": {
-              "sessionEpoch": "897b88bb92bf4d1a99fc55c8612d29a5",
+              "sessionEpoch": "81587f94b1ad4b5eab552555f1a692b8",
               "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
               "fileHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
               "bufferHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
@@ -623,7 +571,7 @@
                 "operation": "symbol",
                 "backendVersion": "unknown",
                 "adapterVersion": "0.3.0",
-                "executionId": "semantic-9ee9dcb2-3dec-4938-b9b5-c6b9d1b3f2b5"
+                "executionId": "semantic-a0d440d9-5bf6-4daf-9184-7d4c528717a0"
               }
             ]
           }
@@ -648,9 +596,9 @@
         ],
         "evidence": [
           {
-            "id": "semantic-89829734-92d7-4b03-86fd-46aa1437f630-0",
+            "id": "semantic-88125702-bcfc-411e-b6c1-17d9b873248b-0",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "invoice.py",
               "range": {
                 "startLine": 0,
@@ -661,7 +609,7 @@
             "textKind": "source",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
               "fileId": "invoice.py",
               "relativePath": "invoice.py",
               "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
@@ -674,7 +622,7 @@
               "occurrenceId": "invoice.py:0:0:invoice"
             },
             "semanticObservation": {
-              "sessionEpoch": "897b88bb92bf4d1a99fc55c8612d29a5",
+              "sessionEpoch": "81587f94b1ad4b5eab552555f1a692b8",
               "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
               "fileHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
               "bufferHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
@@ -696,7 +644,7 @@
               {
                 "role": "containing-symbol",
                 "anchor": {
-                  "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
+                  "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
                   "fileId": "invoice.py",
                   "relativePath": "invoice.py",
                   "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
@@ -716,14 +664,14 @@
                 "operation": "references",
                 "backendVersion": "unknown",
                 "adapterVersion": "0.3.0",
-                "executionId": "semantic-89829734-92d7-4b03-86fd-46aa1437f630"
+                "executionId": "semantic-88125702-bcfc-411e-b6c1-17d9b873248b"
               }
             ]
           },
           {
-            "id": "semantic-faaa3dd2-3b8c-424a-b344-00218fb9b2dd-1",
+            "id": "semantic-9217526f-edc0-42c2-a0fa-cdb2556e05f1-1",
             "locator": {
-              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-nuWBT9",
+              "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-workspace-vHnRtL",
               "relativePath": "invoice.py",
               "range": {
                 "startLine": 2,
@@ -734,7 +682,7 @@
             "textKind": "source",
             "sourceCheck": "matched",
             "anchor": {
-              "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
+              "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
               "fileId": "invoice.py",
               "relativePath": "invoice.py",
               "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
@@ -747,7 +695,7 @@
               "occurrenceId": "invoice.py:2:0:invoice_total"
             },
             "semanticObservation": {
-              "sessionEpoch": "897b88bb92bf4d1a99fc55c8612d29a5",
+              "sessionEpoch": "81587f94b1ad4b5eab552555f1a692b8",
               "serverProfileDigest": "208a5c7b712be5cf108490e234b0f05bb0a2025afbf5a4225156ffbc45b07584",
               "fileHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
               "bufferHash": "51fea473039dd5e1ad065f62d54e10626be83f3325b733b62f1789f33eee491b",
@@ -769,7 +717,7 @@
               {
                 "role": "containing-symbol",
                 "anchor": {
-                  "workspaceId": "workspace-30c35450aed9b9e8630ec1baefd0c7e5",
+                  "workspaceId": "workspace-78d2cef7b75c994d420770e6d873e6c3",
                   "fileId": "invoice.py",
                   "relativePath": "invoice.py",
                   "contentHash": "881e452374d4d5755657b23abe1cca775252beaa7541881aab7575d11a7abc3e",
@@ -789,7 +737,7 @@
                 "operation": "references",
                 "backendVersion": "unknown",
                 "adapterVersion": "0.3.0",
-                "executionId": "semantic-faaa3dd2-3b8c-424a-b344-00218fb9b2dd"
+                "executionId": "semantic-9217526f-edc0-42c2-a0fa-cdb2556e05f1"
               }
             ]
           }
@@ -804,102 +752,102 @@
     ],
     "shutdownCorrect": true,
     "rawEvents": [
-      "{\"kind\":\"boot\",\"pid\":98165,\"ppid\":97957,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
-      "{\"kind\":\"boot\",\"pid\":98176,\"ppid\":98165,\"executable\":\"/opt/homebrew/bin/git\"}",
-      "{\"kind\":\"boot\",\"pid\":98177,\"ppid\":98165,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
-      "{\"kind\":\"boot\",\"pid\":98353,\"ppid\":98165,\"executable\":\"/opt/homebrew/bin/git\"}",
-      "{\"kind\":\"boot\",\"pid\":98364,\"ppid\":98165,\"executable\":\"/opt/homebrew/bin/git\"}",
-      "{\"kind\":\"boot\",\"pid\":98375,\"ppid\":98165,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
-      "{\"kind\":\"boot\",\"pid\":98387,\"ppid\":98165,\"executable\":\"/opt/homebrew/bin/git\"}",
-      "{\"kind\":\"boot\",\"pid\":98388,\"ppid\":98165,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
-      "{\"kind\":\"boot\",\"pid\":98398,\"ppid\":98388,\"executable\":\"/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python\"}",
-      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":98398,\"ppid\":98388,\"family\":30,\"blocked\":false,\"executable\":\"/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python\",\"timeMs\":1790117634221}"
+      "{\"kind\":\"boot\",\"pid\":4441,\"ppid\":4220,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":4452,\"ppid\":4441,\"executable\":\"/opt/homebrew/bin/git\"}",
+      "{\"kind\":\"boot\",\"pid\":4465,\"ppid\":4441,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":4619,\"ppid\":4441,\"executable\":\"/opt/homebrew/bin/git\"}",
+      "{\"kind\":\"boot\",\"pid\":4630,\"ppid\":4441,\"executable\":\"/opt/homebrew/bin/git\"}",
+      "{\"kind\":\"boot\",\"pid\":4631,\"ppid\":4441,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":4663,\"ppid\":4441,\"executable\":\"/opt/homebrew/bin/git\"}",
+      "{\"kind\":\"boot\",\"pid\":4673,\"ppid\":4441,\"executable\":\"/opt/homebrew/Cellar/node@22/22.22.3/bin/node\"}",
+      "{\"kind\":\"boot\",\"pid\":4674,\"ppid\":4673,\"executable\":\"/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python\"}",
+      "{\"kind\":\"socket-open\",\"operation\":\"socket\",\"pid\":4674,\"ppid\":4673,\"family\":30,\"blocked\":false,\"executable\":\"/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python\",\"timeMs\":1790119868306}"
     ],
     "rawPhases": [
-      "{\"name\":\"publish\",\"pid\":98165,\"timeMs\":1790117630006}",
-      "{\"name\":\"retrieval\",\"pid\":98165,\"timeMs\":1790117633918}",
-      "{\"name\":\"graph\",\"pid\":98165,\"timeMs\":1790117634057}",
-      "{\"name\":\"semantic\",\"pid\":98165,\"timeMs\":1790117634060}"
+      "{\"name\":\"publish\",\"pid\":4441,\"timeMs\":1790119864118}",
+      "{\"name\":\"retrieval\",\"pid\":4441,\"timeMs\":1790119868057}",
+      "{\"name\":\"graph\",\"pid\":4441,\"timeMs\":1790119868155}",
+      "{\"name\":\"semantic\",\"pid\":4441,\"timeMs\":1790119868157}"
     ],
     "boots": [
       {
         "kind": "boot",
-        "pid": 98165,
-        "ppid": 97957,
+        "pid": 4441,
+        "ppid": 4220,
         "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
       },
       {
         "kind": "boot",
-        "pid": 98176,
-        "ppid": 98165,
+        "pid": 4452,
+        "ppid": 4441,
         "executable": "/opt/homebrew/bin/git"
       },
       {
         "kind": "boot",
-        "pid": 98177,
-        "ppid": 98165,
+        "pid": 4465,
+        "ppid": 4441,
         "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
       },
       {
         "kind": "boot",
-        "pid": 98353,
-        "ppid": 98165,
+        "pid": 4619,
+        "ppid": 4441,
         "executable": "/opt/homebrew/bin/git"
       },
       {
         "kind": "boot",
-        "pid": 98364,
-        "ppid": 98165,
+        "pid": 4630,
+        "ppid": 4441,
         "executable": "/opt/homebrew/bin/git"
       },
       {
         "kind": "boot",
-        "pid": 98375,
-        "ppid": 98165,
+        "pid": 4631,
+        "ppid": 4441,
         "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
       },
       {
         "kind": "boot",
-        "pid": 98387,
-        "ppid": 98165,
+        "pid": 4663,
+        "ppid": 4441,
         "executable": "/opt/homebrew/bin/git"
       },
       {
         "kind": "boot",
-        "pid": 98388,
-        "ppid": 98165,
+        "pid": 4673,
+        "ppid": 4441,
         "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node"
       },
       {
         "kind": "boot",
-        "pid": 98398,
-        "ppid": 98388,
+        "pid": 4674,
+        "ppid": 4673,
         "executable": "/Users/steve/lazy-project/lazy-intel/workers/semantic/.venv/bin/python"
       }
     ],
     "attempts": [],
     "coverage": {
-      "queryPid": 98165,
+      "queryPid": 4441,
       "bootCount": 9,
       "bootPids": [
-        98165,
-        98176,
-        98177,
-        98353,
-        98364,
-        98375,
-        98387,
-        98388,
-        98398
+        4441,
+        4452,
+        4465,
+        4619,
+        4630,
+        4631,
+        4663,
+        4673,
+        4674
       ],
       "ownedChildBootCount": 8,
       "nodeChildBootPids": [
-        98177,
-        98375,
-        98388
+        4465,
+        4631,
+        4673
       ],
       "pythonLspChildPids": [
-        98398
+        4674
       ],
       "retrievalAndGraphChildBoots": true,
       "semanticLspChildBoot": true,
@@ -909,9 +857,9 @@
   "limitations": [],
   "cleanup": {
     "scratchRemoved": true,
-    "scratchPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l",
+    "scratchPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji",
     "ownedTemporaryAssets": [
-      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-s6Yt9l/offline-interposer.dylib"
+      "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-offline-proof-Mmcdji/offline-interposer.dylib"
     ]
   }
 }

@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-22T22:53:10.253Z",
+  "generated_at": "2026-09-22T23:30:25.886Z",
   "command": "npm test --silent",
   "node": "v22.22.3",
   "exit_code": 0,
   "status": "PASS",
   "counts": {
-    "tests": 168,
-    "pass": 167,
+    "tests": 171,
+    "pass": 170,
     "fail": 0,
     "skipped": 1
   },
@@ -61,6 +61,10 @@
     },
     {
       "name": "bounded output keeps headers, warnings, and metadata while reporting honest truncation",
+      "status": "pass"
+    },
+    {
+      "name": "evidence too large for the budget is returned as a location, and no readable body means partial",
       "status": "pass"
     },
     {
@@ -324,7 +328,7 @@
       "status": "pass"
     },
     {
-      "name": "a staged rebuild publishes into a distinct store and leaves the old store intact",
+      "name": "a staged rebuild publishes into a distinct store and retires old stores after the grace window",
       "status": "pass"
     },
     {
@@ -556,6 +560,10 @@
       "status": "pass"
     },
     {
+      "name": "full prepared builds compact the shared embedding cache and incremental builds retain unrelated keys",
+      "status": "pass"
+    },
+    {
       "name": "diagnostics intent with a path does not need a symbol",
       "status": "pass"
     },
@@ -624,6 +632,10 @@
       "status": "pass"
     },
     {
+      "name": "publication journal stays bounded and compacted journals still recover or abandon new pending work",
+      "status": "pass"
+    },
+    {
       "name": "semantic discovery routes only to zvec",
       "status": "pass"
     },
@@ -684,5 +696,5 @@
       "status": "pass"
     }
   ],
-  "output_sha256": "419c9ae04a62926c12d2ff11a8b16b5bc23cb4bca4a3ad8f4c50a6dec1163ec4"
+  "output_sha256": "6a81382aeadff9f74d33c792daba072197bf5662d3672763f860f62a2f99647d"
 }

@@ -6,6 +6,7 @@ import { serveWorker, WorkerError, readPreparedBatch } from "../../packages/core
 const services = new Map();
 const serviceEmbeddings = new Map();
 const queues = new Map();
+const fullPreparedBatchIds = new Set();
 
 function requestObject(payload, operation, { requireStateRoot = true } = {}) {
   if (!payload || typeof payload !== "object") {
@@ -97,7 +98,9 @@ function preparedBatch(root, batch) {
     };
   });
   const deletedPaths = (Array.isArray(batch.deletedPaths) ? batch.deletedPaths : []).map((relativePath) => join(root, relativePath));
-  return { upserts, deletedPaths };
+  if (batch.full === true) fullPreparedBatchIds.add(batch.batchId);
+  const full = fullPreparedBatchIds.has(batch.batchId);
+  return { upserts, deletedPaths, full, batchId: batch.batchId, part: batch.part, final: batch.final };
 }
 
 async function context(payload) {
@@ -119,34 +122,46 @@ async function info(payload) {
 
 async function apply(payload, context) {
   const request = requestObject(payload, "apply");
-  const batch = await readPreparedBatch(request.stateRoot, payload.batchRef);
+  let batch;
+  try {
+    batch = await readPreparedBatch(request.stateRoot, payload.batchRef);
+  } catch (error) {
+    fullPreparedBatchIds.delete(payload.batchRef?.batchId);
+    throw error;
+  }
   return serial(request.root, request.stateRoot, async () => {
-    const service = await serviceFor(request.root, request.stateRoot, request.options);
-    const prepared = preparedBatch(request.root, batch);
-    const signal = AbortSignal.timeout(Math.max(1, context.remainingBudgetMs));
-    let result;
     try {
-      result = await service.indexPrepared({ stateRoot: request.stateRoot, embeddingCachePath: request.options.embeddingCachePath, batch: prepared, signal });
-    } finally {
+      const service = await serviceFor(request.root, request.stateRoot, request.options);
+      const prepared = preparedBatch(request.root, batch);
+      const signal = AbortSignal.timeout(Math.max(1, context.remainingBudgetMs));
+      let result;
       try {
-        await service.releaseEmbeddingResources();
-      } catch {
-        // Resource release is best-effort and must not fail the apply.
+        result = await service.indexPrepared({ stateRoot: request.stateRoot, embeddingCachePath: request.options.embeddingCachePath, batch: prepared, signal });
+      } finally {
+        try {
+          await service.releaseEmbeddingResources();
+        } catch {
+          // Resource release is best-effort and must not fail the apply.
+        }
       }
+      if (batch.final === true) fullPreparedBatchIds.delete(batch.batchId);
+      return {
+        outcome: "ok",
+        payload: {
+          batchId: batch.batchId,
+          projection: "retrieval",
+          state: "applied",
+          manifestId: batch.manifestId,
+          durableBoundary: "zvec.finalizeWrites",
+          storeRoot: request.stateRoot,
+          filesIndexed: result.filesIndexed,
+          filesDeleted: result.filesDeleted,
+        },
+      };
+    } catch (error) {
+      fullPreparedBatchIds.delete(batch.batchId);
+      throw error;
     }
-    return {
-      outcome: "ok",
-      payload: {
-        batchId: batch.batchId,
-        projection: "retrieval",
-        state: "applied",
-        manifestId: batch.manifestId,
-        durableBoundary: "zvec.finalizeWrites",
-        storeRoot: request.stateRoot,
-        filesIndexed: result.filesIndexed,
-        filesDeleted: result.filesDeleted,
-      },
-    };
   });
 }
 

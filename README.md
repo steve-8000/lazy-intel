@@ -54,6 +54,8 @@ Indexed evidence carries its `CanonicalAnchor` and `ProjectionView`: canonical f
 
 Coverage remains explicit: ranked retrieval is not exhaustive search, bounded graph evidence is not a complete program graph, and unsupported semantics are not successful empty results. Fresh empty diagnostic publications and valid empty pull replies clear prior errors; silence remains `not_reported`, not completed empty. Empty diagnostics retain the completion observation even when there are no evidence items. Output budgeting includes headers, warnings, evidence descriptors, views and observations.
 
+No source block is ever split. An item whose body does not fit `maxChars` is returned as its location with `bodyOmitted: true`, and the text says how many characters it needed. An answer that carries at least one whole item stays `ok`; one whose evidence is only locations, or that could fit nothing at all, is `partial` — never `ok` with an empty evidence list, which an agent would read as "nothing relevant exists".
+
 Truth order remains current source/compiler/tests, live language semantics, indexed structure, then retrieval relevance. Derived indexes accelerate discovery; they do not replace source verification.
 
 ## Operations
@@ -99,6 +101,14 @@ A read never waits for publication work. Indexing a real repository takes minute
 ### Interrupted publications
 
 A publication interrupted mid-apply stays journaled. The next sync compares it with what the current capture would produce: a batch captured under a different scope, parser, resolver or embedding profile can never be produced again, so it is abandoned — its previous views are restored, the decision is journaled, and its orphaned store is removed — instead of being replayed. A batch that still matches is rolled forward; if the replay fails it is abandoned too. After any abandonment the publication rebuilds into a fresh store rather than building on a store the abandoned batch may have half-written. Before this, one batch captured under an older ignore policy (2,344 files including a 36 MB generated parser) blocked every later publication in that workspace indefinitely.
+
+### On-disk state
+
+Derived state under `.lazy-intel/` is bounded by the current corpus rather than by history:
+
+- **Journal.** `runtime/publication.journal` keeps only records for publications still pending; once the catalog holds none, it is rewritten atomically to empty. It previously grew by a full batch, source text included, on every publication (3 MB to 50 MB in one day on a 143-file workspace).
+- **Stores.** After every publication, a store directory that no view, active batch or pending batch references is closed in its worker and deleted. A store replaced by a rebuild is stamped at replacement and kept for `LAZY_INTEL_STORE_GRACE_MS` (default `600000`) so a reader in another process can finish; a store that never backed a clean view (an abandoned batch) goes immediately.
+- **Embedding cache.** A successful full build rewrites `embedding-cache.jsonl` to exactly the vectors that build used, across all of its parts; incremental, failed or cancelled builds leave it alone. On this repository a cache seeded with 83 MB of stale entries compacted to 4.5 MB on one full build, and a following full rebuild took 11.6 s with the cache unchanged, against roughly 240 s for embedding the corpus from scratch.
 
 ### Workers
 
