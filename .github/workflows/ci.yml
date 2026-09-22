@@ -10,6 +10,7 @@ permissions:
 jobs:
   boundaries:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         node: ['22.22.3', '24']
@@ -19,6 +20,10 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm run check:integration
+      # The integration tests import packages/core/dist and drive the owned
+      # codegraph worker, so a clean clone has to build both before testing.
+      - run: node scripts/build-unified.mjs --only=core
+      - run: node scripts/build-unified.mjs --only=vendor
       - run: npm run test:integration
   pinned-backends:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -43,4 +48,5 @@ jobs:
           version=$(node -p 'JSON.parse(require("fs").readFileSync("upstreams.lock.json")).upstreams.serena.version')
           uv tool install "serena-agent==$version" --python 3.13
           echo "LAZY_INTEL_SERENA_BIN=$(uv tool dir --bin)/serena" >> "$GITHUB_ENV"
+      - run: node scripts/build-unified.mjs
       - run: npm run test:compatibility
