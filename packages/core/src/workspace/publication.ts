@@ -72,9 +72,32 @@ export class PublicationNotReadable extends Error { readonly code: "applying" | 
 
 export class PublicationCoordinator {
   readonly stateRoot: string; readonly catalogPath: string; readonly journalPath: string; readonly projectionsRoot: string;
-  private catalog: PublicationCatalog = emptyCatalog(); private journal!: WorkspaceJournal; private opened = false; private readonly rw = new ReadWriteLease(); private recoveryApply: ApplyProjection | undefined;
+  private catalog: PublicationCatalog = emptyCatalog(); private journal!: WorkspaceJournal; private opened = false; private readonly rw = new ReadWriteLease(); private recoveryApply: ApplyProjection | undefined; private readOnly = false;
   private constructor(stateRoot: string) { this.stateRoot = stateRoot; this.catalogPath = path.join(stateRoot, "runtime", "publication-catalog.json"); this.journalPath = path.join(stateRoot, "runtime", "publication.journal"); this.projectionsRoot = path.join(stateRoot, "projections"); }
-  static async open(stateRoot: string): Promise<PublicationCoordinator> { const coordinator = new PublicationCoordinator(stateRoot); await mkdir(path.join(stateRoot, "runtime"), { recursive: true }); coordinator.catalog = await readCatalog(coordinator.catalogPath); coordinator.journal = await openWorkspaceJournal(coordinator.journalPath); coordinator.opened = true; await coordinator.recover(); return coordinator; }
+  static async open(stateRoot: string, options: { readonly mode?: "read" | "write" } = {}): Promise<PublicationCoordinator> {
+    const coordinator = new PublicationCoordinator(stateRoot); coordinator.readOnly = options.mode === "read";
+    await mkdir(path.join(stateRoot, "runtime"), { recursive: true });
+    coordinator.catalog = await readCatalog(coordinator.catalogPath); coordinator.journal = await openWorkspaceJournal(coordinator.journalPath); coordinator.opened = true;
+    // Recovery is a mutation and belongs to the owner. A reader that recovered
+    // would write the catalog it was only supposed to observe, and two readers
+    // could race the owner for it.
+    if (!coordinator.readOnly) await coordinator.recover();
+    return coordinator;
+  }
+  /**
+   * Re-read the durable catalog.
+   *
+   * The owner's in-memory catalog is authoritative for itself, but a reader is a
+   * different object - usually a different process - and its copy goes stale the
+   * moment the owner publishes. Every read path refreshes first, so a reader can
+   * never serve a view the owner has already replaced.
+   */
+  async refresh(): Promise<void> {
+    if (!this.opened) throw new Error("publication coordinator is not open");
+    if (!this.readOnly) return;
+    const release = await this.rw.write();
+    try { this.catalog = await readCatalog(this.catalogPath); } finally { release(); }
+  }
   private async save(): Promise<void> { await durableJson(this.catalogPath, this.catalog); }
   private fail(point: PublicationFailurePoint, requested?: PublicationFailurePoint): void { if (point === requested) throw new PublicationCrash(point); }
   private async publicationEntries(): Promise<Map<string, StoredTransaction>> {
@@ -137,6 +160,7 @@ export class PublicationCoordinator {
   async read(projection: Projection, options?: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal }): Promise<ProjectionRead>;
   async read(projections: readonly Projection[], options?: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal }): Promise<Readonly<Record<Projection, ProjectionRead>>>;
   async read<T>(input: Projection | readonly Projection[], options: { readonly requireCoherent?: boolean; readonly signal?: AbortSignal } = {}, callback?: (views: Readonly<Partial<Record<Projection, ProjectionView>>>, lease: PublicationReadLease) => Promise<T> | T): Promise<T | ProjectionRead | Readonly<Record<Projection, ProjectionRead>>> {
+    await this.refresh();
     const wanted = typeof input === "string" ? [input] : [...input]; const release = await this.rw.read(options.signal); const views = Object.freeze(Object.fromEntries(wanted.map((projection) => [projection, this.catalog.views[projection] ? cloneView(this.catalog.views[projection]!) : undefined])) as Partial<Record<Projection, ProjectionView>>); let lease: PublicationReadLease | undefined;
     try { const selected = wanted.map((projection) => views[projection]).filter((view): view is ProjectionView => !!view); if (selected.some((view) => view.state === "applying")) throw new PublicationNotReadable("applying", "publication is applying"); if (selected.some((view) => view.state === "needs_recovery")) throw new PublicationNotReadable("needs_recovery", "publication needs recovery"); if (selected.length !== wanted.length) throw new PublicationNotReadable("unavailable", "projection has no published view"); if ((options.requireCoherent ?? true) && mixedViews(views)) throw new PublicationNotReadable("mixed-views", "published views are from different manifests"); let released = false; lease = { views, get released() { return released; }, release: () => { if (!released) { released = true; release(); } } }; if (callback) { try { return await callback(views, lease); } finally { lease.release(); } } lease.release(); if (typeof input === "string") return { projection: input, view: views[input]!, data: undefined }; return Object.fromEntries(wanted.map((projection) => [projection, { projection, view: views[projection]!, data: undefined }])) as Readonly<Record<Projection, ProjectionRead>>; }
     catch (error) { if (lease) lease.release(); else release(); throw error; }

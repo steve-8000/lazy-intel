@@ -69,24 +69,32 @@ async function newIndexWorker(runtime, projection) {
     runtime.graph = api.createGraphAdapter({ pool, sourceRoot: runtime.root });
   }
 }
-async function runtimeFor(root) {
+async function runtimeFor(root, mode) {
   root = await realpath(root);
-  let pending = runtimes.get(root);
+  const key = `${root}\0${mode}`;
+  let pending = runtimes.get(key);
   if (pending) return pending;
   pending = (async () => {
     const api = await core();
     const trustedForLanguageTools = await requestRoot(root).then(() => true, () => false);
-    const scope = await api.openWorkspaceRuntime({ sourceRoot: root, trustedForLanguageTools });
+    const scope = await api.openWorkspaceRuntime({ sourceRoot: root, mode, trustedForLanguageTools });
     try {
-      const publication = await api.PublicationCoordinator.open(scope.canonicalStateRoot);
+      const coordinator = await api.PublicationCoordinator.open(scope.canonicalStateRoot, { mode });
+      const publication = mode === "read" ? new Proxy(coordinator, {
+        get(target, property, receiver) {
+          if (property === "publishBatch" || property === "publish" || property === "recover" || property === "registerRecovery") return () => scope.assertWritable();
+          const value = Reflect.get(target, property, receiver);
+          return typeof value === "function" ? value.bind(target) : value;
+        },
+      }) : coordinator;
       const runtime = { root, scope, publication, semantic: new Map(), sync: Promise.resolve(), closed: false, retrievalPool: null, graphPool: null };
       await Promise.all([newIndexWorker(runtime, "retrieval"), newIndexWorker(runtime, "graph")]);
-      publication.registerRecovery((projection, batch) => applyProjection(runtime, projection, batch));
+      if (mode === "write") publication.registerRecovery((projection, batch) => applyProjection(runtime, projection, batch));
       return runtime;
     } catch (error) { await scope.release(); throw error; }
   })();
-  runtimes.set(root, pending);
-  pending.catch(() => { if (runtimes.get(root) === pending) runtimes.delete(root); });
+  runtimes.set(key, pending);
+  pending.catch(() => { if (runtimes.get(key) === pending) runtimes.delete(key); });
   return pending;
 }
 function supervisorFor(runtime, projection, affinityKey = runtime.scope.canonicalStateRoot) {
@@ -114,6 +122,7 @@ function sourceChunks(sources) {
   return chunks;
 }
 async function applyProjection(runtime, projection, batch) {
+  runtime.scope.assertWritable();
   if (batch.storeRoot) await assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot);
   const api = await core();
   const supervisor = supervisorFor(runtime, projection, batch.storeRoot ?? runtime.scope.canonicalStateRoot);
@@ -127,7 +136,7 @@ async function applyProjection(runtime, projection, batch) {
     for (let index = 0; index < chunks.length; index += 1) {
       const part = { batchId: batch.batchId, part: index, final: index === chunks.length - 1, manifestId: batch.manifestId, sources: chunks[index], deletedPaths: index === 0 ? batch.deletedPaths : [], full: batch.full && index === 0 };
       transport = await api.stagePreparedBatch(batch.storeRoot, part);
-      const result = await supervisor.call("apply", { root: runtime.root, stateRoot: batch.storeRoot, batchRef: transport.reference, options: { embedding: batch.embedding } }, {
+      const result = await supervisor.call("apply", { root: runtime.root, stateRoot: batch.storeRoot, batchRef: transport.reference, options: { embedding: batch.embedding, embeddingCachePath: path.join(runtime.scope.canonicalStateRoot, "embedding-cache.jsonl") } }, {
         requestId: api.newRequestId(projection + "-apply"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: applyDeadline,
       });
       if (!result.ok) throw new Error(result.message);
@@ -165,9 +174,10 @@ async function assertOwnedStoreRoot(stateRoot, storeRoot) {
 
 /** One capture and publication owns all requested projections, including admin work. */
 export async function synchronizeWorkspace(root, backends, options = {}) {
-  const runtime = await runtimeFor(root);
+  const runtime = await runtimeFor(root, "write");
   const projections = [...new Set(backends.map((backend) => COMPONENT[backend]).filter((value) => value === "graph" || value === "retrieval"))];
   const run = async () => {
+    runtime.scope.assertWritable();
     if (runtime.closed) throw new Error("workspace is closing");
     if (runtime.publication.status().needsRecovery) await runtime.publication.recover();
     const previous = projections.map((projection) => currentBatch(runtime, projection)).filter(Boolean);
@@ -209,7 +219,8 @@ export async function synchronizeWorkspace(root, backends, options = {}) {
   return waitForJob(job, options.signal);
 }
 export async function unifiedIndexStatus(root) {
-  const runtime = await runtimeFor(root);
+  const runtime = await runtimeFor(root, "read");
+  await runtime.publication.refresh();
   const status = runtime.publication.status();
   const backends = Object.fromEntries(["retrieval", "graph"].map((projection) => {
     const view = runtime.publication.view(projection);
@@ -240,8 +251,7 @@ export async function unifiedStage(reads, input, deadline, execute) {
         results.set(read, { status: "fulfilled", value: failureEnvelope(read.backend, read.operation, row?.building ? "INDEX_BUILDING" : "INDEX_UNAVAILABLE", row?.error ?? row?.detail ?? "no clean published view") });
       }
       const usable = indexed.filter((read) => ready.has(read.backend));
-      if (!usable.length) return;
-      const runtime = await runtimeFor(input.root);
+      const runtime = await runtimeFor(input.root, "read");
       await runtime.publication.read([...new Set(usable.map((read) => COMPONENT[read.backend]))], { requireCoherent: true, signal: deadline.signal }, async (views) => {
         const lease = { runtime, views };
         const settled = await Promise.allSettled(usable.map((read) => execute(read, lease)));
@@ -332,7 +342,7 @@ export async function unifiedRead(read, input, deadline, lease) {
   }
   const started = performance.now();
   const component = COMPONENT[read.backend];
-  const runtime = lease?.runtime ?? await runtimeFor(input.root);
+  const runtime = lease?.runtime ?? await runtimeFor(input.root, "read");
   const api = await core();
   const context = { requestId: api.newRequestId(component), signal: deadline.signal, deadlineMonotonicMs: performance.now() + deadline.budget(input.timeoutMs),
     workspaceId: runtime.scope.workspaceId, maxEvidence: input.limit, maxOutputChars: input.maxChars, maxWireBytes: 1_048_576 };
@@ -383,11 +393,11 @@ export async function unifiedRead(read, input, deadline, lease) {
   }
 }
 export async function unifiedSemanticStatus(root) {
-  const runtime = await runtimeFor(root);
+  const runtime = await runtimeFor(root, "read");
   return { backend: "serena", ok: true, configuredLanguages: Object.keys(trustedLanguageServers()), activeLanguages: [...runtime.semantic.keys()] };
 }
 export async function repairUnifiedSemantic(root) {
-  const runtime = await runtimeFor(root);
+  const runtime = await runtimeFor(root, "write");
   const ports = [...runtime.semantic.values()];
   runtime.semantic.clear();
   await Promise.all(ports.map((port) => port.close()));

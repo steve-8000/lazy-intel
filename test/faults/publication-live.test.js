@@ -50,7 +50,7 @@ async function status(root) {
 }
 
 async function graphBatch(root) {
-  const runtime = await unified.__internals.runtimeFor(root);
+  const runtime = await unified.__internals.runtimeFor(root, "write");
   return runtime.publication.currentBatch("graph");
 }
 
@@ -63,7 +63,7 @@ for (const failureAt of failurePoints) {
       const oldStoreRoot = old.backends.codegraph.view.storeRoot;
       await writeFile(path.join(root, "a.js"), "export function target() { return 2; }\n", "utf8");
 
-      const runtime = await unified.__internals.runtimeFor(root);
+      const runtime = await unified.__internals.runtimeFor(root, "write");
       const publish = runtime.publication.publishBatch.bind(runtime.publication);
       runtime.publication.publishBatch = (batch, apply, options = {}) => publish(batch, apply, { ...options, failureAt });
       await assert.rejects(
@@ -132,7 +132,7 @@ test("a failed staged rebuild restores the operator backup and serves the old ge
     await cp(stateRoot, backup, { recursive: true });
     const backupDigest = await digestTree(backup);
     await writeFile(path.join(root, "a.js"), "export function target() { return 99; }\n", "utf8");
-    const runtime = await unified.__internals.runtimeFor(root);
+    const runtime = await unified.__internals.runtimeFor(root, "write");
     const publish = runtime.publication.publishBatch.bind(runtime.publication);
     runtime.publication.publishBatch = (batch, apply, options = {}) => publish(batch, apply, { ...options, failureAt: "after-component-write-before-ack" });
     await assert.rejects(() => unified.synchronizeWorkspace(root, ["codegraph"], { rebuild: true }), PublicationCrash);
@@ -186,12 +186,12 @@ test("mixed graph and retrieval publication recovers a real multipart retrieval 
     const initial = await status(root);
     assert.equal(initial.backends.codegraph.ready, true);
     assert.equal(initial.backends.zvec.ready, true);
-    const initialBatch = await unified.__internals.runtimeFor(root).then((runtime) => runtime.publication.currentBatch("graph"));
+    const initialBatch = await unified.__internals.runtimeFor(root, "write").then((runtime) => runtime.publication.currentBatch("graph"));
 
     await writeFile(path.join(root, "large-0.js"), large("changed-0"), "utf8");
     for (let index = 0; index < 4; index += 1) await writeFile(path.join(root, `large-${index}.js`), large(`changed-${index}`), "utf8");
     await rm(path.join(root, "deleted.js"));
-    const runtime = await unified.__internals.runtimeFor(root);
+    const runtime = await unified.__internals.runtimeFor(root, "write");
     // Reads and applies are routed per store root, so a single supervisor is not a
     // stable interception point. Wrapping the pool catches whichever worker serves.
     const pool = runtime.retrievalPool;
@@ -230,7 +230,7 @@ test("mixed graph and retrieval publication recovers a real multipart retrieval 
     assert.equal(recovered.backends.zvec.view.state, "clean");
     assert.equal(recovered.backends.codegraph.view.appliedManifestId, recovered.backends.zvec.view.appliedManifestId);
     assert.equal(recovered.backends.codegraph.view.storeRoot, recovered.backends.zvec.view.storeRoot);
-    const finalRuntime = await unified.__internals.runtimeFor(root);
+    const finalRuntime = await unified.__internals.runtimeFor(root, "write");
     const graph = finalRuntime.publication.currentBatch("graph");
     const retrieval = finalRuntime.publication.currentBatch("retrieval");
     assert.equal(graph.manifestId, retrieval.manifestId);

@@ -3,8 +3,10 @@ import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import type { WorkspaceScope } from "../contracts.js";
 
-export interface WorkspaceRuntimeOptions { readonly sourceRoot: string; readonly stateRoot?: string; readonly lockRetryMs?: number; readonly lockTimeoutMs?: number; readonly signal?: AbortSignal; readonly trustedForLanguageTools?: boolean; }
-export interface WorkspaceRuntimeHandle extends WorkspaceScope { readonly sourceRoot: string; readonly stateRoot: string; readonly release: () => Promise<void>; }
+export type WorkspaceRuntimeMode = "read" | "write";
+interface WorkspaceRuntimeOptionsBase { readonly sourceRoot: string; readonly stateRoot?: string; readonly lockRetryMs?: number; readonly lockTimeoutMs?: number; readonly signal?: AbortSignal; readonly trustedForLanguageTools?: boolean; }
+export type WorkspaceRuntimeOptions = WorkspaceRuntimeOptionsBase & { readonly mode: WorkspaceRuntimeMode };
+export interface WorkspaceRuntimeHandle extends WorkspaceScope { readonly sourceRoot: string; readonly stateRoot: string; readonly mode: WorkspaceRuntimeMode; readonly assertWritable: () => void; readonly release: () => Promise<void>; }
 interface LockContents { readonly pid: number; readonly token: string; readonly sourceRoot: string; readonly sourceIdentity: string; }
 interface PersistentIdentity { readonly version: 1; readonly workspaceId: string; readonly sourceRoot: string; readonly stateRoot: string; readonly sourceIdentity: string; }
 const LOCK_NAME = "workspace.lock"; const RUNTIME_DIR = "runtime"; const LOCK_GRACE_MS = 5_000;
@@ -58,17 +60,21 @@ async function acquireLock(stateRoot: string, sourceRoot: string, sourceKey: str
   }
 }
 async function readIdentity(filePath: string): Promise<PersistentIdentity | null> { try { return JSON.parse(await readFile(filePath, "utf8")) as PersistentIdentity; } catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return null; throw error; } }
-
 export async function openWorkspaceRuntime(options: WorkspaceRuntimeOptions): Promise<WorkspaceRuntimeHandle> {
+  if (options.mode !== "read" && options.mode !== "write") throw new Error("workspace runtime mode must be read or write");
   const sourceRoot = await canonicalExistingDirectory(options.sourceRoot); const stateRoot = await canonicalStateDirectory(sourceRoot, options.stateRoot); const sourceKey = await sourceIdentity(sourceRoot); const workspaceId = `workspace-${digest(sourceRoot).slice(0, 32)}`; const identityPath = path.join(stateRoot, RUNTIME_DIR, "workspace-identity.json");
-  const lock = await acquireLock(stateRoot, sourceRoot, sourceKey, options.lockRetryMs ?? 10, options.lockTimeoutMs ?? 30_000, options.signal);
+  const existing = await readIdentity(identityPath); if (existing && (existing.sourceRoot !== sourceRoot || existing.stateRoot !== stateRoot || existing.sourceIdentity !== sourceKey)) throw new Error("workspace identity mismatch: source was recreated or state belongs to another workspace");
+  const lock = options.mode === "write"
+    ? await acquireLock(stateRoot, sourceRoot, sourceKey, options.lockRetryMs ?? 10, options.lockTimeoutMs ?? 30_000, options.signal)
+    : { release: async () => {} };
   try {
-    const existing = await readIdentity(identityPath); if (existing && (existing.sourceRoot !== sourceRoot || existing.stateRoot !== stateRoot || existing.sourceIdentity !== sourceKey)) throw new Error("workspace identity mismatch: source was recreated or state belongs to another workspace");
-    await durableJson(identityPath, { version: 1, workspaceId, sourceRoot, stateRoot, sourceIdentity: sourceKey } satisfies PersistentIdentity);
+    // Readers validate the persisted identity but never publish one.
+    if (options.mode === "write") await durableJson(identityPath, { version: 1, workspaceId, sourceRoot, stateRoot, sourceIdentity: sourceKey } satisfies PersistentIdentity);
   } catch (error) { await lock.release(); throw error; }
   const scopeDigest = digest(JSON.stringify({ sourceRoot, stateRoot })); const trustedForLanguageTools = options.trustedForLanguageTools ?? false; const scope: WorkspaceScope = { workspaceId, canonicalSourceRoot: sourceRoot, canonicalStateRoot: stateRoot, scopeDigest, buildContextDigest: null, trustedForLanguageTools };
-  return { ...scope, sourceRoot, stateRoot, release: lock.release };
+  const assertWritable = (): void => { if (options.mode !== "write") throw new Error("read-mode workspace runtime cannot publish, apply, or recover"); };
+  return { ...scope, sourceRoot, stateRoot, mode: options.mode, assertWritable, release: lock.release };
 }
-export class WorkspaceRuntime { readonly scope: WorkspaceRuntimeHandle; private constructor(scope: WorkspaceRuntimeHandle) { this.scope = scope; } static async open(options: WorkspaceRuntimeOptions): Promise<WorkspaceRuntime> { return new WorkspaceRuntime(await openWorkspaceRuntime(options)); } get workspaceId(): string { return this.scope.workspaceId; } get sourceRoot(): string { return this.scope.canonicalSourceRoot; } get stateRoot(): string { return this.scope.canonicalStateRoot; } get canonicalSourceRoot(): string { return this.scope.canonicalSourceRoot; } get canonicalStateRoot(): string { return this.scope.canonicalStateRoot; } get scopeDigest(): string { return this.scope.scopeDigest; } async release(): Promise<void> { await this.scope.release(); } }
+export class WorkspaceRuntime { readonly scope: WorkspaceRuntimeHandle; private constructor(scope: WorkspaceRuntimeHandle) { this.scope = scope; } static async open(options: WorkspaceRuntimeOptions): Promise<WorkspaceRuntime> { return new WorkspaceRuntime(await openWorkspaceRuntime(options)); } get workspaceId(): string { return this.scope.workspaceId; } get sourceRoot(): string { return this.scope.canonicalSourceRoot; } get stateRoot(): string { return this.scope.canonicalStateRoot; } get mode(): WorkspaceRuntimeMode { return this.scope.mode; } get canonicalSourceRoot(): string { return this.scope.canonicalSourceRoot; } get canonicalStateRoot(): string { return this.scope.canonicalStateRoot; } get scopeDigest(): string { return this.scope.scopeDigest; } assertWritable(): void { this.scope.assertWritable(); } async release(): Promise<void> { await this.scope.release(); } }
 export async function canonicalWorkspaceRoot(root: string): Promise<string> { return canonicalExistingDirectory(root); }
 export async function canonicalStateRoot(sourceRoot: string, stateRoot?: string): Promise<string> { return canonicalStateDirectory(await canonicalExistingDirectory(sourceRoot), stateRoot); }

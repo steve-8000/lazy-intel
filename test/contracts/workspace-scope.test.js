@@ -11,7 +11,7 @@ import { captureWorkspaceSnapshot, discoverWorkspaceFiles } from "../../packages
 
 function childHoldingRoot(root) {
   const runtimePath = path.resolve("packages/core/dist/workspace/runtime.js");
-  const script = `import { openWorkspaceRuntime } from ${JSON.stringify(runtimePath)}; await openWorkspaceRuntime({sourceRoot: process.argv[1]}); console.log("READY"); process.stdin.resume();`;
+  const script = `import { openWorkspaceRuntime } from ${JSON.stringify(runtimePath)}; await openWorkspaceRuntime({sourceRoot: process.argv[1], mode: "write"}); console.log("READY"); process.stdin.resume();`;
   return spawn(process.execPath, ["--input-type=module", "-e", script, root], { cwd: process.cwd(), stdio: ["pipe", "pipe", "pipe"] });
 }
 
@@ -37,12 +37,12 @@ test("workspace scope separates source and state and canonical aliases share one
   const child = childHoldingRoot(alias);
   try {
     await waitForReady(child);
-    await assert.rejects(() => openWorkspaceRuntime({ sourceRoot: root }), /already owned/);
+    await assert.rejects(() => openWorkspaceRuntime({ sourceRoot: root, mode: "write" }), /already owned/);
   } finally {
     child.kill("SIGTERM");
     await rm(alias, { force: true });
   }
-  const runtime = await openWorkspaceRuntime({ sourceRoot: root });
+  const runtime = await openWorkspaceRuntime({ sourceRoot: root, mode: "write" });
   assert.notEqual(runtime.canonicalSourceRoot, runtime.canonicalStateRoot);
   assert.equal(path.basename(runtime.canonicalStateRoot), ".lazy-intel");
   await runtime.release();
@@ -56,7 +56,7 @@ test("a lock whose holder is dead is reclaimed", async () => {
   const lock = path.join(root, ".lazy-intel", "runtime", "workspace.lock");
   await mkdir(lock);
   await writeFile(path.join(lock, "holder.json"), JSON.stringify({ pid: 999999, token: "dead", sourceRoot: root, createdAt: new Date().toISOString() }));
-  const runtime = await openWorkspaceRuntime({ sourceRoot: root });
+  const runtime = await openWorkspaceRuntime({ sourceRoot: root, mode: "write" });
   assert.equal(runtime.canonicalSourceRoot, await realpath(root));
   await runtime.release();
   await rm(root, { recursive: true, force: true });
@@ -108,11 +108,11 @@ test("default state and runtime metadata reject symlink escape", async (t) => {
   const outside = path.join(base, "outside");
   await mkdir(root); await mkdir(outside);
   await symlink(outside, path.join(root, ".lazy-intel"));
-  await assert.rejects(openWorkspaceRuntime({ sourceRoot: root }), /state.*symlink|state.*outside/);
+  await assert.rejects(openWorkspaceRuntime({ sourceRoot: root, mode: "write" }), /state.*symlink|state.*outside/);
   await rm(path.join(root, ".lazy-intel"));
   await mkdir(path.join(root, ".lazy-intel"));
   await symlink(outside, path.join(root, ".lazy-intel", "runtime"));
-  await assert.rejects(openWorkspaceRuntime({ sourceRoot: root }), /runtime.*symlink|runtime.*outside/);
+  await assert.rejects(openWorkspaceRuntime({ sourceRoot: root, mode: "write" }), /runtime.*symlink|runtime.*outside/);
 });
 
 test("prepared source transport rejects escaped directories and altered bytes", async (t) => {

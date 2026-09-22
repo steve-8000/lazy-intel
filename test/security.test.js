@@ -32,7 +32,7 @@ test("source and state identities cannot be confused across workspaces", async (
   const first = await directory("state-first");
   const second = await directory("state-second");
   const stateRoot = path.join(base, "shared-state");
-  const runtime = await openWorkspaceRuntime({ sourceRoot: first, stateRoot });
+  const runtime = await openWorkspaceRuntime({ sourceRoot: first, stateRoot, mode: "write" });
   try {
     assert.equal(runtime.canonicalSourceRoot, await realpath(first));
     assert.equal(runtime.canonicalStateRoot, await realpath(stateRoot));
@@ -41,7 +41,7 @@ test("source and state identities cannot be confused across workspaces", async (
     await runtime.release();
   }
   await assert.rejects(
-    () => openWorkspaceRuntime({ sourceRoot: second, stateRoot }),
+    () => openWorkspaceRuntime({ sourceRoot: second, stateRoot, mode: "write" }),
     /workspace identity mismatch/,
   );
 });
