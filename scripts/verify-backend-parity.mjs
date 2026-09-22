@@ -136,7 +136,9 @@ function rawText(result) {
 }
 
 async function stockArm(root, stateRoot, source) {
-  const service = await createZvecGrep({ root, stateRoot, embedding: MODEL, device: DEVICE });
+  // The embedding cache is shared across a workspace's stores, so the stock arm
+  // names it beside its state root rather than inside the store being written.
+  const service = await createZvecGrep({ root, stateRoot, embedding: MODEL, device: DEVICE, embeddingCachePath: path.join(stateRoot, "..", "embedding-cache.jsonl") });
   const rows = [];
   try {
     const indexed = await service.index({ root, stateRoot, embedding: MODEL, device: DEVICE });

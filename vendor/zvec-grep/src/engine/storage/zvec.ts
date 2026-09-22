@@ -12,7 +12,15 @@ import {
   type ZVecDocInput,
   type ZVecStatus,
 } from "@zvec/zvec";
-import { closeSync, existsSync, mkdirSync, openSync } from "node:fs";
+import {
+  closeSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  readSync,
+  writeSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { EngineError } from "../errors.js";
 import type {
@@ -31,6 +39,7 @@ import { normalizePath } from "../utils/path.js";
 import type {
   WorkspaceIndexStorage,
   WorkspaceIndexStorageOptions,
+  EmbeddingCacheEntry,
 } from "./index.js";
 import { resolveWorkspaceIndexStoragePaths } from "./layout.js";
 
@@ -47,6 +56,65 @@ type IndexedFragment = {
   fragment: EntityFragment;
   vector: readonly number[];
 };
+class EmbeddingCache {
+  private readonly locations = new Map<string, { offset: number; length: number }>();
+  private readonly fileDescriptor: number | null;
+  private fileSize: number;
+
+  constructor(private readonly path: string, readOnly: boolean) {
+    if (!readOnly && existsSync(path)) this.indexExistingEntries();
+    this.fileDescriptor = readOnly ? null : openSync(path, "a+");
+    this.fileSize = !readOnly && existsSync(path) ? readFileSync(path).byteLength : 0;
+  }
+
+  get(keys: readonly string[]): ReadonlyMap<string, readonly number[]> {
+    const result = new Map<string, readonly number[]>();
+    const fileDescriptor = this.fileDescriptor;
+    for (const key of keys) {
+      const location = this.locations.get(key);
+      if (!location || fileDescriptor === null) continue;
+      const bytes = Buffer.allocUnsafe(location.length);
+      readSync(fileDescriptor, bytes, 0, location.length, location.offset);
+      const entry = JSON.parse(bytes.toString("utf8")) as EmbeddingCacheEntry;
+      result.set(key, entry.vector);
+    }
+    return result;
+  }
+
+  put(entries: readonly EmbeddingCacheEntry[]): void {
+    const fileDescriptor = this.fileDescriptor;
+    if (fileDescriptor === null) return;
+    for (const entry of entries) {
+      if (this.locations.has(entry.key)) continue;
+      const bytes = Buffer.from(JSON.stringify(entry) + "\n");
+      writeSync(fileDescriptor, bytes, 0, bytes.length, this.fileSize);
+      this.locations.set(entry.key, { offset: this.fileSize, length: bytes.length - 1 });
+      this.fileSize += bytes.length;
+    }
+  }
+
+  close(): void {
+    if (this.fileDescriptor !== null) closeSync(this.fileDescriptor);
+  }
+
+  private indexExistingEntries(): void {
+    const bytes = readFileSync(this.path);
+    let offset = 0;
+    while (offset < bytes.length) {
+      const end = bytes.indexOf(10, offset);
+      if (end < 0) break;
+      try {
+        const entry = JSON.parse(bytes.subarray(offset, end).toString("utf8")) as EmbeddingCacheEntry;
+        if (typeof entry.key === "string" && Array.isArray(entry.vector)) {
+          this.locations.set(entry.key, { offset, length: end - offset });
+        }
+      } catch {
+        // Ignore a partial/corrupt cache record; the index remains usable.
+      }
+      offset = end + 1;
+    }
+  }
+}
 
 type FileIndexDiagnostics = {
   truncatedFragmentCount?: number;
@@ -96,17 +164,23 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
   private readonly files: ZvecFileMetaStore;
   private readonly filesById = new Map<string, FileRecord>();
   private readonly filesByAbsolutePath = new Map<string, FileRecord>();
+  private readonly embeddingCache: EmbeddingCache;
   private needsOptimize = false;
 
   constructor(options: WorkspaceIndexStorageOptions) {
-    const paths = resolveWorkspaceIndexStoragePaths(options.storagePath);
+    const paths = resolveWorkspaceIndexStoragePaths(
+      options.storagePath,
+      options.readOnly ? options.storagePath : options.embeddingCachePath,
+    );
     const { readOnly } = options;
     this.readOnly = readOnly;
     initializeZvec();
     if (!readOnly) {
       mkdirSync(paths.storagePath, { recursive: true });
+      mkdirSync(dirname(paths.embeddingCachePath), { recursive: true });
     }
 
+    this.embeddingCache = new EmbeddingCache(paths.embeddingCachePath, readOnly);
     this.files = new ZvecFileMetaStore(paths.filesPath, readOnly);
     for (const file of this.files.list()) {
       this.rememberFile(file);
@@ -260,6 +334,15 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
     }
   }
 
+  getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]> {
+    return this.embeddingCache.get(keys);
+  }
+
+  putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void {
+    this.assertWritable("putCachedEmbeddings");
+    this.embeddingCache.put(entries);
+  }
+
   markFileFailed(file: FileInfo, error: string): void {
     this.assertWritable("markFileFailed");
     this.deleteFileDocuments(file.id);
@@ -339,9 +422,9 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
     }
 
     this.files.close();
+    this.embeddingCache.close();
     this.collection.closeSync();
   }
-
   private fetchStoredEntities(ids: readonly string[]): StoredEntity[] {
     if (ids.length === 0) {
       return [];

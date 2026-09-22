@@ -14,7 +14,7 @@ import {
   vectorContentForFragment,
 } from "../../extraction/index.js";
 import { indexChunkOptions } from "./input-budget.js";
-
+import { sha256Text } from "../../utils/hash.js";
 export interface PreparedSnapshot {
   readonly file: FileInfo;
   readonly content: Content;
@@ -77,6 +77,24 @@ export async function prepareSnapshot(
   };
 }
 
+function embeddingCacheKey(
+  content: Content,
+  model: EmbeddingModel,
+): string | null {
+  if (content.kind !== "text") return null;
+  const identity = JSON.stringify({
+    reference: model.info.reference,
+    provider: model.info.provider,
+    name: model.info.name,
+    dimension: model.info.dimension,
+    metric: model.info.metric,
+    inputKinds: model.info.inputKinds,
+    maxInputTokens: model.info.limits.maxInputTokens,
+  });
+  const normalized = content.text.normalize("NFC").replace(/\r\n?/g, "\n");
+  return sha256Text(identity + "\n" + normalized);
+}
+
 export async function ingestPreparedSnapshots(
   storage: WorkspaceIndexStorage,
   embeddingModel: EmbeddingModel,
@@ -94,23 +112,55 @@ export async function ingestPreparedSnapshots(
       filesDeleted += 1;
     }
   }
-
   const prepared: PreparedSnapshotFile[] = [];
   for (const snapshot of batch.upserts) {
     const file = await prepareSnapshot(snapshot, embeddingModel);
-    const vectors: number[][] = [];
+    const vectors: number[][] = Array.from(
+      { length: file.embeddingInputs.length },
+      () => [],
+    );
+    const keys = file.embeddingInputs.map((content) =>
+      embeddingCacheKey(content, embeddingModel),
+    );
+    const cached = storage.getCachedEmbeddings(
+      keys.filter((key): key is string => key !== null),
+    );
+    const pending = new Map<string, { index: number; content: Content }[]>();
+    for (const [index, content] of file.embeddingInputs.entries()) {
+      const key = keys[index];
+      const cachedVector = key === null ? undefined : cached.get(key);
+      if (cachedVector) {
+        vectors[index] = [...cachedVector];
+        continue;
+      }
+      const pendingKey = key ?? "uncached:" + index;
+      const indexes = pending.get(pendingKey) ?? [];
+      indexes.push({ index, content });
+      pending.set(pendingKey, indexes);
+    }
+    const pendingContents = [...pending.values()].map(([entry]) => entry);
     for (
       let start = 0;
-      start < file.embeddingInputs.length;
+      start < pendingContents.length;
       start += embeddingModel.info.limits.maxBatchSize
     ) {
-      const result = await embeddingModel.embed(
-        file.embeddingInputs.slice(
-          start,
-          start + embeddingModel.info.limits.maxBatchSize,
-        ),
+      const batch = pendingContents.slice(
+        start,
+        start + embeddingModel.info.limits.maxBatchSize,
       );
-      vectors.push(...result.vectors);
+      const result = await embeddingModel.embed(
+        batch.map(({ content }) => content),
+      );
+      const cacheEntries: { key: string; vector: readonly number[] }[] = [];
+      for (const [batchIndex, entry] of batch.entries()) {
+        const vector = result.vectors[batchIndex] ?? [];
+        for (const duplicate of pending.get(keys[entry.index] ?? "uncached:" + entry.index) ?? []) {
+          vectors[duplicate.index] = vector;
+        }
+        const key = keys[entry.index];
+        if (key !== null) cacheEntries.push({ key, vector });
+      }
+      storage.putCachedEmbeddings(cacheEntries);
     }
     storage.replaceFile(
       file.file,

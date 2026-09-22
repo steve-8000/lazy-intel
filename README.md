@@ -88,9 +88,21 @@ vendor/
 
 The file's contents are hashed into the scope digest, so editing it re-indexes on the next request. A single file larger than 1 MiB is excluded and reported as a `too-large` manifest exclusion: generated data artifacts otherwise dominate the whole corpus, since retrieval chunks and embeds every byte.
 
+### Readiness
+
+A read never blocks on building a view that was never published. Indexing a real repository takes minutes — far past any request budget — so a caller that waited would only ever learn that it timed out. A request against a workspace with no published view returns `index_building` at once and schedules one background build; `LAZY_INTEL_BOOTSTRAP_TIMEOUT_MS` bounds that build (default `1800000`, clamped `5000..3600000`) and nothing waits on it. Ask again once it lands.
+
+`freshness: "strict"` is the exception and still blocks: it is how you publish deliberately rather than by side effect.
+
 ### Workers
 
 Retrieval and graph reads run in worker processes shared by every workspace the server has open, because each retrieval worker holds its own embedding model. `LAZY_INTEL_WORKER_POOL` sets how many exist per projection (default `2`, clamped to `1..8`). A request prefers the worker already holding its store, and moves to an idle one when that worker is busy, so a long index apply in one workspace does not block a query in another. A worker that fails an apply is replaced on its own; the other workers keep their processes.
+
+An idle worker gives its memory back. After `LAZY_INTEL_WORKER_IDLE_MS` without a call (default `120000`, clamped `10000..3600000`, `0` disables) the worker process exits and the next request starts a fresh one. This matters because every editor session runs its own server: seven live servers were measured holding 7.51 GB of resident memory between them, with the machine 5.65 GB into swap, purely because each retrieval worker kept an embedding model loaded long after its session stopped asking questions.
+
+### Concurrent sessions
+
+Owning a workspace and reading one are different rights. Publishing — capture, apply, recovery — takes the exclusive workspace lock, and a second writer is refused. Reading takes no lock: a reader opens the published catalog, re-reads it before every read so it can never serve a view the owner has already replaced, and is refused any mutating call. Without that split, the first editor session to touch a repository made `code_intel` unusable in every other one.
 
 ### Embeddings
 

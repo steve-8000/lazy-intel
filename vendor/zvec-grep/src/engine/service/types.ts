@@ -30,6 +30,7 @@ export type CreateZvecGrepOptions = {
   modelCacheDir?: string;
   device?: "auto" | "cpu" | "metal" | "vulkan" | "cuda";
   authorizationSigningKeyPath?: string;
+  embeddingCachePath?: string;
 };
 
 export type ZvecGrepIndexOptions = {
@@ -251,7 +252,7 @@ export type ZvecGrep = {
   readonly root: string;
   index(options?: ZvecGrepIndexOptions): Promise<IndexResult>;
   dropIndex(options?: ZvecGrepInfoOptions): Promise<boolean>;
-  indexPrepared(options: { stateRoot: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult>;
+  indexPrepared(options: { stateRoot: string; embeddingCachePath: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult>;
   disableIndex(options?: ZvecGrepInfoOptions): Promise<ZvecGrepInfoResult>;
   info(options?: ZvecGrepInfoOptions): Promise<ZvecGrepInfoResult>;
   context(options: ZvecGrepContextOptions): Promise<ZvecGrepContextResult>;

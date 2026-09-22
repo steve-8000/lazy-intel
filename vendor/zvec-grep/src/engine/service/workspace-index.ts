@@ -29,11 +29,16 @@ import type {
 } from "../types.js";
 import { CURRENT_INDEX_VERSION } from "../types.js";
 
-export type WorkspaceIndexOptions = {
-  mode: "read" | "write";
-  embeddingModel?: EmbeddingModel;
-};
-
+export type WorkspaceIndexOptions =
+  | {
+      mode: "read";
+      embeddingModel?: EmbeddingModel;
+    }
+  | {
+      mode: "write";
+      embeddingModel?: EmbeddingModel;
+      embeddingCachePath: string;
+    };
 export class WorkspaceIndex {
   private readonly storage: WorkspaceIndexStorage;
   private readonly embedding: WorkspaceIndexEmbeddingSchema;
@@ -56,6 +61,7 @@ export class WorkspaceIndex {
         storagePath: info.path,
         readOnly: false,
         embedding: this.embedding,
+        embeddingCachePath: options.embeddingCachePath,
       });
     } else {
       this.storage = createWorkspaceIndexStorage({

@@ -51,6 +51,12 @@ function snapshot(root, relativePath, content, format) {
   };
 }
 
+// The embedding cache is shared across a workspace's stores, so it is named
+// explicitly rather than derived from whichever store is being written.
+function cachePath(stateRoot) {
+  return path.join(stateRoot, "..", "embedding-cache.jsonl");
+}
+
 async function query(service, root, stateRoot, query) {
   return service.context({
     root,
@@ -89,7 +95,7 @@ test("prepared snapshots preserve stock extraction and indexed results across fo
       assert.ok(prepared.fragments.length > 0, `${item.file.relativePath} must produce fragments`);
     }
 
-    const indexed = await service.indexPrepared({ stateRoot, batch: { upserts: files } });
+    const indexed = await service.indexPrepared({ stateRoot, embeddingCachePath: cachePath(stateRoot), batch: { upserts: files } });
     assert.equal(indexed.filesIndexed, files.length);
     assert.ok(indexed.fragmentsIndexed > 0);
     for (const marker of ["markdown_marker", "json_marker", "config_marker", "plaintext_marker"]) {
@@ -118,7 +124,7 @@ test("two real stores sharing a borrowed model survive close order and retain ca
   try {
     await writeFile(fileA.file.absolutePath, contentA, "utf8");
     await writeFile(fileB.file.absolutePath, contentB, "utf8");
-    const indexedA = await serviceA.indexPrepared({ stateRoot: stateA, batch: { upserts: [fileA] } });
+    const indexedA = await serviceA.indexPrepared({ stateRoot: stateA, embeddingCachePath: cachePath(stateA), batch: { upserts: [fileA] } });
     assert.equal(indexedA.filesIndexed, 1);
     const resultA = await query(serviceA, rootA, stateA, "shared_model_alpha_marker");
     assert.ok(resultA.items.length > 0);
@@ -126,7 +132,7 @@ test("two real stores sharing a borrowed model survive close order and retain ca
     await serviceA.close();
     assert.equal(lifecycle.disposed, 0, "closing store A must not dispose the borrowed model");
 
-    const indexedB = await serviceB.indexPrepared({ stateRoot: stateB, batch: { upserts: [fileB] } });
+    const indexedB = await serviceB.indexPrepared({ stateRoot: stateB, embeddingCachePath: cachePath(stateB), batch: { upserts: [fileB] } });
     assert.equal(indexedB.filesIndexed, 1);
     const resultB = await query(serviceB, rootB, stateB, "shared_model_beta_marker");
     assert.ok(resultB.items.length > 0);
@@ -155,13 +161,13 @@ test("prepared apply rejects an embedding schema mismatch", async () => {
   try {
     await writeFile(file.file.absolutePath, content, "utf8");
     compatible = await createZvecGrep({ root, stateRoot, embeddingModel: model(), embeddingModelOwnership: "borrowed" });
-    await compatible.indexPrepared({ stateRoot, batch: { upserts: [file] } });
+    await compatible.indexPrepared({ stateRoot, embeddingCachePath: cachePath(stateRoot), batch: { upserts: [file] } });
     await compatible.close();
     compatible = undefined;
 
     incompatible = await createZvecGrep({ root, stateRoot, embeddingModel: model([], { disposed: 0 }, 3), embeddingModelOwnership: "borrowed" });
     await assert.rejects(
-      incompatible.indexPrepared({ stateRoot, batch: { upserts: [file] } }),
+      incompatible.indexPrepared({ stateRoot, embeddingCachePath: cachePath(stateRoot), batch: { upserts: [file] } }),
       (error) => error?.code === "ZVEC_GREP.ENGINE.SERVICE.EMBEDDING_SCHEMA_CHANGE_REQUIRES_REBUILD",
     );
   } finally {
@@ -183,18 +189,18 @@ test("prepared rename and delete remove stale vector metadata", async () => {
   const service = await createZvecGrep({ root, stateRoot, embeddingModel, embeddingModelOwnership: "borrowed" });
   try {
     await writeFile(oldSnapshot.file.absolutePath, content, "utf8");
-    const initial = await service.indexPrepared({ stateRoot, batch: { upserts: [oldSnapshot] } });
+    const initial = await service.indexPrepared({ stateRoot, embeddingCachePath: cachePath(stateRoot), batch: { upserts: [oldSnapshot] } });
     assert.equal(initial.filesIndexed, 1);
     assert.ok((await query(service, root, stateRoot, "rename_vector_marker")).items.some((item) => item.file.relativePath === oldPath));
 
     await rename(oldSnapshot.file.absolutePath, newSnapshot.file.absolutePath);
-    const renamed = await service.indexPrepared({ stateRoot, batch: { upserts: [newSnapshot], deletedPaths: [oldSnapshot.file.absolutePath] } });
+    const renamed = await service.indexPrepared({ stateRoot, embeddingCachePath: cachePath(stateRoot), batch: { upserts: [newSnapshot], deletedPaths: [oldSnapshot.file.absolutePath] } });
     assert.equal(renamed.filesDeleted, 1);
     const afterRename = await query(service, root, stateRoot, "rename_vector_marker");
     assert.ok(afterRename.items.some((item) => item.file.relativePath === newPath));
     assert.ok(afterRename.items.every((item) => item.file.relativePath !== oldPath));
 
-    const deleted = await service.indexPrepared({ stateRoot, batch: { upserts: [], deletedPaths: [newSnapshot.file.absolutePath] } });
+    const deleted = await service.indexPrepared({ stateRoot, embeddingCachePath: cachePath(stateRoot), batch: { upserts: [], deletedPaths: [newSnapshot.file.absolutePath] } });
     assert.equal(deleted.filesDeleted, 1);
     const afterDelete = await query(service, root, stateRoot, "rename_vector_marker");
     assert.equal(afterDelete.items.length, 0);

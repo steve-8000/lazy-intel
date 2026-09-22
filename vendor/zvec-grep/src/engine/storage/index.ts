@@ -15,7 +15,10 @@ type IndexedFragment = {
   fragment: EntityFragment;
   vector: readonly number[];
 };
-
+export type EmbeddingCacheEntry = {
+  key: string;
+  vector: readonly number[];
+};
 type FileIndexDiagnostics = {
   truncatedFragmentCount?: number;
 };
@@ -38,11 +41,13 @@ export type WorkspaceIndexStorageOptions =
   | {
       storagePath: string;
       readOnly: true;
+      embeddingCachePath?: never;
     }
   | {
       storagePath: string;
       readOnly: false;
       embedding: WorkspaceIndexEmbeddingSchema;
+      embeddingCachePath: string;
     };
 
 export interface WorkspaceIndexStorage {
@@ -71,6 +76,8 @@ export interface WorkspaceIndexStorage {
     entries: readonly IndexedFragment[],
     diagnostics?: FileIndexDiagnostics,
   ): void;
+  getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]>;
+  putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void;
   markFileFailed(file: FileInfo, error: string): void;
   deleteFile(fileId: string): void;
   finalizeWrites(): Promise<void>;

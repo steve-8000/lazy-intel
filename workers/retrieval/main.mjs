@@ -126,7 +126,7 @@ async function apply(payload, context) {
     const signal = AbortSignal.timeout(Math.max(1, context.remainingBudgetMs));
     let result;
     try {
-      result = await service.indexPrepared({ stateRoot: request.stateRoot, batch: prepared, signal });
+      result = await service.indexPrepared({ stateRoot: request.stateRoot, embeddingCachePath: request.options.embeddingCachePath, batch: prepared, signal });
     } finally {
       try {
         await service.releaseEmbeddingResources();

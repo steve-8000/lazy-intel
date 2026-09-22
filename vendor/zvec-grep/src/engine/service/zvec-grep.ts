@@ -87,6 +87,11 @@ const sharedEmbeddingModels = new Map<
   string,
   { model: EmbeddingModel; refs: number }
 >();
+
+function requiredEmbeddingCachePath(options: CreateZvecGrepOptions): string {
+  if (!options.embeddingCachePath) throw new Error("embeddingCachePath is required for writable index storage");
+  return options.embeddingCachePath;
+}
 async function releaseEmbeddingModel(
   model: EmbeddingModel,
   releasedUnsharedModels?: Set<EmbeddingModel>,
@@ -316,6 +321,7 @@ class ZvecGrepService implements ZvecGrep {
             const workspaceIndex = new WorkspaceIndex(manifest, {
               mode: "write",
               embeddingModel,
+              embeddingCachePath: requiredEmbeddingCachePath(this.options),
             });
             writeWorkspaceManifest(location.home, manifest);
 
@@ -363,7 +369,7 @@ class ZvecGrepService implements ZvecGrep {
     }
   }
 
-  async indexPrepared(options: { stateRoot: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult> {
+  async indexPrepared(options: { stateRoot: string; embeddingCachePath: string; batch: PreparedSnapshotBatch }): Promise<PreparedSnapshotResult> {
     this.ensureOpen();
     const root = this.root;
     const location = workspaceIndexLocation(root, options.stateRoot);
@@ -388,7 +394,7 @@ class ZvecGrepService implements ZvecGrep {
           embeddingModel,
           embeddingRuntimeAfterIndex(existing, existingRuntime, embeddingModel, effectiveRuntime, this.options),
         );
-        const workspaceIndex = new WorkspaceIndex(manifest, { mode: "write", embeddingModel });
+        const workspaceIndex = new WorkspaceIndex(manifest, { mode: "write", embeddingModel, embeddingCachePath: options.embeddingCachePath });
         try {
           const result = await workspaceIndex.indexPrepared(options.batch);
           writeWorkspaceManifest(location.home, { ...manifest, updatedTime: Date.now() });
@@ -709,6 +715,7 @@ class ZvecGrepService implements ZvecGrep {
           const workspaceIndex = new WorkspaceIndex(existing, {
             mode: "write",
             embeddingModel,
+            embeddingCachePath: requiredEmbeddingCachePath(this.options),
           });
           try {
             const result = await workspaceIndex.index({

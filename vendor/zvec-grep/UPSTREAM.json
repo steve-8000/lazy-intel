@@ -84,9 +84,57 @@
       "unit": "MEM01",
       "reason": "Add the optional idle embedding-resource release contract and context-budget model option.",
       "test_evidence": "vendor build; memory release proof; verify-vendor."
+    },
+    {
+      "path": "src/engine/storage/index.ts",
+      "original_blob": "0d37b8c41162b8b4fdb2620f22c2056b4bc2d4f8",
+      "resulting_blob": "ceb15bbce7db25523b6d4409a39089f550370a80",
+      "unit": "U12",
+      "reason": "Stores the content-addressed embedding cache outside rotating publication stores while preserving model- and normalized-chunk-key validity.",
+      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+    },
+    {
+      "path": "src/engine/storage/layout.ts",
+      "original_blob": "1f084cde02cf3befdd8661ce3c0605a8c8a47da6",
+      "resulting_blob": "31ebe7677782a0d8fdb5122d595db084841fc450",
+      "unit": "U12",
+      "reason": "Keeps files.zvec and index.zvec inside each store while accepting an explicit shared embedding-cache path and leaving that cache intact when a store is deleted.",
+      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+    },
+    {
+      "path": "src/engine/storage/zvec.ts",
+      "original_blob": "c1040e6a5555224e9dc57e7bda554039d1e71a5d",
+      "resulting_blob": "776e63a477186bb11e5c552aa3c660338964b8e4",
+      "unit": "U12",
+      "reason": "Opens the embedding cache at the explicit workspace location, creating its parent without coupling cache lifetime to a publication store.",
+      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+    },
+    {
+      "path": "src/engine/service/workspace-index.ts",
+      "original_blob": "b82bb1a5e54747d944a98941fd22fab9eb382591",
+      "resulting_blob": "d18757e4f1c03023ce311697ab4f2caef9200458",
+      "unit": "U12",
+      "reason": "Requires writable workspace index construction to receive the explicit shared embedding-cache path.",
+      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+    },
+    {
+      "path": "src/engine/service/types.ts",
+      "original_blob": "1017431714998992853136dbfc5f9b4d959899e9",
+      "resulting_blob": "ef1e96f6d9d71ff3e5888f1b52b4d9cd6d3522ba",
+      "unit": "U12",
+      "reason": "Exposes the explicit shared embedding-cache path on prepared apply and service options.",
+      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+    },
+    {
+      "path": "src/engine/service/zvec-grep.ts",
+      "original_blob": "11e6a763c325a7b882631710b08a87f9ebb2f084",
+      "resulting_blob": "92e91af74c3058adefe2f0ff58efdb9523fda84e",
+      "unit": "U12",
+      "reason": "Threads the explicit shared embedding-cache path through prepared and regular writable workspace-index creation.",
+      "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
     }
   ],
-  "patch_revision": 3,
+  "patch_revision": 5,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",
@@ -98,7 +146,7 @@
   ],
   "added_files_sha256": {
     "src/lazy-entry.ts": "dae498d7e51d7171bb76f9a97e8918e8e539f7eb26b5a205f21e19cfe70ec85d",
-    "src/engine/pipeline/indexing/prepared.ts": "933038d580f33ac3c89c8d61dffc5e3c65335b0b13da2056dbdbc5d5be385ca1"
+    "src/engine/pipeline/indexing/prepared.ts": "91a7b02c039d54cf33757a7523a9395e323f1c6d80df1771f004358b9a189d96"
   },
   "added_files_note": "Files lazy-intel adds inside the vendor tree. They are ours, not upstream's, and carry an ADDED BY lazy-intel header. verify-vendor.mjs accepts exactly these as non-drift.",
   "manifest": [

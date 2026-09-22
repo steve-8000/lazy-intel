@@ -8,28 +8,37 @@ type WorkspaceIndexStoragePaths = {
   storagePath: string;
   filesPath: string;
   indexPath: string;
+  embeddingCachePath: string;
 };
 
 export function resolveWorkspaceIndexStoragePaths(
   storagePath: string,
+  embeddingCachePath: string,
 ): WorkspaceIndexStoragePaths {
   const resolvedStoragePath = resolve(storagePath);
   return {
     storagePath: resolvedStoragePath,
     filesPath: join(resolvedStoragePath, FILES_ZVEC),
     indexPath: join(resolvedStoragePath, ENTITIES_ZVEC),
+    embeddingCachePath: resolve(embeddingCachePath),
   };
 }
 
 export function hasWorkspaceIndexStorage(storagePath: string): boolean {
-  const paths = resolveWorkspaceIndexStoragePaths(storagePath);
-  return existsSync(paths.filesPath) && existsSync(paths.indexPath);
+  const resolvedStoragePath = resolve(storagePath);
+  return (
+    existsSync(join(resolvedStoragePath, FILES_ZVEC)) &&
+    existsSync(join(resolvedStoragePath, ENTITIES_ZVEC))
+  );
 }
 
 export function deleteWorkspaceIndexStorage(storagePath: string): void {
-  const paths = resolveWorkspaceIndexStoragePaths(storagePath);
-  for (const target of [paths.filesPath, paths.indexPath]) {
-    if (dirname(target) !== paths.storagePath) {
+  const resolvedStoragePath = resolve(storagePath);
+  for (const target of [
+    join(resolvedStoragePath, FILES_ZVEC),
+    join(resolvedStoragePath, ENTITIES_ZVEC),
+  ]) {
+    if (dirname(target) !== resolvedStoragePath) {
       throw new Error("Workspace index data must be inside its storage path");
     }
     rmSync(target, { recursive: true, force: true });
@@ -37,5 +46,5 @@ export function deleteWorkspaceIndexStorage(storagePath: string): void {
 }
 
 export function workspaceIndexPath(storagePath: string): string {
-  return resolveWorkspaceIndexStoragePaths(storagePath).indexPath;
+  return join(resolve(storagePath), ENTITIES_ZVEC);
 }
