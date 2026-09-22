@@ -1,4 +1,4 @@
-import { mkdir, open, readFile, rename } from "node:fs/promises";
+import { mkdir, open, readFile, rename, stat } from "node:fs/promises";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import type { ApplyAck, CapturedManifest, Projection, ProjectionView, SourceSnapshot } from "../contracts.js";
@@ -72,16 +72,22 @@ export class PublicationNotReadable extends Error { readonly code: "applying" | 
 
 export class PublicationCoordinator {
   readonly stateRoot: string; readonly catalogPath: string; readonly journalPath: string; readonly projectionsRoot: string;
-  private catalog: PublicationCatalog = emptyCatalog(); private journal!: WorkspaceJournal; private opened = false; private readonly rw = new ReadWriteLease(); private recoveryApply: ApplyProjection | undefined; private readOnly = false;
+  private catalog: PublicationCatalog = emptyCatalog(); private journal!: WorkspaceJournal; private opened = false; private readonly rw = new ReadWriteLease(); private recoveryApply: ApplyProjection | undefined; private readOnly = false; private catalogSignature: string | undefined;
   private constructor(stateRoot: string) { this.stateRoot = stateRoot; this.catalogPath = path.join(stateRoot, "runtime", "publication-catalog.json"); this.journalPath = path.join(stateRoot, "runtime", "publication.journal"); this.projectionsRoot = path.join(stateRoot, "projections"); }
-  static async open(stateRoot: string, options: { readonly mode?: "read" | "write" } = {}): Promise<PublicationCoordinator> {
+  static async open(stateRoot: string, options: { readonly mode?: "read" | "write"; readonly deferRecovery?: boolean; readonly apply?: ApplyProjection } = {}): Promise<PublicationCoordinator> {
     const coordinator = new PublicationCoordinator(stateRoot); coordinator.readOnly = options.mode === "read";
     await mkdir(path.join(stateRoot, "runtime"), { recursive: true });
     coordinator.catalog = await readCatalog(coordinator.catalogPath); coordinator.journal = await openWorkspaceJournal(coordinator.journalPath); coordinator.opened = true;
     // Recovery is a mutation and belongs to the owner. A reader that recovered
     // would write the catalog it was only supposed to observe, and two readers
     // could race the owner for it.
-    if (!coordinator.readOnly) await coordinator.recover();
+    if (!coordinator.readOnly && options.apply) coordinator.recoveryApply = options.apply;
+    if (!coordinator.readOnly && options.deferRecovery) {
+      const transactions = { ...coordinator.catalog.transactions };
+      for (const transaction of (await coordinator.publicationEntries()).values()) if (!coordinator.catalog.completed[transaction.batch.batchId]) transactions[transaction.batch.batchId] = transaction;
+      coordinator.catalog = { ...coordinator.catalog, transactions };
+      if (coordinator.reconcileAbandoned()) await coordinator.save();
+    } else if (!coordinator.readOnly) await coordinator.recover(options.apply);
     return coordinator;
   }
   /**
@@ -96,15 +102,19 @@ export class PublicationCoordinator {
     if (!this.opened) throw new Error("publication coordinator is not open");
     if (!this.readOnly) return;
     const release = await this.rw.write();
-    try { this.catalog = await readCatalog(this.catalogPath); } finally { release(); }
+    try {
+      const information = await stat(this.catalogPath).catch((error: NodeJS.ErrnoException) => error.code === "ENOENT" ? null : Promise.reject(error));
+      const signature = information ? String(information.ino) + ":" + information.size + ":" + information.mtimeMs : "missing";
+      if (signature !== this.catalogSignature) { this.catalog = await readCatalog(this.catalogPath); this.catalogSignature = signature; }
+    } finally { release(); }
   }
-  private async save(): Promise<void> { await durableJson(this.catalogPath, this.catalog); }
+  private async save(): Promise<void> { await durableJson(this.catalogPath, this.catalog); const information = await stat(this.catalogPath); this.catalogSignature = String(information.ino) + ":" + information.size + ":" + information.mtimeMs; }
   private fail(point: PublicationFailurePoint, requested?: PublicationFailurePoint): void { if (point === requested) throw new PublicationCrash(point); }
   private async publicationEntries(): Promise<Map<string, StoredTransaction>> {
     const pending = new Map<string, StoredTransaction>();
     for (const record of this.journal.entries) {
       if (record.type === "intent" && record.operation === "replace" && (record.payload as PublicationJournalPayload)?.kind === "publication") { pending.set(record.operationId, (record.payload as PublicationJournalPayload).transaction); continue; }
-      if (record.type === "ack") { const transaction = pending.get(record.operationId); const projection = (record.payload as AckPayload | undefined)?.projection; if (transaction && (projection === "retrieval" || projection === "graph") && !transaction.acknowledged.includes(projection)) pending.set(record.operationId, { ...transaction, acknowledged: [...transaction.acknowledged, projection] }); }
+      if (record.type === "ack") { const transaction = pending.get(record.operationId); const payload = record.payload as (AckPayload & { abandonedBatchId?: string }) | undefined; if (payload?.abandonedBatchId) { pending.delete(record.operationId); continue; } const projection = payload?.projection; if (transaction && (projection === "retrieval" || projection === "graph") && !transaction.acknowledged.includes(projection)) pending.set(record.operationId, { ...transaction, acknowledged: [...transaction.acknowledged, projection] }); }
     }
     return pending;
   }
@@ -133,8 +143,52 @@ export class PublicationCoordinator {
       const journalTransactions = await this.publicationEntries(); const transactions = { ...this.catalog.transactions };
       for (const transaction of journalTransactions.values()) { if (this.catalog.completed[transaction.batch.batchId]) continue; transactions[transaction.batch.batchId] = transaction; }
       this.catalog = { ...this.catalog, transactions };
-      for (const transaction of Object.values(transactions)) { if (!transaction) continue; this.markPending(transaction, apply ? "applying" : "needs_recovery"); await this.save(); if (!apply) continue; try { await this.applyTransaction(transaction, apply); } catch (error) { this.markPending(transaction, "needs_recovery"); await this.save(); throw error; } }
+      if (this.reconcileAbandoned()) await this.save();
+      const remaining = { ...this.catalog.transactions };
+      for (const transaction of Object.values(remaining)) { if (!transaction) continue; this.markPending(transaction, apply ? "applying" : "needs_recovery"); await this.save(); if (!apply) continue; try { await this.applyTransaction(transaction, apply); } catch (error) { this.markPending(transaction, "needs_recovery"); await this.save(); throw error; } }
     } finally { release(); }
+  }
+  async abandon(batchId: string): Promise<PublicationBatch | null> {
+    if (!this.opened || this.readOnly) throw new Error("publication coordinator is not writable");
+    const release = await this.rw.write();
+    try {
+      const transaction = this.catalog.transactions[batchId];
+      if (!transaction) return null;
+      await this.journal.appendAck({ operationId: transaction.operationId, operation: "replace" }, { abandonedBatchId: batchId });
+      this.catalog = this.withoutTransaction(transaction); await this.save();
+      return cloneBatch(transaction.batch);
+    } finally { release(); }
+  }
+  /**
+   * The journal ack is the durable abandonment decision; the catalog save that
+   * follows it can be lost to a crash. Drop every catalog transaction the journal
+   * says was abandoned so a restart cannot replay it.
+   */
+  private reconcileAbandoned(): boolean {
+    const abandoned = new Set<string>();
+    for (const record of this.journal.entries) if (record.type === "ack" && (record.payload as { abandonedBatchId?: unknown } | undefined)?.abandonedBatchId) abandoned.add(record.operationId);
+    let changed = false;
+    for (const transaction of Object.values(this.catalog.transactions)) {
+      if (transaction && abandoned.has(transaction.operationId)) { this.catalog = this.withoutTransaction(transaction); changed = true; }
+    }
+    return changed;
+  }
+  /**
+   * Remove a transaction and restore the views it displaced. A view whose store the
+   * batch wrote into is not restored as clean: that store may be half-replaced, so it
+   * stays unreadable until a fresh store is published.
+   */
+  private withoutTransaction(transaction: StoredTransaction): PublicationCatalog {
+    const { batch } = transaction; const views = { ...this.catalog.views }; const activeBatches = { ...this.catalog.activeBatches }; const transactions = { ...this.catalog.transactions };
+    for (const projection of batch.projections) {
+      const old = transaction.oldViews[projection];
+      if (!old) delete views[projection];
+      else if (batch.storeRoot && old.storeRoot === batch.storeRoot) views[projection] = Object.freeze({ ...old, state: "needs_recovery" as const });
+      else views[projection] = cloneView(old);
+      if (activeBatches[projection]?.batchId === batch.batchId) delete activeBatches[projection];
+    }
+    delete transactions[batch.batchId];
+    return { ...this.catalog, views, activeBatches, transactions };
   }
   private async applyTransaction(transaction: StoredTransaction, apply: ApplyProjection, options: PublicationOptions = {}): Promise<readonly ApplyAck[]> {
     const acks: ApplyAck[] = []; const acknowledged = new Set(transaction.acknowledged);

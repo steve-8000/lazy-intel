@@ -53,7 +53,7 @@ async function acquireLock(stateRoot: string, sourceRoot: string, sourceKey: str
       const holder = await readLock(lockPath);
       if (holder?.pid === process.pid) throw new Error("workspace already owned by this process");
       if (holder && !(await processIsAlive(holder.pid))) { await rm(lockPath, { recursive: true, force: true }); continue; }
-      if (holder) { await new Promise<void>((resolve) => setTimeout(resolve, Math.min(25, Math.max(1, retryMs)))); if (!(await processIsAlive(holder.pid))) { await rm(lockPath, { recursive: true, force: true }); continue; } throw new Error("workspace already owned by another process"); }
+      if (holder) { await new Promise<void>((resolve) => setTimeout(resolve, Math.min(25, Math.max(1, retryMs)))); if (!(await processIsAlive(holder.pid))) { await rm(lockPath, { recursive: true, force: true }); continue; } const error = new Error("workspace already owned by another process") as Error & { code: string; holderPid: number }; error.code = "WORKSPACE_OWNED"; error.holderPid = holder.pid; throw error; }
       if (!holder) { try { const information = await stat(lockPath); if (Date.now() - information.mtimeMs > LOCK_GRACE_MS) await rm(lockPath, { recursive: true, force: true }); } catch { /* owner won the race */ } }
       await new Promise<void>((resolve) => setTimeout(resolve, Math.max(1, retryMs)));
     }

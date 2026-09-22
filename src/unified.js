@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { readFile, realpath } from "node:fs/promises";
+import { readFile, realpath, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ADAPTER_VERSION, envelope, failureEnvelope } from "./contracts.js";
@@ -77,9 +77,10 @@ async function runtimeFor(root, mode) {
   pending = (async () => {
     const api = await core();
     const trustedForLanguageTools = await requestRoot(root).then(() => true, () => false);
-    const scope = await api.openWorkspaceRuntime({ sourceRoot: root, mode, trustedForLanguageTools });
+    const runtimeOptions = { sourceRoot: root, mode, trustedForLanguageTools };
+    const scope = await api.openWorkspaceRuntime(runtimeOptions);
     try {
-      const coordinator = await api.PublicationCoordinator.open(scope.canonicalStateRoot, { mode });
+      const coordinator = await api.PublicationCoordinator.open(scope.canonicalStateRoot, { mode, deferRecovery: mode === "write" });
       const publication = mode === "read" ? new Proxy(coordinator, {
         get(target, property, receiver) {
           if (property === "publishBatch" || property === "publish" || property === "recover" || property === "registerRecovery") return () => scope.assertWritable();
@@ -87,7 +88,7 @@ async function runtimeFor(root, mode) {
           return typeof value === "function" ? value.bind(target) : value;
         },
       }) : coordinator;
-      const runtime = { root, scope, publication, semantic: new Map(), sync: Promise.resolve(), closed: false, retrievalPool: null, graphPool: null };
+      const runtime = { root, api, runtimeOptions, scope, publication, semantic: new Map(), sync: Promise.resolve(), closed: false, retrievalPool: null, graphPool: null, idleTimer: null, writerReleased: false };
       await Promise.all([newIndexWorker(runtime, "retrieval"), newIndexWorker(runtime, "graph")]);
       if (mode === "write") publication.registerRecovery((projection, batch) => applyProjection(runtime, projection, batch));
       return runtime;
@@ -96,6 +97,42 @@ async function runtimeFor(root, mode) {
   runtimes.set(key, pending);
   pending.catch(() => { if (runtimes.get(key) === pending) runtimes.delete(key); });
   return pending;
+}
+function writerIdleMs() {
+  const raw = process.env.LAZY_INTEL_WRITER_IDLE_MS;
+  if (raw == null || raw === "") return 30_000;
+  const value = Number(raw);
+  return Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 30_000;
+}
+async function activateWriter(runtime) {
+  if (!runtime.writerReleased) return;
+  runtime.scope = await runtime.api.openWorkspaceRuntime(runtime.runtimeOptions);
+  runtime.publication = await runtime.api.PublicationCoordinator.open(runtime.scope.canonicalStateRoot, { mode: "write", deferRecovery: true });
+  runtime.publication.registerRecovery((projection, batch) => applyProjection(runtime, projection, batch));
+  runtime.writerReleased = false;
+}
+function scheduleWriterRelease(runtime) {
+  if (runtime.writerReleased || runtime.closed) return;
+  clearTimeout(runtime.idleTimer);
+  runtime.idleTimer = setTimeout(() => {
+    // Release rides the same chain as syncs, so a sync enqueued meanwhile either
+    // runs first (and this sees activeSync) or runs after and re-acquires the lock.
+    runtime.sync = runtime.sync.then(async () => {
+      if (runtime.closed || runtime.activeSync || runtime.writerReleased) return;
+      try { await runtime.publication.close(); await runtime.scope.release(); runtime.writerReleased = true; }
+      catch (error) { log("warn", "idle writer release failed", { root: runtime.root, error: error.message }); }
+    });
+  }, writerIdleMs());
+  runtime.idleTimer.unref?.();
+}
+async function retireStoreIfUnused(runtime, storeRoot, projection) {
+  if (!storeRoot || Object.values(runtime.publication.status().views).some((view) => view?.storeRoot === storeRoot)) return;
+  const supervisor = supervisorFor(runtime, projection, storeRoot);
+  const result = await supervisor.call("close-store", { root: runtime.root, stateRoot: storeRoot }, {
+    requestId: runtime.api.newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
+  });
+  if (!result.ok) throw new Error(result.message);
+  await rm(storeRoot, { recursive: true, force: true });
 }
 function supervisorFor(runtime, projection, affinityKey = runtime.scope.canonicalStateRoot) {
   return (projection === "retrieval" ? runtime.retrievalPool : runtime.graphPool).acquire(affinityKey);
@@ -177,17 +214,40 @@ export async function synchronizeWorkspace(root, backends, options = {}) {
   const runtime = await runtimeFor(root, "write");
   const projections = [...new Set(backends.map((backend) => COMPONENT[backend]).filter((value) => value === "graph" || value === "retrieval"))];
   const run = async () => {
-    runtime.scope.assertWritable();
     if (runtime.closed) throw new Error("workspace is closing");
-    if (runtime.publication.status().needsRecovery) await runtime.publication.recover();
-    const previous = projections.map((projection) => currentBatch(runtime, projection)).filter(Boolean);
-    await Promise.all(previous.map((batch) => batch.storeRoot ? assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot) : undefined));
+    await activateWriter(runtime);
+    runtime.scope.assertWritable();
+    const initial = projections.map((projection) => currentBatch(runtime, projection)).filter(Boolean);
+    await Promise.all(initial.map((batch) => batch.storeRoot ? assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot) : undefined));
     const configured = process.env.LAZY_INTEL_EMBEDDING || await (await import("./lifecycle.js")).configuredEmbedding();
-    const embedding = options.embedding ?? previous.find((batch) => batch.embedding)?.embedding ?? configured ?? undefined;
+    const embedding = options.embedding ?? initial.find((batch) => batch.embedding)?.embedding ?? configured ?? undefined;
     const observedSeq = String(observeIndexState(root)?.generation ?? 1);
     const captured = await capture(runtime, observedSeq, embedding);
     const profileDigest = digest({ scope: captured.manifest.scopeDigest, parser: captured.manifest.parserProfileDigest, resolver: captured.manifest.resolverProfileDigest, embedding });
-    const rebuild = options.rebuild === true || previous.length !== projections.length || new Set(previous.map((batch) => batch.storeRoot)).size > 1 || previous.some((batch) => batch.profileDigest !== profileDigest);
+    const abandoned = [];
+    const pending = runtime.publication.status().pendingBatches;
+    for (const transaction of pending) if (transaction.storeRoot) await assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, transaction.storeRoot);
+    try {
+      for (const transaction of pending) {
+        if (transaction.profileDigest !== profileDigest) { abandoned.push(await runtime.publication.abandon(transaction.batchId)); continue; }
+      }
+      if (runtime.publication.status().pendingBatches.length) await runtime.publication.recover((projection, batch) => applyProjection(runtime, projection, batch));
+    } catch (error) {
+      log("warn", "pending publication could not be replayed; abandoning it", { root, error: error.message });
+      for (const transaction of runtime.publication.status().pendingBatches) abandoned.push(await runtime.publication.abandon(transaction.batchId));
+    }
+    // Retiring an orphaned store is housekeeping; it must not keep the workspace unpublished.
+    for (const transaction of abandoned) {
+      if (!transaction?.storeRoot) continue;
+      await retireStoreIfUnused(runtime, transaction.storeRoot, transaction.projections[0])
+        .catch((error) => log("warn", "abandoned store retirement failed", { root, storeRoot: transaction.storeRoot, error: error.message }));
+    }
+    const previous = projections.map((projection) => currentBatch(runtime, projection)).filter(Boolean);
+    await Promise.all(previous.map((batch) => batch.storeRoot ? assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot) : undefined));
+    // An abandoned batch may have partially written a shared store, and a view left
+    // unreadable by one (possibly before a crash) marks that store; never build on top of it.
+    const tainted = abandoned.some(Boolean) || projections.some((projection) => { const view = runtime.publication.view(projection); return view && view.state !== "clean"; });
+    const rebuild = options.rebuild === true || tainted || previous.length !== projections.length || new Set(previous.map((batch) => batch.storeRoot)).size > 1 || previous.some((batch) => batch.profileDigest !== profileDigest);
     const oldPaths = new Set(previous.flatMap((batch) => batch.sources.map((source) => source.relativePath)));
     const paths = new Set(captured.sources.map((source) => source.relativePath));
     const storeRoot = rebuild ? path.join(runtime.scope.canonicalStateRoot, "stores", randomUUID())
@@ -206,16 +266,19 @@ export async function synchronizeWorkspace(root, backends, options = {}) {
         const old = previous.find((entry) => entry.projections.includes(projection));
         if (!old?.storeRoot || old.storeRoot === storeRoot) continue;
         const supervisor = supervisorFor(runtime, projection, old.storeRoot);
-        await supervisor.call("close-store", { root, stateRoot: old.storeRoot }, {
-          requestId: (await core()).newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
+        const result = await supervisor.call("close-store", { root, stateRoot: old.storeRoot }, {
+          requestId: runtime.api.newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
         });
+        if (!result.ok) throw new Error(result.message);
       }
     }
     return projections.map((projection) => ({ backend: BACKEND[projection], ok: true, ready: true, building: false,
       action: rebuild ? "rebuilt" : unchanged ? "ready" : "synced", view: runtime.publication.view(projection) }));
   };
+  runtime.activeSync = (runtime.activeSync ?? 0) + 1;
+  clearTimeout(runtime.idleTimer);
   const job = runtime.sync.then(run, run);
-  runtime.sync = job.then(() => undefined, () => undefined);
+  runtime.sync = job.then(() => { runtime.activeSync -= 1; if (!runtime.activeSync) scheduleWriterRelease(runtime); }, () => { runtime.activeSync -= 1; if (!runtime.activeSync) scheduleWriterRelease(runtime); });
   return waitForJob(job, options.signal);
 }
 export async function unifiedIndexStatus(root) {
@@ -248,7 +311,9 @@ export async function unifiedStage(reads, input, deadline, execute) {
       const ready = new Set(readiness.filter((row) => row.ready && !row.building).map((row) => row.backend));
       for (const read of indexed.filter((read) => !ready.has(read.backend))) {
         const row = readiness.find((entry) => entry.backend === read.backend);
-        results.set(read, { status: "fulfilled", value: failureEnvelope(read.backend, read.operation, row?.building ? "INDEX_BUILDING" : "INDEX_UNAVAILABLE", row?.error ?? row?.detail ?? "no clean published view") });
+        const detail = row?.error ?? row?.detail ?? (row?.building ? "the index is being built in the background" : "no clean published view");
+        results.set(read, { status: "fulfilled", value: failureEnvelope(read.backend, read.operation, row?.building ? "INDEX_BUILDING" : "INDEX_UNAVAILABLE",
+          row?.building ? `${detail}; use native exact search meanwhile and retry later` : detail) });
       }
       const usable = indexed.filter((read) => ready.has(read.backend));
       const runtime = await runtimeFor(input.root, "read");
@@ -410,6 +475,7 @@ export async function closeUnified() {
     let runtime;
     try {
       runtime = await pending;
+      clearTimeout(runtime.idleTimer);
       runtime.closed = true;
       await Promise.all([runtime.retrieval.close(), runtime.graph.close(), ...[...runtime.semantic.values()].map((port) => port.close())]);
       await runtime.sync;

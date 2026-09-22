@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { spawn } from "node:child_process";
 import { access, cp, mkdtemp, readdir, realpath, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -239,6 +240,67 @@ test("mixed graph and retrieval publication recovers a real multipart retrieval 
     assert.notEqual(graph.sources.find((source) => source.relativePath === "large-0.js").contentHash, initialBatch.sources.find((source) => source.relativePath === "large-0.js").contentHash);
     assert.deepEqual(graph.sources.map((source) => source.relativePath), retrieval.sources.map((source) => source.relativePath));
   } finally {
+    await clean(root);
+  }
+});
+test("a profile-mismatched pending publication is abandoned before a fresh capture", { timeout: 600_000 }, async () => {
+  const root = await workspace();
+  try {
+    await unified.synchronizeWorkspace(root, ["codegraph"]);
+    await writeFile(path.join(root, ".lazy-intel-ignore"), "b.js\n", "utf8");
+    const runtime = await unified.__internals.runtimeFor(root, "write");
+    const publish = runtime.publication.publishBatch.bind(runtime.publication);
+    runtime.publication.publishBatch = (batch, apply, options = {}) => publish(batch, apply, { ...options, failureAt: "before-component-write" });
+    await assert.rejects(() => unified.synchronizeWorkspace(root, ["codegraph"]), /injected publication crash/);
+    runtime.publication.publishBatch = publish;
+    await writeFile(path.join(root, ".lazy-intel-ignore"), "a.js\n", "utf8");
+
+    const result = await unified.synchronizeWorkspace(root, ["codegraph"]);
+    const current = await status(root);
+    assert.equal(result[0].ready, true);
+    assert.equal(current.backends.codegraph.ready, true);
+    assert.equal(current.needsRecovery, false);
+    const batch = await graphBatch(root);
+    assert.equal(batch.sources.some((source) => source.relativePath === "a.js"), false);
+    assert.equal(batch.sources.some((source) => source.relativePath === "b.js"), true);
+  } finally { await clean(root); }
+});
+
+test("a failed roll-forward is abandoned so unified publication can proceed", { timeout: 600_000 }, async () => {
+  const root = await workspace();
+  try {
+    await unified.synchronizeWorkspace(root, ["codegraph"]);
+    await writeFile(path.join(root, "a.js"), "export function target() { return 2; }\n", "utf8");
+    const runtime = await unified.__internals.runtimeFor(root, "write");
+    const publish = runtime.publication.publishBatch.bind(runtime.publication);
+    runtime.publication.publishBatch = (batch, apply, options = {}) => publish(batch, apply, { ...options, failureAt: "before-component-write" });
+    await assert.rejects(() => unified.synchronizeWorkspace(root, ["codegraph"]), /injected publication crash/);
+    runtime.publication.publishBatch = publish;
+    const recover = runtime.publication.recover.bind(runtime.publication);
+    runtime.publication.recover = () => recover(async () => { throw new Error("injected roll-forward failure"); });
+
+    const result = await unified.synchronizeWorkspace(root, ["codegraph"]);
+    runtime.publication.recover = recover;
+    assert.equal(result[0].ready, true);
+    assert.equal((await status(root)).backends.codegraph.ready, true);
+    assert.equal((await graphBatch(root)).sources.find((source) => source.relativePath === "a.js").content, "export function target() { return 2; }\n");
+  } finally { await clean(root); }
+});
+test("an idle unified writer releases ownership for another process", { timeout: 600_000 }, async () => {
+  const root = await workspace();
+  const previousIdle = process.env.LAZY_INTEL_WRITER_IDLE_MS;
+  process.env.LAZY_INTEL_WRITER_IDLE_MS = "50";
+  try {
+    await unified.synchronizeWorkspace(root, ["codegraph"]);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const runtimeModule = new URL("../../packages/core/dist/workspace/runtime.js", import.meta.url).href;
+    const script = `const { openWorkspaceRuntime } = await import(${JSON.stringify(runtimeModule)}); const runtime = await openWorkspaceRuntime({ sourceRoot: ${JSON.stringify(root)}, mode: "write", lockRetryMs: 1 }); await runtime.release();`;
+    const child = spawn(process.execPath, ["--input-type=module", "-e", script], { stdio: "ignore" });
+    const exitCode = await new Promise((resolve, reject) => { child.once("error", reject); child.once("exit", (code) => resolve(code)); });
+    assert.equal(exitCode, 0);
+  } finally {
+    if (previousIdle === undefined) delete process.env.LAZY_INTEL_WRITER_IDLE_MS;
+    else process.env.LAZY_INTEL_WRITER_IDLE_MS = previousIdle;
     await clean(root);
   }
 });
