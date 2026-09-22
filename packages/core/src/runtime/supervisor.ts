@@ -86,7 +86,20 @@ const DEFAULTS = {
   maxRestarts: 5,
   restartWindowMs: 60_000,
   abandonedJobLimit: 3,
+  workerIdleMs: 120_000,
 } as const;
+function intEnv(name: string, fallback: number, min: number, max: number): number {
+  const raw = process.env[name];
+  if (raw == null || raw === "") return fallback;
+  const value = Number(raw);
+  return Number.isFinite(value) ? Math.max(min, Math.min(max, Math.trunc(value))) : fallback;
+}
+
+function workerIdleMs(): number {
+  const raw = process.env.LAZY_INTEL_WORKER_IDLE_MS;
+  if (raw != null && raw !== "" && Number(raw) === 0) return 0;
+  return intEnv("LAZY_INTEL_WORKER_IDLE_MS", DEFAULTS.workerIdleMs, 10_000, 3_600_000);
+}
 
 export class WorkerSupervisor {
   readonly #options: SupervisorOptions;
@@ -102,9 +115,13 @@ export class WorkerSupervisor {
   #closed = false;
   #closing: Promise<void> | null = null;
   #deadReason: string | null = null;
+  #idleTimer: ReturnType<typeof setTimeout> | null = null;
+  #idleEviction: Promise<void> | null = null;
+  readonly #workerIdleMs: number;
 
   constructor(options: SupervisorOptions) {
     this.#options = options;
+    this.#workerIdleMs = workerIdleMs();
   }
 
   get epoch(): string | null {
@@ -130,10 +147,12 @@ export class WorkerSupervisor {
    * engine can degrade one read instead of losing a whole request.
    */
   async call<Req, Res>(operation: string, payload: Req, context: CallContext): Promise<CallResult<Res>> {
+    this.#cancelIdleEviction();
     if (this.#closed) {
       return { ok: false, code: "worker_failed", message: `${this.#options.kind} worker is closed`, retryable: false, workerEpoch: null };
     }
     if (context.signal.aborted) {
+      this.#scheduleIdleEviction();
       return { ok: false, code: "cancelled", message: "caller aborted before dispatch", retryable: false, workerEpoch: this.#epoch };
     }
 
@@ -148,10 +167,14 @@ export class WorkerSupervisor {
       return { ok: false, code: "worker_failed", message: error instanceof Error ? error.message : String(error), retryable: !this.#closed, workerEpoch: null };
     }
     if (this.#closed) return { ok: false, code: "worker_failed", message: `${this.#options.kind} worker is closed`, retryable: false, workerEpoch: null };
-    if (context.signal.aborted) return { ok: false, code: "cancelled", message: "caller aborted before dispatch", retryable: false, workerEpoch: started.epoch };
+    if (context.signal.aborted) {
+      this.#scheduleIdleEviction();
+      return { ok: false, code: "cancelled", message: "caller aborted before dispatch", retryable: false, workerEpoch: started.epoch };
+    }
 
     const remainingBudgetMs = Math.max(0, Math.round(context.deadlineMonotonicMs - performance.now()));
     if (remainingBudgetMs === 0) {
+      this.#scheduleIdleEviction();
       return { ok: false, code: "deadline", message: "no budget left for this read", retryable: false, workerEpoch: started.epoch };
     }
 
@@ -167,6 +190,7 @@ export class WorkerSupervisor {
 
     const size = messageBytes(request);
     if (size > MAX_MESSAGE_BYTES) {
+      this.#scheduleIdleEviction();
       return { ok: false, code: "payload_too_large", message: `request is ${size} bytes, limit is ${MAX_MESSAGE_BYTES}`, retryable: false, workerEpoch: started.epoch };
     }
 
@@ -239,9 +263,11 @@ export class WorkerSupervisor {
 
   async #closeOwned(): Promise<void> {
     this.#closed = true;
+    this.#cancelIdleEviction();
     const child = this.#child;
     const starting = this.#starting;
     const startingChild = this.#startingChild;
+    const idleEviction = this.#idleEviction;
     this.#child = null;
     this.#epoch = null;
     this.#physicalJobs.clear();
@@ -256,6 +282,7 @@ export class WorkerSupervisor {
     if (startingChild) children.add(startingChild);
     const termination = Promise.all([...children].map((owned) => this.#terminate(owned)));
     if (starting) await starting.catch(() => {});
+    if (idleEviction) await idleEviction;
     await termination;
   }
 
@@ -289,6 +316,10 @@ export class WorkerSupervisor {
   async #start(): Promise<{ child: ChildProcess; epoch: string }> {
     const options = this.#options;
     const child = fork(options.modulePath, [], {
+      // Workers may own a native/Python helper. Keep the worker and its
+      // descendants in one process group so lifecycle termination cannot leave
+      // a helper resident after the worker exits.
+      detached: true,
       // `ipc` is a separate channel from stdout: upstream logging can never be
       // mistaken for protocol, and protocol can never be mistaken for logging.
       stdio: ["ignore", "pipe", "pipe", "ipc"],
@@ -369,6 +400,7 @@ export class WorkerSupervisor {
           clearTimeout(timer);
           this.#child = child;
           this.#epoch = epoch;
+          this.#scheduleIdleEviction();
           resolve({ child, epoch });
           return;
         }
@@ -402,6 +434,7 @@ export class WorkerSupervisor {
     if (!entry) {
       this.#physicalJobs.delete(message.requestId);
       if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
+      this.#scheduleIdleEviction();
       return;
     }
     if (entry.workerEpoch !== message.workerEpoch || job.workerEpoch !== message.workerEpoch) {
@@ -413,10 +446,12 @@ export class WorkerSupervisor {
     this.#physicalJobs.delete(message.requestId);
     if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
     entry.settle(message);
+    this.#scheduleIdleEviction();
   }
 
   #onExit(child: ChildProcess, code: number | null, signal: NodeJS.Signals | null): void {
     if (this.#child !== child) return;
+    this.#cancelIdleEviction();
     this.#child = null;
     const epoch = this.#epoch;
     this.#epoch = null;
@@ -455,6 +490,7 @@ export class WorkerSupervisor {
     const child = this.#child;
     if (!child) return;
     const epoch = this.#epoch;
+    this.#cancelIdleEviction();
     this.#child = null;
     this.#epoch = null;
     for (const [requestId, job] of this.#physicalJobs) {
@@ -464,23 +500,96 @@ export class WorkerSupervisor {
     this.#options.onLog?.(`recycling ${this.#options.kind} worker: ${reason}`, "stderr");
     await this.#terminate(child);
   }
+  #cancelIdleEviction(): void {
+    if (this.#idleTimer === null) return;
+    clearTimeout(this.#idleTimer);
+    this.#idleTimer = null;
+  }
+
+  #scheduleIdleEviction(): void {
+    if (this.#workerIdleMs === 0 || this.#closed || this.#child === null || this.#physicalJobs.size > 0 || this.#idleTimer !== null) return;
+    this.#idleTimer = setTimeout(() => {
+      this.#idleTimer = null;
+      this.#idleEviction ??= this.#evictIdle().finally(() => { this.#idleEviction = null; });
+    }, this.#workerIdleMs);
+    this.#idleTimer.unref?.();
+  }
+
+  async #evictIdle(): Promise<void> {
+    if (this.#closed || this.#child === null || this.#physicalJobs.size > 0) return;
+    const child = this.#child;
+    this.#child = null;
+    this.#epoch = null;
+    this.#upstreamCommit = null;
+    // Clear the live child before terminating so this lifecycle operation is
+    // invisible to crash accounting in #onExit.
+    await this.#terminate(child);
+  }
+
 
   #dropPhysicalJob(requestId: string, workerEpoch: string): void {
     const job = this.#physicalJobs.get(requestId);
     if (!job || job.workerEpoch !== workerEpoch) return;
     this.#physicalJobs.delete(requestId);
+    this.#scheduleIdleEviction();
     if (job.abandoned) this.#abandoned = Math.max(0, this.#abandoned - 1);
   }
 
-  /** SIGTERM, then SIGKILL. The promise resolves on exit, not on signal delivery. */
+  /**
+   * SIGTERM, then SIGKILL, for the worker process group. The worker may own a
+   * native/Python child, so waiting only for the direct child is insufficient.
+   * The promise resolves after the group disappears, not merely on signal
+   * delivery.
+   */
   async #terminate(child: ChildProcess): Promise<void> {
-    if (child.exitCode !== null || child.signalCode !== null) return;
-    const exited = new Promise<void>((resolve) => child.once("exit", () => resolve()));
-    child.kill("SIGTERM");
-    const result = await Promise.race([exited.then(() => "exited" as const), delay(2_000, "timeout" as const, { ref: false })]);
-    if (result === "timeout") {
-      child.kill("SIGKILL");
-      await exited;
+    const pid = child.pid;
+    if (pid === undefined || pid === null) return;
+    let exited = false;
+    const exit = new Promise<void>((resolve) => {
+      if (child.exitCode !== null || child.signalCode !== null) {
+        exited = true;
+        resolve();
+        return;
+      }
+      child.once("exit", () => { exited = true; resolve(); });
+    });
+    if (exited) return;
+    this.#signalProcessGroup(pid, "SIGTERM", child);
+    await Promise.race([exit, delay(2_000, "timeout" as const)]);
+    if (!exited) this.#signalProcessGroup(pid, "SIGKILL", child);
+
+    const deadline = Date.now() + 2_000;
+    while (this.#processGroupAlive(pid) && Date.now() < deadline) {
+      await delay(25);
+    }
+    if (this.#processGroupAlive(pid)) this.#signalProcessGroup(pid, "SIGKILL", child);
+    await Promise.race([exit, delay(2_000, "timeout" as const)]);
+  }
+
+  #signalProcessGroup(pid: number, signal: NodeJS.Signals, child: ChildProcess): void {
+    if (process.platform !== "win32") {
+      try {
+        process.kill(-pid, signal);
+        return;
+      } catch (error) {
+        if (error && typeof error === "object" && "code" in error && error.code !== "ESRCH") throw error;
+      }
+    }
+    try {
+      child.kill(signal);
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error && error.code !== "ESRCH") throw error;
+    }
+  }
+
+  #processGroupAlive(pid: number): boolean {
+    if (process.platform === "win32") return false;
+    try {
+      process.kill(-pid, 0);
+      return true;
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error && error.code === "EPERM") return true;
+      return false;
     }
   }
 }
