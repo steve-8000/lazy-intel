@@ -131,7 +131,9 @@ export async function installOmp(root, options = {}) {
       ...config.mcpServers["lazy-intel"]?.env,
     },
   };
-  for (const key of ["LAZY_INTEL_ZVEC_MODE", "LAZY_INTEL_SERENA_CONTEXT", "LAZY_INTEL_SERENA_BIN"]) delete entry.env[key];
+  // Settings that only meant something when the backends were external executables.
+  const obsolete = ["LAZY_INTEL_ZVEC_MODE", "LAZY_INTEL_SERENA_CONTEXT", "LAZY_INTEL_SERENA_BIN", "LAZY_INTEL_ZG_BIN", "LAZY_INTEL_CODEGRAPH_BIN"];
+  for (const key of obsolete) delete entry.env[key];
   // A project-scoped install pins the root; the global install follows OMP's session cwd.
   if (!options.global) entry.cwd = absolute;
   config.mcpServers["lazy-intel"] = entry;

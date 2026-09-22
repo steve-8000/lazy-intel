@@ -1,13 +1,7 @@
 import { spawn } from "node:child_process";
-import { constants } from "node:fs";
-import { access, realpath, stat } from "node:fs/promises";
-import { homedir } from "node:os";
+import { access } from "node:fs/promises";
 import path from "node:path";
 import { StringDecoder } from "node:string_decoder";
-import { fileURLToPath } from "node:url";
-
-const BIN_ENV = { zg: "LAZY_INTEL_ZG_BIN", codegraph: "LAZY_INTEL_CODEGRAPH_BIN", serena: "LAZY_INTEL_SERENA_BIN" };
-const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 
 const DEFAULT_MAX_OUTPUT = 2 * 1024 * 1024;
 
@@ -18,26 +12,6 @@ export async function pathExists(p) {
   } catch {
     return false;
   }
-}
-
-function binName(name) {
-  return process.platform === "win32" ? `${name}.cmd` : name;
-}
-
-// Only explicit absolute overrides or our installed dependencies are executable trust roots.
-// Never search cwd or PATH: either can contain an untrusted project's fake backend.
-export async function resolveBin(name) {
-  const key = BIN_ENV[name];
-  if (!key) throw new Error(`unsupported backend executable: ${name}`);
-  const override = process.env[key];
-  const candidate = override || (name === "serena"
-    ? path.join(homedir(), ".local", "bin", binName(name))
-    : path.join(repoRoot, "node_modules", ".bin", binName(name)));
-  if (!path.isAbsolute(candidate)) throw new Error(`${key} must be an absolute executable path`);
-  const executable = await realpath(candidate);
-  if (!(await stat(executable)).isFile()) throw new Error(`${key} is not a file: ${executable}`);
-  await access(executable, constants.X_OK);
-  return executable;
 }
 
 export function run(command, args = [], options = {}) {
