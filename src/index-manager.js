@@ -101,7 +101,7 @@ async function ensureState(root) {
   return state;
 }
 function backendState() {
-  return { applied: 0, lastSyncAt: 0, consecutiveFailures: 0, lastError: null, pending: 0, ready: false, nextAttemptAt: 0, readFailed: false };
+  return { applied: 0, lastSyncAt: 0, consecutiveFailures: 0, lastError: null, errorCode: null, holderPid: null, pending: 0, ready: false, nextAttemptAt: 0, readFailed: false };
 }
 function hasBaseline(b) { return b.applied > 0; }
 function isStale(state, b, options = {}) {
@@ -127,7 +127,7 @@ function shouldIgnore(filename, state) {
 }
 function markApplied(b, generation) {
   b.applied = generation; b.lastSyncAt = Date.now(); b.consecutiveFailures = 0; b.lastError = null;
-  b.nextAttemptAt = 0; b.ready = true; b.readFailed = false;
+  b.nextAttemptAt = 0; b.ready = true; b.readFailed = false; b.errorCode = null; b.holderPid = null;
 }
 export function noteIndexReadFailure(root, backend, message) {
   const b = roots.get(canonicalPath(root))?.backends[backend];
@@ -165,26 +165,23 @@ function runPublication(state, backends, options, action) {
   const key = action === "ensure" ? [...backends].sort().join(",") + ":" + (options.freshness ?? "auto") : null;
   const existing = key && state.ensures.get(key);
   if (existing) return join(existing, options.signal);
-  if (state.queueDepth >= 32) return Promise.reject(new Error("workspace publication queue is full"));
+  if (state.queueDepth >= 32 && action !== "ensure") return Promise.reject(new Error("workspace publication queue is full"));
+  const freshness = options.freshness ?? "auto";
+  if (action === "ensure" && freshness !== "strict") {
+    return assessReadiness(state, backends, options).then((result) => {
+      if (result.canRead && result.coherent) {
+        if (freshness === "fast" || result.fresh) return backends.map((backend) => ({ backend, ok: true, ready: true, building: false, action: "ready", view: result.status.backends[backend].view, dirty: !result.fresh }));
+        scheduleBackgroundBuild(state, backends);
+        return backends.map((backend) => ({ backend, ok: true, ready: true, building: false, action: "ready", view: result.status.backends[backend].view, dirty: true }));
+      }
+      scheduleBackgroundBuild(state, backends);
+      return backends.map((backend) => buildingRow(backend, state.backends[backend]));
+    });
+  }
   const run = async () => {
     if (state.closed) throw new Error("workspace is closing");
-    const { synchronizeWorkspace, unifiedIndexStatus } = await import("./unified.js");
-    const status = await unifiedIndexStatus(state.root);
-    const freshness = options.freshness ?? "auto";
-    const readFailed = backends.some((backend) => state.backends[backend].readFailed);
-    const canRead = !readFailed && !status.needsRecovery && backends.every((backend) => status.backends[backend].ready);
-    const coherent = new Set(backends.map((backend) => status.backends[backend].view?.appliedManifestId)).size <= 1;
-    const fresh = backends.every((backend) => hasBaseline(state.backends[backend]) && state.backends[backend].applied === state.generation && !isStale(state, state.backends[backend], options));
-    // A read cannot wait for a view that was never published. Indexing a real
-    // repository takes minutes, far past any request budget, so a caller that
-    // blocks on it only learns that it timed out. Answer now, build behind.
-    if (action === "ensure" && freshness !== "strict" && !canRead) {
-      scheduleBackgroundBuild(state, backends);
-      return backends.map((backend) => ({ backend, ok: true, ready: false, building: true, action: "building" }));
-    }
-    if (action === "ensure" && canRead && coherent && (freshness === "fast" || (freshness === "auto" && fresh))) {
-      return backends.map((backend) => ({ backend, ok: true, ready: true, building: false, action: "ready", view: status.backends[backend].view, dirty: !fresh }));
-    }
+    const { synchronizeWorkspace } = await import("./unified.js");
+    const { readFailed } = await assessReadiness(state, backends, options);
     const generation = state.generation;
     try {
       // Watcher hints can arrive while capture/publication is in flight. Reconcile a
@@ -205,10 +202,17 @@ function runPublication(state, backends, options, action) {
     } catch (error) {
       for (const backend of backends) {
         const b = state.backends[backend];
-        b.ready = false; b.lastError = error.message; b.consecutiveFailures += 1;
-        b.nextAttemptAt = Date.now() + Math.min(30_000 * 2 ** Math.max(0, b.consecutiveFailures - 1), 900_000);
+        b.ready = false; b.lastError = error.message;
+        b.errorCode = error.code;
+        b.holderPid = error.holderPid;
+        if (error.code === "WORKSPACE_OWNED") b.nextAttemptAt = Date.now() + 5_000;
+        else {
+          b.consecutiveFailures += 1;
+          b.nextAttemptAt = Date.now() + Math.min(30_000 * 2 ** Math.max(0, b.consecutiveFailures - 1), 900_000);
+        }
       }
-      return backends.map((backend) => ({ backend, ok: false, ready: false, building: false, action: "failed", error: error.message }));
+      if (error.code === "WORKSPACE_OWNED") return backends.map((backend) => buildingRow(backend, state.backends[backend]));
+      return backends.map((backend) => ({ backend, ok: false, ready: false, building: false, action: "failed", error: error.message, ...(error.code ? { errorCode: error.code } : {}), ...(Number.isInteger(error.holderPid) ? { holderPid: error.holderPid } : {}) }));
     }
   };
   state.queueDepth += 1;
@@ -222,6 +226,25 @@ function runPublication(state, backends, options, action) {
   state.publicationQueue = settled;
   if (key) state.ensures.set(key, job);
   return join(job, options.signal);
+}
+
+function buildingRow(backend, state) {
+  const row = { backend, ok: true, ready: false, building: true, action: "building" };
+  if (state.errorCode === "WORKSPACE_OWNED") {
+    row.errorCode = state.errorCode;
+    row.holderPid = state.holderPid;
+    row.detail = "another lazy-intel process (pid " + state.holderPid + ") owns publication for this workspace";
+  }
+  return row;
+}
+async function assessReadiness(state, backends, options) {
+  const { unifiedIndexStatus } = await import("./unified.js");
+  const status = await unifiedIndexStatus(state.root);
+  const readFailed = backends.some((backend) => state.backends[backend].readFailed);
+  const canRead = !readFailed && !status.needsRecovery && backends.every((backend) => status.backends[backend].ready);
+  const coherent = new Set(backends.map((backend) => status.backends[backend].view?.appliedManifestId)).size <= 1;
+  const fresh = backends.every((backend) => hasBaseline(state.backends[backend]) && state.backends[backend].applied === state.generation && !isStale(state, state.backends[backend], options));
+  return { status, readFailed, canRead, coherent, fresh };
 }
 function startMaintenanceLoop() {
   if (maintenanceTimer || MAINTENANCE_MS <= 0) return;

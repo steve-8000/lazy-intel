@@ -56,6 +56,7 @@ const request = (operation, args = {}, signal) => codeIntel({
 // answers "building" at once rather than blocking past its request budget.
 // Publish once with strict freshness so these tests exercise serving.
 await request("search", { query: "warm the published view", freshness: "strict", limit: 1 });
+await request("architecture", { query: "warm the published graph view", freshness: "strict" });
 
 const inspect = (label, result) => {
   assert.equal(typeof result.metaText, "string", `${label}: metaText must be a string`);

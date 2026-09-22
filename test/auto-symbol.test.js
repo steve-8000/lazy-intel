@@ -33,7 +33,7 @@ after(async () => {
 });
 
 test("auto keeps same-named indexed definitions ambiguous", { timeout: 900_000, concurrency: false }, async () => {
-  await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   const result = await codeIntel({
     operation: "auto",
     query: "where is duplicate",
@@ -47,7 +47,7 @@ test("auto keeps same-named indexed definitions ambiguous", { timeout: 900_000, 
 });
 
 test("auto resolves a pathless symbol from the embedded CodeGraph index", { timeout: 900_000, concurrency: false }, async () => {
-  const [published] = await ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  const [published] = await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
   assert.equal(published.ok, true, JSON.stringify(published));
 
   const result = await codeIntel({

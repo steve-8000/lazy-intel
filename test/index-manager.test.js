@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
 import os from "node:os";
 import path from "node:path";
 
@@ -43,6 +45,48 @@ test("auto ensure returns a building row while bootstrapping a missing baseline"
   assert.deepEqual(row, { backend: "codegraph", ok: true, ready: false, building: true, action: "building" });
   const scheduled = await waitFor(() => indexStatus(root), (status) => status.backends.codegraph.busy || status.backends.codegraph.ready);
   assert.ok(scheduled.backends.codegraph.busy || scheduled.backends.codegraph.ready);
+});
+
+test("fast readiness does not wait behind a running publication", async (t) => {
+  const root = await fixture(t);
+  await Promise.all(Array.from({ length: 1_500 }, (_, index) => writeFile(path.join(root, "module-" + index + ".js"), "export const value" + index + " = " + index + ";\n")));
+  // Register the workspace first so the strict publication is enqueued before the read starts.
+  await indexStatus(root);
+  const publishing = ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
+  await new Promise((resolve) => setImmediate(resolve));
+  // Ordering, not a wall-clock bound: a queued read can only settle after the publication.
+  const reading = ensureIndexes(root, ["codegraph"], { freshness: "auto", timeoutMs: 120_000 });
+  const first = await Promise.race([reading.then(() => "read"), publishing.then(() => "publication")]);
+  assert.equal(first, "read");
+  const [row] = await reading;
+  assert.equal(row.building, true);
+  await publishing;
+  // The read scheduled a background sync; a strict ensure queues behind it, so the
+  // fixture's cleanup cannot race a sync still writing into the state root.
+  await ensureIndexes(root, ["codegraph"], { freshness: "strict", timeoutMs: 120_000 });
+});
+
+test("a workspace-owned publication reports a building row without increasing failures", async (t) => {
+  const root = await fixture(t);
+  const child = spawn(process.execPath, ["--input-type=module", "-e", `
+    import { openWorkspaceRuntime } from "./packages/core/dist/index.js";
+    const scope = await openWorkspaceRuntime({ sourceRoot: process.argv[1], mode: "write" });
+    console.log("READY");
+    setInterval(() => {}, 1000);
+  `, root], { cwd: process.cwd(), stdio: ["ignore", "pipe", "pipe"] });
+  t.after(() => child.kill("SIGTERM"));
+  let output = "";
+  child.stdout.on("data", (chunk) => { output += chunk; });
+  await Promise.race([
+    once(child.stdout, "data"),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("writer did not acquire workspace lock")), 10_000)),
+  ]);
+  assert.match(output, /READY/);
+
+  const [row] = await syncIndexes(root, ["codegraph"], { timeoutMs: 5_000 });
+  assert.deepEqual(row, { backend: "codegraph", ok: true, ready: false, building: true, action: "building", errorCode: "WORKSPACE_OWNED", holderPid: child.pid, detail: "another lazy-intel process (pid " + child.pid + ") owns publication for this workspace" });
+  const status = await indexStatus(root);
+  assert.equal(status.backends.codegraph.consecutiveFailures, 0);
 });
 
 test("strict ensure blocks until a missing baseline is published", async (t) => {
