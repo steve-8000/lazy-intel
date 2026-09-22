@@ -12,9 +12,11 @@ import type {
   RequestContext,
 } from "../contracts.js";
 import type { WorkerSupervisor } from "../runtime/supervisor.js";
+import type { WorkerPool } from "../runtime/pool.js";
 
 export interface GraphAdapterOptions {
-  readonly supervisor: WorkerSupervisor;
+  readonly supervisor?: WorkerSupervisor;
+  readonly pool?: WorkerPool;
   readonly sourceRoot: string;
 }
 interface WireNode { readonly id: string; readonly kind: string; readonly name: string; readonly filePath: string; readonly startLine: number; readonly endLine: number; readonly [key: string]: unknown; }
@@ -65,7 +67,9 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
       const code: EngineIssue["code"] = missingSources ? "invalid_input" : input.view?.state === "needs_recovery" ? "needs_recovery" : "index_building";
       return { outcome: "unavailable", evidence: [], issues: [{ code, component: "graph", message: missingSources ? "indexed graph requires captured source snapshots" : input.view?.state === "needs_recovery" ? "graph store needs recovery" : "graph store is not cleanly published", retryable: code !== "invalid_input" }], coverage: graphCoverage(0), consistency: "unknown" };
     }
-    const result = await options.supervisor.call<{ root: string; stateRoot: string; request: GraphRequest }, WireResponse>(input.operation, { root: options.sourceRoot, stateRoot, request: { ...input, sources: [] } }, context);
+    const supervisor = options.pool?.acquire(stateRoot) ?? options.supervisor;
+    if (!supervisor) throw new Error("graph adapter requires a supervisor or pool");
+    const result = await supervisor.call<{ root: string; stateRoot: string; request: GraphRequest }, WireResponse>(input.operation, { root: options.sourceRoot, stateRoot, request: { ...input, sources: [] } }, context);
     if (!result.ok) {
       const issue: EngineIssue = { code: result.code === "cancelled" ? "cancelled" : result.code === "deadline" ? "deadline" : "worker_failed", component: "graph", message: result.message, retryable: result.retryable };
       return { outcome: result.code === "cancelled" ? "unavailable" : "error", evidence: [], issues: [issue], coverage: graphCoverage(0), consistency: "unknown" };
@@ -73,7 +77,7 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
     const payload = result.payload;
     const evidence: Evidence[] = [];
     const issues: EngineIssue[] = [];
-    const revision = options.supervisor.upstreamCommit ?? "unknown";
+    const revision = supervisor.upstreamCommit ?? "unknown";
     const workspaceId = context.workspaceId;
     const sources = input.sources ?? [];
     const subgraph = payload.result === "context" ? payload.data!.context.subgraph : payload.subgraph!;
@@ -88,5 +92,5 @@ export function createGraphAdapter(options: GraphAdapterOptions): GraphPort {
     if (omittedAnchors > 0) issues.push({ code: "output_truncated", component: "graph", message: "graph omitted nodes without matching captured source bytes", retryable: false });
     return { outcome: omittedAnchors > 0 ? "partial" : evidence.length === 0 ? "empty" : issues.length > 0 ? "partial" : result.outcome, evidence, issues, coverage: graphCoverage(evidence.length, omittedAnchors > 0 ? omittedAnchors : null), consistency: "captured-manifest" };
   }
-  return { read, close: async () => options.supervisor.close() };
+  return { read, close: async () => undefined };
 }

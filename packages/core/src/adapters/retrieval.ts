@@ -16,6 +16,7 @@ import type {
   SourceSnapshot,
 } from "../contracts.js";
 import { WorkerSupervisor, type CallResult, type SupervisorOptions } from "../runtime/supervisor.js";
+import { WorkerPool } from "../runtime/pool.js";
 
 const ZVEC_UPSTREAM_COMMIT = "309a66995809243d3274fa8b5bea63ab11dda1a0";
 
@@ -69,15 +70,16 @@ type WorkerRange =
   | { readonly kind: "page"; readonly page: number }
   | { readonly kind: "page_text"; readonly page: number; readonly startOffset: number; readonly endOffset: number }
   | { readonly kind: "page_region"; readonly page: number; readonly x: number; readonly y: number; readonly width: number; readonly height: number };
-
 export interface RetrievalAdapterOptions {
   readonly workspaceId?: string;
   readonly workerPath?: string;
-  readonly supervisor?: Omit<SupervisorOptions, "kind" | "modulePath" | "workspaceId">;
+  readonly supervisor?: Omit<SupervisorOptions, "kind" | "modulePath" | "workspaceId"> | WorkerSupervisor;
+  readonly pool?: WorkerPool;
 }
 
 export interface RetrievalAdapter extends RetrievalPort {
-  readonly supervisor: WorkerSupervisor;
+  /** The worker this adapter owns, or `null` when reads are routed through a pool. */
+  readonly supervisor: WorkerSupervisor | null;
 }
 
 function defaultWorkerPath(): string {
@@ -283,16 +285,17 @@ function resultForFailure(call: FailedCall): ReadResult {
 }
 
 export function createRetrievalAdapter(options: RetrievalAdapterOptions = {}): RetrievalAdapter {
-  const supervisorOptions = options.supervisor ?? {};
-  const supervisor = new WorkerSupervisor({
+  const injectedSupervisor = options.supervisor instanceof WorkerSupervisor ? options.supervisor : undefined;
+  const supervisorOptions = injectedSupervisor ? {} : options.supervisor ?? {};
+  const ownedSupervisor = injectedSupervisor ?? (options.pool ? undefined : new WorkerSupervisor({
     ...supervisorOptions,
     kind: "retrieval",
     modulePath: options.workerPath ?? defaultWorkerPath(),
     workspaceId: options.workspaceId ?? "retrieval",
-  });
+  }));
 
   return {
-    supervisor,
+    supervisor: ownedSupervisor ?? null,
     async read(input, context): Promise<ReadResult> {
       const indexedView = input.mode === "exact" ? null : input.view;
       const storeRoot = stateRootFor(input);
@@ -311,6 +314,7 @@ export function createRetrievalAdapter(options: RetrievalAdapterOptions = {}): R
           consistency: "unknown",
         };
       }
+      const supervisor = options.pool?.acquire(storeRoot) ?? ownedSupervisor!;
       const payload: WorkerContextPayload = {
         root: resolve(input.scope.canonicalSourceRoot),
         stateRoot: resolve(storeRoot),
@@ -318,6 +322,7 @@ export function createRetrievalAdapter(options: RetrievalAdapterOptions = {}): R
       };
       const call = await supervisor.call<WorkerContextPayload, WorkerContextResult>("context", payload, {
         requestId: context.requestId,
+        workspaceId: context.workspaceId,
         signal: context.signal,
         deadlineMonotonicMs: context.deadlineMonotonicMs,
       });
@@ -353,7 +358,7 @@ export function createRetrievalAdapter(options: RetrievalAdapterOptions = {}): R
       };
     },
     close(): Promise<void> {
-      return supervisor.close();
+      return injectedSupervisor || options.pool ? Promise.resolve() : ownedSupervisor!.close();
     },
   };
 }

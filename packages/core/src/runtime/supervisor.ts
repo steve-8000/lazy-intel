@@ -62,6 +62,7 @@ export interface CallContext {
   readonly signal: AbortSignal;
   /** Absolute `performance.now()` value at which the caller stops waiting. */
   readonly deadlineMonotonicMs: number;
+  readonly workspaceId?: WorkspaceId;
 }
 
 export type CallResult<T> =
@@ -118,6 +119,10 @@ export class WorkerSupervisor {
     return this.#child !== null && this.#child.connected;
   }
 
+  get inFlight(): number {
+    return this.#physicalJobs.size;
+  }
+
   /**
    * Run one operation on the worker.
    *
@@ -154,7 +159,7 @@ export class WorkerSupervisor {
       type: "request",
       requestId: context.requestId,
       workerEpoch: started.epoch,
-      workspaceId: this.#options.workspaceId,
+      workspaceId: context.workspaceId ?? this.#options.workspaceId,
       operation,
       remainingBudgetMs,
       payload,

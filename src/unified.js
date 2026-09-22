@@ -25,6 +25,20 @@ const LANGUAGE_BY_EXTENSION = {
 const runtimes = new Map();
 let corePromise;
 let profilePromise;
+const workerPools = new Map();
+function poolSize() {
+  const raw = process.env.LAZY_INTEL_WORKER_POOL;
+  if (raw == null || raw === "") return 2;
+  const value = Number(raw);
+  return Number.isFinite(value) ? Math.max(1, Math.min(8, Math.trunc(value))) : 2;
+}
+async function sharedWorkerPool(api, projection) {
+  let pool = workerPools.get(projection);
+  if (pool) return pool;
+  pool = new api.WorkerPool({ kind: projection, size: poolSize(), modulePath: path.join(ROOT_DIR, projection === "retrieval" ? "workers/retrieval/main.mjs" : "workers/graph/main.mjs"), workspaceId: "shared", onLog: (line, stream) => log("debug", "worker output", { projection, stream, line }) });
+  workerPools.set(projection, pool);
+  return pool;
+}
 function core() {
   corePromise ??= import(path.join(ROOT_DIR, "packages/core/dist/index.js")).catch((error) => {
     corePromise = undefined;
@@ -46,12 +60,13 @@ function trustedLanguageServers() {
 }
 async function newIndexWorker(runtime, projection) {
   const api = await core();
-  const supervisor = { onLog: (line, stream) => log("debug", "worker output", { root: runtime.root, stream, line }) };
+  const pool = await sharedWorkerPool(api, projection);
   if (projection === "retrieval") {
-    runtime.retrieval = api.createRetrievalAdapter({ workspaceId: runtime.scope.workspaceId, workerPath: path.join(ROOT_DIR, "workers/retrieval/main.mjs"), supervisor });
+    runtime.retrievalPool = pool;
+    runtime.retrieval = api.createRetrievalAdapter({ workspaceId: runtime.scope.workspaceId, workerPath: path.join(ROOT_DIR, "workers/retrieval/main.mjs"), pool });
   } else {
-    runtime.graphSupervisor = new api.WorkerSupervisor({ ...supervisor, kind: "graph", modulePath: path.join(ROOT_DIR, "workers/graph/main.mjs"), workspaceId: runtime.scope.workspaceId });
-    runtime.graph = api.createGraphAdapter({ supervisor: runtime.graphSupervisor, sourceRoot: runtime.root });
+    runtime.graphPool = pool;
+    runtime.graph = api.createGraphAdapter({ pool, sourceRoot: runtime.root });
   }
 }
 async function runtimeFor(root) {
@@ -64,7 +79,7 @@ async function runtimeFor(root) {
     const scope = await api.openWorkspaceRuntime({ sourceRoot: root, trustedForLanguageTools });
     try {
       const publication = await api.PublicationCoordinator.open(scope.canonicalStateRoot);
-      const runtime = { root, scope, publication, semantic: new Map(), sync: Promise.resolve(), closed: false };
+      const runtime = { root, scope, publication, semantic: new Map(), sync: Promise.resolve(), closed: false, retrievalPool: null, graphPool: null };
       await Promise.all([newIndexWorker(runtime, "retrieval"), newIndexWorker(runtime, "graph")]);
       publication.registerRecovery((projection, batch) => applyProjection(runtime, projection, batch));
       return runtime;
@@ -74,8 +89,8 @@ async function runtimeFor(root) {
   pending.catch(() => { if (runtimes.get(root) === pending) runtimes.delete(root); });
   return pending;
 }
-function supervisorFor(runtime, projection) {
-  return projection === "retrieval" ? runtime.retrieval.supervisor : runtime.graphSupervisor;
+function supervisorFor(runtime, projection, affinityKey = runtime.scope.canonicalStateRoot) {
+  return (projection === "retrieval" ? runtime.retrievalPool : runtime.graphPool).acquire(affinityKey);
 }
 function waitForJob(job, signal) {
   if (!signal) return job;
@@ -101,7 +116,7 @@ function sourceChunks(sources) {
 async function applyProjection(runtime, projection, batch) {
   if (batch.storeRoot) await assertOwnedStoreRoot(runtime.scope.canonicalStateRoot, batch.storeRoot);
   const api = await core();
-  const supervisor = supervisorFor(runtime, projection);
+  const supervisor = supervisorFor(runtime, projection, batch.storeRoot ?? runtime.scope.canonicalStateRoot);
   const previous = currentBatch(runtime, projection);
   const priorHashes = new Map((previous?.sources ?? []).map((source) => [source.relativePath, source.contentHash]));
   const upserts = batch.full ? batch.sources : batch.sources.filter((source) => priorHashes.get(source.relativePath) !== source.contentHash);
@@ -113,7 +128,7 @@ async function applyProjection(runtime, projection, batch) {
       const part = { batchId: batch.batchId, part: index, final: index === chunks.length - 1, manifestId: batch.manifestId, sources: chunks[index], deletedPaths: index === 0 ? batch.deletedPaths : [], full: batch.full && index === 0 };
       transport = await api.stagePreparedBatch(batch.storeRoot, part);
       const result = await supervisor.call("apply", { root: runtime.root, stateRoot: batch.storeRoot, batchRef: transport.reference, options: { embedding: batch.embedding } }, {
-        requestId: api.newRequestId(projection + "-apply"), signal: new AbortController().signal, deadlineMonotonicMs: applyDeadline,
+        requestId: api.newRequestId(projection + "-apply"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: applyDeadline,
       });
       if (!result.ok) throw new Error(result.message);
       ack = result.payload;
@@ -126,8 +141,8 @@ async function applyProjection(runtime, projection, batch) {
     return { ...ack, storeRoot: batch.storeRoot };
   } catch (error) {
     // Retain input until any timed-out native operation has been physically reaped.
-    await supervisor.close();
-    if (!runtime.closed) await newIndexWorker(runtime, projection);
+    // The worker is shared, so reclaim it whatever this runtime is doing.
+    await (projection === "retrieval" ? runtime.retrievalPool : runtime.graphPool).recycle(supervisor);
     throw error;
   } finally {
     if (transport) await transport.release();
@@ -180,9 +195,9 @@ export async function synchronizeWorkspace(root, backends, options = {}) {
       for (const projection of projections) {
         const old = previous.find((entry) => entry.projections.includes(projection));
         if (!old?.storeRoot || old.storeRoot === storeRoot) continue;
-        const supervisor = supervisorFor(runtime, projection);
+        const supervisor = supervisorFor(runtime, projection, old.storeRoot);
         await supervisor.call("close-store", { root, stateRoot: old.storeRoot }, {
-          requestId: (await core()).newRequestId("retire-store"), signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
+          requestId: (await core()).newRequestId("retire-store"), workspaceId: runtime.scope.workspaceId, signal: new AbortController().signal, deadlineMonotonicMs: performance.now() + 30_000,
         });
       }
     }
@@ -331,12 +346,12 @@ export async function unifiedRead(read, input, deadline, lease) {
       if (component === "retrieval") {
         result = await runtime.retrieval.read({ query: input.query ?? input.symbol ?? "", mode: "hybrid", scope: { ...runtime.scope, canonicalStateRoot: view.storeRoot },
           view, sources: batch.sources, limit: input.limit }, context);
-        upstreamCommit = runtime.retrieval.supervisor.upstreamCommit;
+        upstreamCommit = runtime.retrievalPool.upstreamCommit;
       } else {
         result = await runtime.graph.read({ operation: read.operation === "impact" ? "impact" : read.operation === "architecture" ? "architecture" : "context",
           query: input.query ?? input.symbol ?? "", subject: input.symbol ? { namePath: input.symbol, relativePath: input.relativePath ?? null, anchor: null, nativeAlias: null } : null,
           depth: input.depth, view, sources: batch.sources }, context);
-        upstreamCommit = runtime.graphSupervisor.upstreamCommit;
+        upstreamCommit = runtime.graphPool.upstreamCommit;
       }
       result = { ...result, views: [view] };
       if (result.issues?.some((issue) => issue.code === "worker_failed")) noteIndexReadFailure(input.root, read.backend, result.issues.map((issue) => issue.message).join("; "));
@@ -386,11 +401,13 @@ export async function closeUnified() {
     try {
       runtime = await pending;
       runtime.closed = true;
-      await Promise.all([runtime.retrieval.close(), runtime.graphSupervisor.close(), ...[...runtime.semantic.values()].map((port) => port.close())]);
+      await Promise.all([runtime.retrieval.close(), runtime.graph.close(), ...[...runtime.semantic.values()].map((port) => port.close())]);
       await runtime.sync;
       await runtime.publication.close();
     } catch (error) { log("warn", "unified runtime shutdown failed", { error: error.message }); }
     finally { if (runtime) await runtime.scope.release(); }
   }));
+  await Promise.all([...workerPools.values()].map((pool) => pool.close()));
+  workerPools.clear();
 }
 export const __internals = { lineRangeForSpan, METHOD_TO_PRODUCT, KIND_TO_PRODUCT, runtimeFor };

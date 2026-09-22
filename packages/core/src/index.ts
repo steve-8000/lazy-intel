@@ -10,6 +10,8 @@ export * from "./contracts.js";
 export * from "./runtime/protocol.js";
 export { WorkerSupervisor, newRequestId } from "./runtime/supervisor.js";
 export type { SupervisorOptions, CallContext, CallResult } from "./runtime/supervisor.js";
+export { WorkerPool } from "./runtime/pool.js";
+export type { WorkerPoolOptions } from "./runtime/pool.js";
 export { serveWorker, WorkerError } from "./runtime/worker-client.js";
 export type { Handler, HandlerContext, HandlerResult, ServeOptions } from "./runtime/worker-client.js";
 export { stagePreparedBatch, readPreparedBatch } from "./runtime/prepared.js";

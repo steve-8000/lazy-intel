@@ -192,16 +192,27 @@ test("mixed graph and retrieval publication recovers a real multipart retrieval 
     for (let index = 0; index < 4; index += 1) await writeFile(path.join(root, `large-${index}.js`), large(`changed-${index}`), "utf8");
     await rm(path.join(root, "deleted.js"));
     const runtime = await unified.__internals.runtimeFor(root);
-    const originalCall = runtime.retrieval.supervisor.call.bind(runtime.retrieval.supervisor);
+    // Reads and applies are routed per store root, so a single supervisor is not a
+    // stable interception point. Wrapping the pool catches whichever worker serves.
+    const pool = runtime.retrievalPool;
+    const originalAcquire = pool.acquire.bind(pool);
+    const patched = new WeakSet();
     let retrievalApplies = 0;
-    runtime.retrieval.supervisor.call = async (operation, ...args) => {
-      const part = args[0]?.batchRef?.part;
-      if (operation === "apply") {
-        assert.ok(args[0]?.batchRef, "retrieval apply must use a staged batch reference");
-        retrievalApplies += 1;
-        if (part === 1) throw new Error("injected retrieval multipart failure");
-      }
-      return originalCall(operation, ...args);
+    pool.acquire = (key) => {
+      const supervisor = originalAcquire(key);
+      if (patched.has(supervisor)) return supervisor;
+      patched.add(supervisor);
+      const originalCall = supervisor.call.bind(supervisor);
+      supervisor.call = async (operation, ...args) => {
+        const part = args[0]?.batchRef?.part;
+        if (operation === "apply") {
+          assert.ok(args[0]?.batchRef, "retrieval apply must use a staged batch reference");
+          retrievalApplies += 1;
+          if (part === 1) throw new Error("injected retrieval multipart failure");
+        }
+        return originalCall(operation, ...args);
+      };
+      return supervisor;
     };
     await assert.rejects(() => unified.synchronizeWorkspace(root, projections), /injected retrieval multipart failure|retrieval worker exited/);
     assert.ok(retrievalApplies >= 2);

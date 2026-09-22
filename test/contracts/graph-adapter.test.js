@@ -58,7 +58,7 @@ test("graph adapter returns anchored native-id evidence and reuses worker handle
   const workspaceId = "graph-test-workspace";
   const supervisor = new WorkerSupervisor({ kind: "graph", workspaceId, modulePath: resolve("workers/graph/main.mjs") });
   const adapter = createGraphAdapter({ supervisor, sourceRoot: root });
-  t.after(() => adapter.close());
+  t.after(() => supervisor.close());
   const view = { projection: "graph", viewId: "test-view", appliedManifestId: "test-manifest", profileDigest: "test-profile", state: "clean", storeRoot: stateRoot };
   const sources = [snapshot(source)];
   const request = { operation: "context", query: "start middle finish", subject: null, depth: 3, view, sources };
@@ -86,8 +86,9 @@ test("graph adapter requires a clean published view and captured source snapshot
   graph.close();
   t.after(async () => { await rm(root, { recursive: true, force: true }); });
   const workspaceId = "graph-gate-workspace";
-  const adapter = createGraphAdapter({ supervisor: new WorkerSupervisor({ kind: "graph", workspaceId, modulePath: resolve("workers/graph/main.mjs") }), sourceRoot: root });
-  t.after(() => adapter.close());
+  const supervisor = new WorkerSupervisor({ kind: "graph", workspaceId, modulePath: resolve("workers/graph/main.mjs") });
+  const adapter = createGraphAdapter({ supervisor, sourceRoot: root });
+  t.after(() => supervisor.close());
   const base = { operation: "architecture", query: "start", subject: null, depth: 2, view: { projection: "graph", viewId: "v", appliedManifestId: "m", profileDigest: "p", state: "clean", storeRoot: stateRoot }, sources: [snapshot(source)] };
   const missingSources = await adapter.read({ ...base, sources: undefined }, callContext(workspaceId));
   assert.equal(missingSources.outcome, "unavailable");

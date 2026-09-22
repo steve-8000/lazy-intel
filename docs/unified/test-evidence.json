@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-22T05:18:27.197Z",
+  "generated_at": "2026-09-22T08:20:25.731Z",
   "command": "npm test --silent",
   "node": "v22.22.3",
   "exit_code": 0,
   "status": "PASS",
   "counts": {
-    "tests": 148,
-    "pass": 147,
+    "tests": 150,
+    "pass": 149,
     "fail": 0,
     "skipped": 1
   },
@@ -268,6 +268,10 @@
       "status": "pass"
     },
     {
+      "name": "workspace ignore policy filters tracked and walked vendor files and changes scope digest",
+      "status": "pass"
+    },
+    {
       "name": "codeIntel serves unified retrieval and graph evidence with bounded output",
       "status": "pass"
     },
@@ -425,6 +429,10 @@
     },
     {
       "name": "recursive watcher attach noise does not dirty the initial publication",
+      "status": "pass"
+    },
+    {
+      "name": "scope-derived directories stay unwatched while scope policy changes are dirty",
       "status": "pass"
     },
     {
@@ -604,5 +612,5 @@
       "status": "pass"
     }
   ],
-  "output_sha256": "1074778581da1e9626e7bf0240dc5593e729c618f31465f5e83dbfb0037cd8d4"
+  "output_sha256": "04774efe60e2be359fa3619eeaf62ff0489601bc8f05f789e687428f1efde455"
 }

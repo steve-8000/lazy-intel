@@ -76,6 +76,22 @@ Explicit operations are not silently replaced. `auto` has a bounded dependent st
 {"operation":"reindex","backend":"zvec","root":"/src/project","embedding":"local/qwen3-embedding-0.6b"}
 ```
 
+### Index scope
+
+Scope is everything the workspace's version control tracks, minus derived directories (`node_modules`, `dist`, `target`, `DerivedData`, `.next`, caches and the like). One policy decides both what is indexed and what the watcher treats as a change, so a file cannot be indexed once and then go stale unobserved.
+
+A `.lazy-intel-ignore` file at the workspace root narrows that further, using gitignore syntax. It is the right place for vendored third-party trees a repository tracks but does not own:
+
+```text
+vendor/
+```
+
+The file's contents are hashed into the scope digest, so editing it re-indexes on the next request. A single file larger than 1 MiB is excluded and reported as a `too-large` manifest exclusion: generated data artifacts otherwise dominate the whole corpus, since retrieval chunks and embeds every byte.
+
+### Workers
+
+Retrieval and graph reads run in worker processes shared by every workspace the server has open, because each retrieval worker holds its own embedding model. `LAZY_INTEL_WORKER_POOL` sets how many exist per projection (default `2`, clamped to `1..8`). A request prefers the worker already holding its store, and moves to an idle one when that worker is busy, so a long index apply in one workspace does not block a query in another. A worker that fails an apply is replaced on its own; the other workers keep their processes.
+
 ### Embeddings
 
 A new index inherits the existing zvec-grep configuration, including model and device. An existing index keeps its stored embedding schema during automatic synchronization/repair. An explicit model change requires rebuilding that projection. This repository does not change the user's model configuration or download a different model during a normal query.
