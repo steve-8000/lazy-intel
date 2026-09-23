@@ -29,6 +29,7 @@ import { fork, type ChildProcess } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 
+import { workerStartPauseReason } from "./worker-starts.js";
 import type { Outcome, WorkspaceId } from "../contracts.js";
 import {
   MAX_MESSAGE_BYTES,
@@ -289,6 +290,8 @@ export class WorkerSupervisor {
   async #ensureStarted(signal: AbortSignal): Promise<{ child: ChildProcess; epoch: string }> {
     if (this.#deadReason) throw new Error(this.#deadReason);
     if (this.#child && this.#child.connected && this.#epoch) return { child: this.#child, epoch: this.#epoch };
+    const pauseReason = workerStartPauseReason();
+    if (pauseReason) throw new Error(pauseReason);
     this.#starting ??= this.#start().finally(() => {
       this.#starting = null;
       this.#startingChild = null;

@@ -506,6 +506,10 @@ export async function repairUnifiedSemantic(root) {
   await Promise.all(ports.map((port) => port.close()));
   return { backend: "serena", ok: true, action: "repair", building: false };
 }
+export async function unifiedHasInFlightWork() {
+  const settled = await Promise.allSettled([...runtimes.values()]);
+  return settled.some(({ status, value }) => status === "fulfilled" && (value.activeSync > 0 || value.publication.status().applying || value.publication.status().pendingBatches.length > 0));
+}
 export async function closeUnified() {
   const entries = [...runtimes.values()];
   runtimes.clear();

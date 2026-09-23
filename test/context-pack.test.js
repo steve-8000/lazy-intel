@@ -64,10 +64,13 @@ test("public context preserves indexed and semantic observation boundaries", () 
     semanticObservation: { sessionEpoch: "session", documentVersion: 4, fileHash: "captured", scope: "own-buffer" },
     coverage: { kind: "bounded_graph", completeWithinScope: false, omitted: null },
   });
-  const pack = buildContextPack({ items: [source], envelopes: [{ coverage: "bounded", returned: 1, total: null }], maxChars: 4000 });
+  const pack = buildContextPack({ items: [source], envelopes: [{ coverage: "bounded", returned: 1, total: null, views: [source.projectionView] }], maxChars: 4000 });
   const metadata = JSON.parse(pack.metaText);
   assert.equal(metadata.coverage, "bounded");
-  assert.equal(metadata.evidence[0].projectionView.appliedManifestId, "manifest");
+  assert.equal(metadata.evidence[0].projection, "graph");
+  assert.equal(metadata.evidence[0].viewId, "view");
+  assert.equal(metadata.views.find((view) => view.viewId === metadata.evidence[0].viewId)?.appliedManifestId, "manifest");
+  assert.equal(Object.hasOwn(metadata.evidence[0], "projectionView"), false);
   assert.equal(metadata.evidence[0].semanticObservation.documentVersion, 4);
   assert.equal(metadata.evidence[0].anchor.contentHash, "captured");
 });

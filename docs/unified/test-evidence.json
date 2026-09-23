@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-22T23:30:25.886Z",
+  "generated_at": "2026-09-23T00:02:04.373Z",
   "command": "npm test --silent",
   "node": "v22.22.3",
   "exit_code": 0,
   "status": "PASS",
   "counts": {
-    "tests": 171,
-    "pass": 170,
+    "tests": 176,
+    "pass": 175,
     "fail": 0,
     "skipped": 1
   },
@@ -25,6 +25,22 @@
     },
     {
       "name": "a pre-aborted MCP request is rejected before dispatch",
+      "status": "pass"
+    },
+    {
+      "name": "changed loaded code marks stale and restarts after the idle quiet window",
+      "status": "pass"
+    },
+    {
+      "name": "an active request postpones restart until the server is idle",
+      "status": "pass"
+    },
+    {
+      "name": "a reverted on-disk fingerprint never triggers restart",
+      "status": "pass"
+    },
+    {
+      "name": "a stale worker supervisor refuses a new process with a retryable failure",
       "status": "pass"
     },
     {
@@ -504,6 +520,10 @@
       "status": "pass"
     },
     {
+      "name": "MCP legacy sessions retain metadata as a text block",
+      "status": "pass"
+    },
+    {
       "name": "MCP admits four active requests, queues thirty-two, then reports busy",
       "status": "pass"
     },
@@ -696,5 +716,5 @@
       "status": "pass"
     }
   ],
-  "output_sha256": "6a81382aeadff9f74d33c792daba072197bf5662d3672763f860f62a2f99647d"
+  "output_sha256": "92211ae68b25c11c36407e13e0c6715e55f1fa9a1b9940e8d1175920abd1c918"
 }

@@ -161,12 +161,15 @@ LAZY_INTEL_AUTO_REPAIR=true
 LAZY_INTEL_MAINTENANCE_MS=5000
 LAZY_INTEL_INDEX_TIMEOUT_MS=600000
 LAZY_INTEL_TIMEOUT_MS=30000
+LAZY_INTEL_RESTART_QUIET_MS=30000
+LAZY_INTEL_RESTART_ON_CODE_CHANGE=true
 SERENA_USAGE_REPORTING=false
 DO_NOT_TRACK=1
 ```
 
-`LAZY_INTEL_ROOT` fixes the bootstrap root. `LAZY_INTEL_ALLOWED_ROOTS` and `LAZY_INTEL_DENY_ROOTS` use the platform path delimiter. `LAZY_INTEL_MAX_ROOTS` bounds managed workspaces. `LAZY_INTEL_EMBEDDING` supplies an explicit embedding selection; otherwise the shared configuration is inherited. There is no daemon transport selector or external Serena MCP executable setting in the new query path.
+`LAZY_INTEL_RESTART_QUIET_MS` sets the stable-disk interval before an idle server restarts after loaded code changes (default `30000` ms). `LAZY_INTEL_RESTART_ON_CODE_CHANGE=false` disables automatic restart while retaining the stale-server warning. The server never restarts within one quiet interval of startup or if code returns to its original fingerprint.
 
+`LAZY_INTEL_ROOT` fixes the bootstrap root. `LAZY_INTEL_ALLOWED_ROOTS` and `LAZY_INTEL_DENY_ROOTS` use the platform path delimiter. `LAZY_INTEL_MAX_ROOTS` bounds managed workspaces. `LAZY_INTEL_EMBEDDING` supplies an explicit embedding selection; otherwise the shared configuration is inherited. There is no daemon transport selector or external Serena MCP executable setting in the new query path.
 ### Trust boundaries
 
 - Request roots and source locators are canonicalized and contained. The home directory itself, the OMP home tree and zvec-grep's private home tree are not indexable roots.

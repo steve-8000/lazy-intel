@@ -6,7 +6,7 @@
  * vendored module directly, and a worker never imports the product.
  */
 export * from "./contracts.js";
-
+export { pauseWorkerStarts, workerStartsPaused, workerStartPauseReason, resumeWorkerStarts } from "./runtime/worker-starts.js";
 export * from "./runtime/protocol.js";
 export { WorkerSupervisor, newRequestId } from "./runtime/supervisor.js";
 export type { SupervisorOptions, CallContext, CallResult } from "./runtime/supervisor.js";

@@ -28,21 +28,30 @@ import {
   syncIndexes,
 } from "./index-manager.js";
 import { log } from "./lib/log.js";
+import { codeIsStale, CODE_OUTDATED_MESSAGE } from "./lib/code-version.js";
 import { unifiedRead, unifiedStage, unifiedSemanticStatus, repairUnifiedSemantic } from "./unified.js";
 
 const SUCCESSFUL_OUTCOMES = new Set(["ok", "empty"]);
-
+function withCodeVersionIssue(result) {
+  if (!codeIsStale()) return result;
+  const issue = { code: "server_outdated", message: CODE_OUTDATED_MESSAGE, retryable: true };
+  let text = result.text;
+  if (CONTROL_OPERATIONS.has(result.meta.operation)) {
+    try { text = JSON.stringify({ ...JSON.parse(text), serverWarning: issue.message }, null, 2); }
+    catch { text = text + "\n\nWarning: " + issue.message; }
+  } else text = text + "\n\nWarning: " + issue.message;
+  return { ...result, text, meta: { ...result.meta, issues: [...(result.meta.issues ?? []), issue] } };
+}
 export async function codeIntel(rawInput, signal) {
   signal?.throwIfAborted();
   const input = await normalizeInput(rawInput);
   signal?.throwIfAborted();
-  if (CONTROL_OPERATIONS.has(input.operation)) return control(input, signal);
-
+  if (CONTROL_OPERATIONS.has(input.operation)) return withCodeVersionIssue(await control(input, signal));
   // One monotonic budget owns the whole request: queue waiting, index preparation, the
   // single transport retry and source verification all draw from it.
   const deadline = createDeadline({ signal, requestTimeoutMs: input.requestTimeoutMs });
   try {
-    return await intelligence(input, deadline);
+    return withCodeVersionIssue(await intelligence(input, deadline));
   } finally {
     deadline.dispose();
   }

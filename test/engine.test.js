@@ -88,7 +88,10 @@ test("codeIntel serves unified retrieval and graph evidence with bounded output"
   assert.equal(architecture.meta.routes[0], "codegraph:architecture");
   assert.ok(architecture.meta.backends.some((row) => row.backend === "codegraph"));
   if (architecture.meta.status === "ok") {
-    assert.ok(architecture.meta.evidence.some((descriptor) => descriptor.method === "indexed_graph"));
+    const graph = architecture.meta.evidence.find((descriptor) => descriptor.method === "indexed_graph");
+    assert.ok(graph, "an ok graph read must carry indexed evidence");
+    assert.ok(graph.viewId, "graph evidence must reference its published view");
+    assert.ok(architecture.meta.views.some((view) => view.viewId === graph.viewId && view.projection === graph.projection));
   }
 });
 

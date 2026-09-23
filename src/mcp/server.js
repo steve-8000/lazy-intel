@@ -1,12 +1,13 @@
 import process from "node:process";
 import { codeIntel } from "../engine.js";
-import { bootstrapRoot, closeIndexManager } from "../index-manager.js";
+import { bootstrapRoot, closeIndexManager, indexManagerHasInFlightWork } from "../index-manager.js";
 import { log } from "../lib/log.js";
 import { bootRoot } from "../lib/roots.js";
-import { closeUnified } from "../unified.js";
+import { closeUnified, unifiedHasInFlightWork } from "../unified.js";
 import { ERROR_CODES } from "../contracts.js";
 import { WIRE_CAP_BYTES as CONTEXT_WIRE_CAP_BYTES } from "../context-pack.js";
-
+import { startCodeVersionMonitor, CODE_OUTDATED_MESSAGE } from "../lib/code-version.js";
+import { pauseWorkerStarts, resumeWorkerStarts } from "../../packages/core/dist/index.js";
 export const SUPPORTED_PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26"];
 export const MAX_INPUT_FRAME_BYTES = 256 * 1024;
 export const WIRE_CAP_BYTES = CONTEXT_WIRE_CAP_BYTES;
@@ -14,7 +15,6 @@ export const OUTPUT_WIRE_CAP_BYTES = WIRE_CAP_BYTES;
 const MAX_ACTIVE_REQUESTS = 4;
 const MAX_QUEUED_REQUESTS = 32;
 const BUSY_CODE = Object.hasOwn(ERROR_CODES, "BUSY") ? "BUSY" : "INTERNAL_ERROR";
-
 const TOOL = {
   name: "code_intel",
   description: [
@@ -77,7 +77,19 @@ export function startMcpServer() {
   const queue = [];
   let active = 0;
   let closed = false;
-
+  let versionMonitor;
+  void startCodeVersionMonitor({
+    getBusy: async () => active > 0 || queue.length > 0 || indexManagerHasInFlightWork() || await unifiedHasInFlightWork(),
+    onStale: () => pauseWorkerStarts(CODE_OUTDATED_MESSAGE),
+    onFresh: () => resumeWorkerStarts(),
+    shutdown: async () => {
+      versionMonitor?.stop(); log("info", "restarting MCP server after code change");
+      closeIndexManager();
+      await closeUnified();
+      // Runtime closures complete before process exit.
+    },
+    onRestart: (code) => process.exit(code),
+  }).then((monitor) => { versionMonitor = monitor; }).catch((error) => log("warn", "code version watch unavailable", { error: error.message }));
   const runRecord = (record) => {
     const intelligence = record.request.method === "tools/call";
     if (intelligence) active += 1;
@@ -160,6 +172,7 @@ export function startMcpServer() {
   process.stdin.once("close", () => {
     closed = true;
     for (const record of controllers.values()) record.controller.abort();
+    versionMonitor?.stop();
     controllers.clear();
     queue.length = 0;
     closeIndexManager();
@@ -195,11 +208,12 @@ async function handle(req, signal, session) {
         // Fulfilment is decided by the engine against the plan's obligations. A backend
         // answering at all was never evidence that the request was satisfied.
         const content = [{ type: "text", text: result.text ?? "" }];
-        // Text-only consumers still need the machine-readable status; its length is already
-        // inside the response budget the engine applied.
-        if (result.metaText) content.push({ type: "text", text: result.metaText });
         const response = { content, isError: Boolean(result.isError) };
-        if (session.negotiatedVersion === SUPPORTED_PROTOCOL_VERSIONS[0]) response.structuredContent = result.meta;
+        if (session.negotiatedVersion === SUPPORTED_PROTOCOL_VERSIONS[0]) {
+          response.structuredContent = result.meta;
+        } else if (result.metaText) {
+          content.push({ type: "text", text: result.metaText });
+        }
         return response;
       } catch (error) {
         if (signal.aborted) throw error;

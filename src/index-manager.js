@@ -57,9 +57,9 @@ export function observeIndexState(root) {
   return { processEpoch, generation: state.generation, appliedGeneration: applied.length ? Math.min(...applied) : null,
     watcher: state.watcherState, baseline: applied.length ? "applied" : "unverified" };
 }
+export function indexManagerHasInFlightWork() { return [...roots.values()].some((state) => state.queueDepth > 0 || state.backgroundBuild !== null || INDEX_BACKENDS.some((backend) => state.backends[backend].pending > 0)); }
 export async function ensureIndexes(root, backends, options = {}) {
-  const state = await ensureState(root);
-  startMaintenanceLoop();
+  const state = await ensureState(root); startMaintenanceLoop();
   return runPublication(state, indexBackends(backends), options, "ensure");
 }
 export async function syncIndexes(root, backends = INDEX_BACKENDS, options = {}) {

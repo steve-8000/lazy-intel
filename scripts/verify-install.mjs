@@ -55,7 +55,8 @@ async function query(client, root, typed) {
     const evidence = metadata.evidence.find((entry) => entry.anchor?.relativePath === "invoice.mjs");
     assert.ok(evidence, "candidate must return the fixture's canonical anchor");
     assert.equal(evidence.anchor.contentHash, hash(await readFile(path.join(root, "invoice.mjs"))));
-    assert.equal(evidence.projectionView.state, "clean");
+    assert.equal(evidence.projection, "graph");
+    assert.equal(metadata.views.find((view) => view.viewId === evidence.viewId)?.state, "clean");
   }
   return { successful: true, evidenceFormat: typed ? "canonical-anchor" : "legacy-textual-locator", response: result };
 }

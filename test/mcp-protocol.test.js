@@ -108,18 +108,39 @@ test("MCP tool output preserves the engine response budget as valid JSON text", 
   assert.equal(response.error, undefined);
   assert.equal(response.result.isError, false);
   const text = response.result.content.filter((block) => block.type === "text").map((block) => block.text);
-  assert.ok(text.length >= 2, "MCP should carry both rendered text and machine metadata");
+  assert.equal(text.length, 1, "structured sessions must not duplicate metadata in a text block");
   assert.ok(text.some((value) => value.includes("Status:") && value.includes("Limits:") && value.includes("Stop reason:")), "MCP text must retain complete headers");
   assert.ok(text.reduce((sum, value) => sum + Buffer.byteLength(value, "utf8"), 0) <= 4_000);
-  const metadata = JSON.parse(text.at(-1));
-  assert.equal(metadata.truncated, true, "MCP metadata must admit omitted output instead of claiming completeness");
+  assert.ok(response.result.structuredContent, "structured sessions must receive machine-readable metadata");
+  const metadata = response.result.structuredContent;
+  assert.ok(["ok", "partial", "empty"].includes(metadata.status));
   const wire = server.wireFrames.at(-1);
   assert.ok(wire, "the response must cross the actual stdio wire");
   assert.ok(Buffer.byteLength(wire + "\n", "utf8") <= 1_048_576, "MCP frame including newline exceeded the wire cap");
   assert.deepEqual(JSON.parse(wire), response);
   assert.ok(text.reduce((sum, value) => sum + value.length, 0) <= 4_000);
-  assert.doesNotThrow(() => JSON.parse(text.at(-1)));
 });
+
+test("MCP legacy sessions retain metadata as a text block", { timeout: 900_000 }, async (t) => {
+  const root = await workspace("lazy-intel-mcp-legacy-");
+  t.after(async () => { await rm(root, { recursive: true, force: true }); });
+  const server = startServer({ LAZY_INTEL_ROOT: root, LAZY_INTEL_ALLOWED_ROOTS: root, LAZY_INTEL_MAINTENANCE_MS: "0" });
+  t.after(() => stopServer(server));
+  await server.send({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "legacy-test", version: "0" } } });
+  await server.send({
+    jsonrpc: "2.0", id: 99, method: "tools/call",
+    params: { name: "code_intel", arguments: { operation: "search", root, query: "needle", freshness: "strict", maxChars: 4_000, timeoutMs: 120_000, indexTimeoutMs: 600_000 } },
+  }, 900_000);
+  const response = await server.send({
+    jsonrpc: "2.0", id: 2, method: "tools/call",
+    params: { name: "code_intel", arguments: { operation: "search", root, query: "needle", maxChars: 4_000, timeoutMs: 120_000, indexTimeoutMs: 600_000 } },
+  }, 900_000);
+  const text = response.result.content.filter((block) => block.type === "text").map((block) => block.text);
+  assert.equal(text.length, 2);
+  assert.ok(text[1].startsWith("{"), "legacy metadata remains a JSON text block");
+  assert.equal(response.result.structuredContent, undefined);
+  assert.doesNotThrow(() => JSON.parse(text[1]));
+ });
 
 test("MCP admits four active requests, queues thirty-two, then reports busy", { timeout: 900_000 }, async (t) => {
   const root = await workspace("lazy-intel-mcp-queue-");

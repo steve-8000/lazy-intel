@@ -24,7 +24,7 @@ function sourceDescriptor(item) {
     textKind: item.textKind ?? "source",
     sourceCheck: item.sourceCheck?.status ?? "unchecked",
     ...(item.anchor ? { anchor: item.anchor } : {}),
-    ...(item.projectionView ? { projectionView: item.projectionView } : {}),
+    ...(item.projectionView ? { projection: item.projectionView.projection, viewId: item.projectionView.viewId } : {}),
     ...(item.semanticObservation ? { semanticObservation: item.semanticObservation } : {}),
     ...(item.coverage ? { coverage: item.coverage } : {}),
     ...(item.relatedAnchors ? { relatedAnchors: item.relatedAnchors } : {}),

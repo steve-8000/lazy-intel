@@ -1177,22 +1177,22 @@
         "query": "applyDiscount",
         "raw": {
           "query": "applyDiscount",
-          "root": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source",
+          "root": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source",
           "source": "index",
           "coverage": "ranked_sample",
           "workspaceIndex": {
-            "id": "f3002568-b3de-4c07-8fe5-41ee2c97d434",
+            "id": "21eae48c-793e-4354-a882-1494ec7b522f",
             "name": "stock-source",
-            "path": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-state"
+            "path": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-state"
           },
           "items": [
             {
               "kind": "indexed_entity",
               "rank": 1,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/discount.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/discount.mjs",
                 "relativePath": "src/discount.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1218,7 +1218,7 @@
                   "exported"
                 ]
               },
-              "entityId": "7d864a94ac0bb8fae1cfa7a1ec01ceaeb2293ea8a36a27dbcb2ea9540e26346b",
+              "entityId": "e6499c10d4606ff935f12d2d2c896ab71d34e7ad886887176ca104c3fb4aadc5",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1235,9 +1235,9 @@
               "kind": "indexed_entity",
               "rank": 2,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/invoice.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/invoice.mjs",
                 "relativePath": "src/invoice.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1263,7 +1263,7 @@
                   "exported"
                 ]
               },
-              "entityId": "1c8fb82536ddd307e44f9aa60598f27392ea7e994f5efc159ce0ca5e81e74749",
+              "entityId": "64be8ed74abca3745903f40994f515f0db2dcca404f1834856238b7262cd83be",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1279,9 +1279,9 @@
               "kind": "indexed_entity",
               "rank": 3,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/README.md",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/README.md",
                 "relativePath": "README.md",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1295,7 +1295,7 @@
               "status": "fresh",
               "score": 0.015873015873015872,
               "matchedBy": "vector",
-              "entityId": "e0cf3bfa4a67239430563e2d76008e6a03ebd760910e5696a01a5b0dce64469d",
+              "entityId": "0899f9bccb06a18cb0b1bcbf0871d2de2de7eccaf8975660eb942ea4934fbbce",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1311,9 +1311,9 @@
               "kind": "indexed_entity",
               "rank": 4,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/package.json",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/package.json",
                 "relativePath": "package.json",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1327,7 +1327,7 @@
               "status": "fresh",
               "score": 0.015625,
               "matchedBy": "vector",
-              "entityId": "123355f1181890f03c4e14f600ce43696add8494d6ae6c930394255d362c3f68",
+              "entityId": "2bf3a47eda74e688cd4b685df8c0fa6477596bed2c69077fe27208eed0a69d60",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1343,9 +1343,9 @@
               "kind": "indexed_entity",
               "rank": 5,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/embedding.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/embedding.mjs",
                 "relativePath": "src/embedding.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1359,7 +1359,7 @@
               "status": "fresh",
               "score": 0.015384615384615385,
               "matchedBy": "vector",
-              "entityId": "5aed456d380e615b8f091bd628a5026d11d073d0efea8fd5b54c2cb1dcc9a603",
+              "entityId": "4e6231e79973448c69addc583cd054ff32963cf2e158699298139788dc1cb0be",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1382,9 +1382,9 @@
                   "kind": "indexed_entity",
                   "rank": 1,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/discount.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/discount.mjs",
                     "relativePath": "src/discount.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -1410,7 +1410,7 @@
                       "exported"
                     ]
                   },
-                  "entityId": "7d864a94ac0bb8fae1cfa7a1ec01ceaeb2293ea8a36a27dbcb2ea9540e26346b",
+                  "entityId": "e6499c10d4606ff935f12d2d2c896ab71d34e7ad886887176ca104c3fb4aadc5",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -1425,9 +1425,9 @@
                   "kind": "indexed_entity",
                   "rank": 2,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/invoice.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/invoice.mjs",
                     "relativePath": "src/invoice.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -1453,7 +1453,7 @@
                       "exported"
                     ]
                   },
-                  "entityId": "1c8fb82536ddd307e44f9aa60598f27392ea7e994f5efc159ce0ca5e81e74749",
+                  "entityId": "64be8ed74abca3745903f40994f515f0db2dcca404f1834856238b7262cd83be",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -1468,9 +1468,9 @@
                   "kind": "indexed_entity",
                   "rank": 3,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/README.md",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/README.md",
                     "relativePath": "README.md",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -1484,7 +1484,7 @@
                   "status": "fresh",
                   "score": 0.015873015873015872,
                   "matchedBy": "vector",
-                  "entityId": "e0cf3bfa4a67239430563e2d76008e6a03ebd760910e5696a01a5b0dce64469d",
+                  "entityId": "0899f9bccb06a18cb0b1bcbf0871d2de2de7eccaf8975660eb942ea4934fbbce",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -1499,9 +1499,9 @@
                   "kind": "indexed_entity",
                   "rank": 4,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/package.json",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/package.json",
                     "relativePath": "package.json",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -1515,7 +1515,7 @@
                   "status": "fresh",
                   "score": 0.015625,
                   "matchedBy": "vector",
-                  "entityId": "123355f1181890f03c4e14f600ce43696add8494d6ae6c930394255d362c3f68",
+                  "entityId": "2bf3a47eda74e688cd4b685df8c0fa6477596bed2c69077fe27208eed0a69d60",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -1530,9 +1530,9 @@
                   "kind": "indexed_entity",
                   "rank": 5,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/embedding.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/embedding.mjs",
                     "relativePath": "src/embedding.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -1546,7 +1546,7 @@
                   "status": "fresh",
                   "score": 0.015384615384615385,
                   "matchedBy": "vector",
-                  "entityId": "5aed456d380e615b8f091bd628a5026d11d073d0efea8fd5b54c2cb1dcc9a603",
+                  "entityId": "4e6231e79973448c69addc583cd054ff32963cf2e158699298139788dc1cb0be",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -1598,7 +1598,7 @@
               },
               {
                 "name": "query_embedding",
-                "durationMs": 32
+                "durationMs": 35
               },
               {
                 "name": "recall",
@@ -1614,11 +1614,11 @@
               },
               {
                 "name": "search_total",
-                "durationMs": 33
+                "durationMs": 37
               },
               {
                 "name": "total",
-                "durationMs": 98
+                "durationMs": 99
               }
             ]
           }
@@ -1727,22 +1727,22 @@
         "query": "invoiceTotal",
         "raw": {
           "query": "invoiceTotal",
-          "root": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source",
+          "root": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source",
           "source": "index",
           "coverage": "ranked_sample",
           "workspaceIndex": {
-            "id": "f3002568-b3de-4c07-8fe5-41ee2c97d434",
+            "id": "21eae48c-793e-4354-a882-1494ec7b522f",
             "name": "stock-source",
-            "path": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-state"
+            "path": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-state"
           },
           "items": [
             {
               "kind": "indexed_entity",
               "rank": 1,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/invoice.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/invoice.mjs",
                 "relativePath": "src/invoice.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1768,7 +1768,7 @@
                   "exported"
                 ]
               },
-              "entityId": "1c8fb82536ddd307e44f9aa60598f27392ea7e994f5efc159ce0ca5e81e74749",
+              "entityId": "64be8ed74abca3745903f40994f515f0db2dcca404f1834856238b7262cd83be",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1785,9 +1785,9 @@
               "kind": "indexed_entity",
               "rank": 2,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/discount.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/discount.mjs",
                 "relativePath": "src/discount.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1813,7 +1813,7 @@
                   "exported"
                 ]
               },
-              "entityId": "7d864a94ac0bb8fae1cfa7a1ec01ceaeb2293ea8a36a27dbcb2ea9540e26346b",
+              "entityId": "e6499c10d4606ff935f12d2d2c896ab71d34e7ad886887176ca104c3fb4aadc5",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1829,9 +1829,9 @@
               "kind": "indexed_entity",
               "rank": 3,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/README.md",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/README.md",
                 "relativePath": "README.md",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1845,7 +1845,7 @@
               "status": "fresh",
               "score": 0.015873015873015872,
               "matchedBy": "vector",
-              "entityId": "e0cf3bfa4a67239430563e2d76008e6a03ebd760910e5696a01a5b0dce64469d",
+              "entityId": "0899f9bccb06a18cb0b1bcbf0871d2de2de7eccaf8975660eb942ea4934fbbce",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1861,9 +1861,9 @@
               "kind": "indexed_entity",
               "rank": 4,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/embedding.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/embedding.mjs",
                 "relativePath": "src/embedding.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1877,7 +1877,7 @@
               "status": "fresh",
               "score": 0.015625,
               "matchedBy": "vector",
-              "entityId": "5aed456d380e615b8f091bd628a5026d11d073d0efea8fd5b54c2cb1dcc9a603",
+              "entityId": "4e6231e79973448c69addc583cd054ff32963cf2e158699298139788dc1cb0be",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1893,9 +1893,9 @@
               "kind": "indexed_entity",
               "rank": 5,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/package.json",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/package.json",
                 "relativePath": "package.json",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -1909,7 +1909,7 @@
               "status": "fresh",
               "score": 0.015384615384615385,
               "matchedBy": "vector",
-              "entityId": "123355f1181890f03c4e14f600ce43696add8494d6ae6c930394255d362c3f68",
+              "entityId": "2bf3a47eda74e688cd4b685df8c0fa6477596bed2c69077fe27208eed0a69d60",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -1932,9 +1932,9 @@
                   "kind": "indexed_entity",
                   "rank": 1,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/invoice.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/invoice.mjs",
                     "relativePath": "src/invoice.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -1960,7 +1960,7 @@
                       "exported"
                     ]
                   },
-                  "entityId": "1c8fb82536ddd307e44f9aa60598f27392ea7e994f5efc159ce0ca5e81e74749",
+                  "entityId": "64be8ed74abca3745903f40994f515f0db2dcca404f1834856238b7262cd83be",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -1975,9 +1975,9 @@
                   "kind": "indexed_entity",
                   "rank": 2,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/discount.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/discount.mjs",
                     "relativePath": "src/discount.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2003,7 +2003,7 @@
                       "exported"
                     ]
                   },
-                  "entityId": "7d864a94ac0bb8fae1cfa7a1ec01ceaeb2293ea8a36a27dbcb2ea9540e26346b",
+                  "entityId": "e6499c10d4606ff935f12d2d2c896ab71d34e7ad886887176ca104c3fb4aadc5",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2018,9 +2018,9 @@
                   "kind": "indexed_entity",
                   "rank": 3,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/README.md",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/README.md",
                     "relativePath": "README.md",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2034,7 +2034,7 @@
                   "status": "fresh",
                   "score": 0.015873015873015872,
                   "matchedBy": "vector",
-                  "entityId": "e0cf3bfa4a67239430563e2d76008e6a03ebd760910e5696a01a5b0dce64469d",
+                  "entityId": "0899f9bccb06a18cb0b1bcbf0871d2de2de7eccaf8975660eb942ea4934fbbce",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2049,9 +2049,9 @@
                   "kind": "indexed_entity",
                   "rank": 4,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/embedding.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/embedding.mjs",
                     "relativePath": "src/embedding.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2065,7 +2065,7 @@
                   "status": "fresh",
                   "score": 0.015625,
                   "matchedBy": "vector",
-                  "entityId": "5aed456d380e615b8f091bd628a5026d11d073d0efea8fd5b54c2cb1dcc9a603",
+                  "entityId": "4e6231e79973448c69addc583cd054ff32963cf2e158699298139788dc1cb0be",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2080,9 +2080,9 @@
                   "kind": "indexed_entity",
                   "rank": 5,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/package.json",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/package.json",
                     "relativePath": "package.json",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2096,7 +2096,7 @@
                   "status": "fresh",
                   "score": 0.015384615384615385,
                   "matchedBy": "vector",
-                  "entityId": "123355f1181890f03c4e14f600ce43696add8494d6ae6c930394255d362c3f68",
+                  "entityId": "2bf3a47eda74e688cd4b685df8c0fa6477596bed2c69077fe27208eed0a69d60",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2148,11 +2148,11 @@
               },
               {
                 "name": "query_embedding",
-                "durationMs": 12
+                "durationMs": 13
               },
               {
                 "name": "recall",
-                "durationMs": 0
+                "durationMs": 1
               },
               {
                 "name": "fusion",
@@ -2168,7 +2168,7 @@
               },
               {
                 "name": "total",
-                "durationMs": 74
+                "durationMs": 71
               }
             ]
           }
@@ -2277,22 +2277,22 @@
         "query": "embedding native Qwen configured local qwen3 embedding",
         "raw": {
           "query": "embedding native Qwen configured local qwen3 embedding",
-          "root": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source",
+          "root": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source",
           "source": "index",
           "coverage": "ranked_sample",
           "workspaceIndex": {
-            "id": "f3002568-b3de-4c07-8fe5-41ee2c97d434",
+            "id": "21eae48c-793e-4354-a882-1494ec7b522f",
             "name": "stock-source",
-            "path": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-state"
+            "path": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-state"
           },
           "items": [
             {
               "kind": "indexed_entity",
               "rank": 1,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/embedding.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/embedding.mjs",
                 "relativePath": "src/embedding.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -2306,7 +2306,7 @@
               "status": "fresh",
               "score": 0.03278688524590164,
               "matchedBy": "fts+vector",
-              "entityId": "5aed456d380e615b8f091bd628a5026d11d073d0efea8fd5b54c2cb1dcc9a603",
+              "entityId": "4e6231e79973448c69addc583cd054ff32963cf2e158699298139788dc1cb0be",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -2323,9 +2323,9 @@
               "kind": "indexed_entity",
               "rank": 2,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/README.md",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/README.md",
                 "relativePath": "README.md",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -2339,7 +2339,7 @@
               "status": "fresh",
               "score": 0.03200204813108039,
               "matchedBy": "fts+vector",
-              "entityId": "e0cf3bfa4a67239430563e2d76008e6a03ebd760910e5696a01a5b0dce64469d",
+              "entityId": "0899f9bccb06a18cb0b1bcbf0871d2de2de7eccaf8975660eb942ea4934fbbce",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -2355,9 +2355,9 @@
               "kind": "indexed_entity",
               "rank": 3,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/invoice.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/invoice.mjs",
                 "relativePath": "src/invoice.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -2383,7 +2383,7 @@
                   "exported"
                 ]
               },
-              "entityId": "1c8fb82536ddd307e44f9aa60598f27392ea7e994f5efc159ce0ca5e81e74749",
+              "entityId": "64be8ed74abca3745903f40994f515f0db2dcca404f1834856238b7262cd83be",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -2399,9 +2399,9 @@
               "kind": "indexed_entity",
               "rank": 4,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/package.json",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/package.json",
                 "relativePath": "package.json",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -2415,7 +2415,7 @@
               "status": "fresh",
               "score": 0.03125763125763126,
               "matchedBy": "fts+vector",
-              "entityId": "123355f1181890f03c4e14f600ce43696add8494d6ae6c930394255d362c3f68",
+              "entityId": "2bf3a47eda74e688cd4b685df8c0fa6477596bed2c69077fe27208eed0a69d60",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -2431,9 +2431,9 @@
               "kind": "indexed_entity",
               "rank": 5,
               "file": {
-                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/discount.mjs",
+                "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/discount.mjs",
                 "relativePath": "src/discount.mjs",
-                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
               },
               "range": {
                 "kind": "text",
@@ -2459,7 +2459,7 @@
                   "exported"
                 ]
               },
-              "entityId": "7d864a94ac0bb8fae1cfa7a1ec01ceaeb2293ea8a36a27dbcb2ea9540e26346b",
+              "entityId": "e6499c10d4606ff935f12d2d2c896ab71d34e7ad886887176ca104c3fb4aadc5",
               "queryGroups": [
                 {
                   "id": "Q1",
@@ -2482,9 +2482,9 @@
                   "kind": "indexed_entity",
                   "rank": 1,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/embedding.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/embedding.mjs",
                     "relativePath": "src/embedding.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2498,7 +2498,7 @@
                   "status": "fresh",
                   "score": 0.03278688524590164,
                   "matchedBy": "fts+vector",
-                  "entityId": "5aed456d380e615b8f091bd628a5026d11d073d0efea8fd5b54c2cb1dcc9a603",
+                  "entityId": "4e6231e79973448c69addc583cd054ff32963cf2e158699298139788dc1cb0be",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2513,9 +2513,9 @@
                   "kind": "indexed_entity",
                   "rank": 2,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/README.md",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/README.md",
                     "relativePath": "README.md",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2529,7 +2529,7 @@
                   "status": "fresh",
                   "score": 0.03200204813108039,
                   "matchedBy": "fts+vector",
-                  "entityId": "e0cf3bfa4a67239430563e2d76008e6a03ebd760910e5696a01a5b0dce64469d",
+                  "entityId": "0899f9bccb06a18cb0b1bcbf0871d2de2de7eccaf8975660eb942ea4934fbbce",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2544,9 +2544,9 @@
                   "kind": "indexed_entity",
                   "rank": 3,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/invoice.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/invoice.mjs",
                     "relativePath": "src/invoice.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2572,7 +2572,7 @@
                       "exported"
                     ]
                   },
-                  "entityId": "1c8fb82536ddd307e44f9aa60598f27392ea7e994f5efc159ce0ca5e81e74749",
+                  "entityId": "64be8ed74abca3745903f40994f515f0db2dcca404f1834856238b7262cd83be",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2587,9 +2587,9 @@
                   "kind": "indexed_entity",
                   "rank": 4,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/package.json",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/package.json",
                     "relativePath": "package.json",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2603,7 +2603,7 @@
                   "status": "fresh",
                   "score": 0.03125763125763126,
                   "matchedBy": "fts+vector",
-                  "entityId": "123355f1181890f03c4e14f600ce43696add8494d6ae6c930394255d362c3f68",
+                  "entityId": "2bf3a47eda74e688cd4b685df8c0fa6477596bed2c69077fe27208eed0a69d60",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2618,9 +2618,9 @@
                   "kind": "indexed_entity",
                   "rank": 5,
                   "file": {
-                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source/src/discount.mjs",
+                    "absolutePath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source/src/discount.mjs",
                     "relativePath": "src/discount.mjs",
-                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-source"
+                    "rootPath": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-source"
                   },
                   "range": {
                     "kind": "text",
@@ -2646,7 +2646,7 @@
                       "exported"
                     ]
                   },
-                  "entityId": "7d864a94ac0bb8fae1cfa7a1ec01ceaeb2293ea8a36a27dbcb2ea9540e26346b",
+                  "entityId": "e6499c10d4606ff935f12d2d2c896ab71d34e7ad886887176ca104c3fb4aadc5",
                   "queryGroups": [
                     {
                       "id": "Q1",
@@ -2698,7 +2698,7 @@
               },
               {
                 "name": "query_embedding",
-                "durationMs": 13
+                "durationMs": 12
               },
               {
                 "name": "recall",
@@ -2714,11 +2714,11 @@
               },
               {
                 "name": "search_total",
-                "durationMs": 14
+                "durationMs": 13
               },
               {
                 "name": "total",
-                "durationMs": 76
+                "durationMs": 70
               }
             ]
           }
@@ -2831,17 +2831,13 @@
           "content": [
             {
               "type": "text",
-              "text": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492-4]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
-            },
-            {
-              "type": "text",
-              "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be-3\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"package.json\",\"range\":{\"startLine\":0,\"endLineExclusive\":4}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"2c7c304cabf0cf29500a4d02b6e9abf0\",\"relativePath\":\"package.json\",\"contentHash\":\"d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":59},\"kind\":\"indexed_entity\",\"occurrenceId\":\"43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566\",\"stableEntityId\":\"571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be\"}]},{\"id\":\"retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768-2\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"README.md\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"909197763ee7e2998c8ebfdf31f7c726\",\"relativePath\":\"README.md\",\"contentHash\":\"ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":61},\"kind\":\"indexed_entity\",\"occurrenceId\":\"8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7\",\"stableEntityId\":\"221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768\"}]},{\"id\":\"retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":3}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"9ce8908dac1610b327e5be2c550f3394\",\"relativePath\":\"src/discount.mjs\",\"contentHash\":\"c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":88},\"kind\":\"indexed_entity\",\"occurrenceId\":\"2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809\",\"stableEntityId\":\"7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc\"}]},{\"id\":\"retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492-4\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/embedding.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":2}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"e4b05058c40b50bd78e38f27a5289337\",\"relativePath\":\"src/embedding.mjs\",\"contentHash\":\"4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":140},\"kind\":\"indexed_entity\",\"occurrenceId\":\"5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e\",\"stableEntityId\":\"2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492\"}]},{\"id\":\"retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/invoice.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":6}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"c65f7332c1801ab1bd5d5f0dd870de6e\",\"relativePath\":\"src/invoice.mjs\",\"contentHash\":\"366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":209},\"kind\":\"indexed_entity\",\"occurrenceId\":\"3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef\",\"stableEntityId\":\"7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f\"}]}],\"views\":[{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"}],\"semanticObservations\":[],\"issues\":[]}"
+              "text": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-ff55db8a-70b8-4fdf-a295-b74bf06f1845-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-75028484-cd28-488b-8501-d9549eeda6ca-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-73426006-bd79-4b5e-993d-f240ef4ae839-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-5e2e41da-130e-4438-8645-18b2f5ab2d3f-4]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-a0bf9f11-ed27-41ae-9af0-f2af313f5443-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
             }
           ],
           "isError": false,
           "structuredContent": {
             "schemaVersion": "lazy-intel.result/1",
-            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
             "operation": "search",
             "routes": [
               "zvec:search"
@@ -2852,7 +2848,7 @@
                 "backend": "zvec",
                 "ok": true,
                 "outcome": "ok",
-                "latencyMs": 131
+                "latencyMs": 123
               }
             ],
             "status": "ok",
@@ -2865,9 +2861,9 @@
             "normalization": "typed",
             "evidence": [
               {
-                "id": "retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be-3",
+                "id": "retrieval-ff55db8a-70b8-4fdf-a295-b74bf06f1845-3",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "package.json",
                   "range": {
                     "startLine": 0,
@@ -2878,8 +2874,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "2c7c304cabf0cf29500a4d02b6e9abf0",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "583bdc6d0f680f1addb531bb0e075103",
                   "relativePath": "package.json",
                   "contentHash": "d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0",
                   "span": {
@@ -2889,16 +2885,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566",
-                  "stableEntityId": "571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8"
+                  "stableEntityId": "782c4ac129c5e981cc5b2e9710b943a3622c5d9c9e0aaa3924908c02d1b7ee01"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -2912,14 +2902,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be"
+                    "executionId": "retrieval-ff55db8a-70b8-4fdf-a295-b74bf06f1845"
                   }
                 ]
               },
               {
-                "id": "retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768-2",
+                "id": "retrieval-75028484-cd28-488b-8501-d9549eeda6ca-2",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "README.md",
                   "range": {
                     "startLine": 0,
@@ -2930,8 +2920,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "909197763ee7e2998c8ebfdf31f7c726",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "d97b4aef82b7e2a57b9e5a674623377e",
                   "relativePath": "README.md",
                   "contentHash": "ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d",
                   "span": {
@@ -2941,16 +2931,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7",
-                  "stableEntityId": "221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694"
+                  "stableEntityId": "f2f971b8132397ede14131c3c478b2370b8024a727de130ec6f9dc9d04e4947a"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -2964,14 +2948,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768"
+                    "executionId": "retrieval-75028484-cd28-488b-8501-d9549eeda6ca"
                   }
                 ]
               },
               {
-                "id": "retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc-1",
+                "id": "retrieval-73426006-bd79-4b5e-993d-f240ef4ae839-1",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/discount.mjs",
                   "range": {
                     "startLine": 0,
@@ -2982,8 +2966,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "9ce8908dac1610b327e5be2c550f3394",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "b2608c876ecc3b2dc6a1f0c15137690d",
                   "relativePath": "src/discount.mjs",
                   "contentHash": "c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a",
                   "span": {
@@ -2993,16 +2977,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809",
-                  "stableEntityId": "7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9"
+                  "stableEntityId": "aa7e3c8baab105a35c4ffa7a8a82d854b6a148703380de4ee54d856cf85bfdf3"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3016,14 +2994,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc"
+                    "executionId": "retrieval-73426006-bd79-4b5e-993d-f240ef4ae839"
                   }
                 ]
               },
               {
-                "id": "retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492-4",
+                "id": "retrieval-5e2e41da-130e-4438-8645-18b2f5ab2d3f-4",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/embedding.mjs",
                   "range": {
                     "startLine": 0,
@@ -3034,8 +3012,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "e4b05058c40b50bd78e38f27a5289337",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "1062bd795a65faeb196158013eee5034",
                   "relativePath": "src/embedding.mjs",
                   "contentHash": "4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981",
                   "span": {
@@ -3045,16 +3023,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e",
-                  "stableEntityId": "2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e"
+                  "stableEntityId": "75dba1a77ccee8b59af946d2b97e22b829fef91d344072803c38638077228d84"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3068,14 +3040,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492"
+                    "executionId": "retrieval-5e2e41da-130e-4438-8645-18b2f5ab2d3f"
                   }
                 ]
               },
               {
-                "id": "retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f-0",
+                "id": "retrieval-a0bf9f11-ed27-41ae-9af0-f2af313f5443-0",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/invoice.mjs",
                   "range": {
                     "startLine": 0,
@@ -3086,8 +3058,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "c65f7332c1801ab1bd5d5f0dd870de6e",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "ffc48c9f603cd0adfdf66301e5810b81",
                   "relativePath": "src/invoice.mjs",
                   "contentHash": "366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3",
                   "span": {
@@ -3097,16 +3069,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef",
-                  "stableEntityId": "7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff"
+                  "stableEntityId": "604fdb75d2fcafcf6bd5c7fb22ce0be831a2e509d28bc4b093beef8e85d93c2e"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3120,7 +3086,7 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f"
+                    "executionId": "retrieval-a0bf9f11-ed27-41ae-9af0-f2af313f5443"
                   }
                 ]
               }
@@ -3131,11 +3097,11 @@
             "views": [
               {
                 "projection": "retrieval",
-                "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
+                "appliedManifestId": "1186dd29b244936a0450fae279ff3f879d8787f63db9a943610afc75dbcc8099",
+                "profileDigest": "8cda79852ad257269a88fb7e903b18750c43827f8a1c67e0483abd550c953955",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source/.lazy-intel/stores/aea60b92-934b-4228-998c-05a10a3e1bdd"
               }
             ],
             "semanticObservations": [],
@@ -3320,7 +3286,7 @@
             "sourceCheck": null
           }
         ],
-        "rawText": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492-4]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n\n{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be-3\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"package.json\",\"range\":{\"startLine\":0,\"endLineExclusive\":4}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"2c7c304cabf0cf29500a4d02b6e9abf0\",\"relativePath\":\"package.json\",\"contentHash\":\"d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":59},\"kind\":\"indexed_entity\",\"occurrenceId\":\"43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566\",\"stableEntityId\":\"571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-054d180f-ab71-4d18-bae5-e7c59d0e81be\"}]},{\"id\":\"retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768-2\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"README.md\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"909197763ee7e2998c8ebfdf31f7c726\",\"relativePath\":\"README.md\",\"contentHash\":\"ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":61},\"kind\":\"indexed_entity\",\"occurrenceId\":\"8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7\",\"stableEntityId\":\"221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-4dd5de91-7817-4c3c-a9a0-a0971f3bc768\"}]},{\"id\":\"retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":3}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"9ce8908dac1610b327e5be2c550f3394\",\"relativePath\":\"src/discount.mjs\",\"contentHash\":\"c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":88},\"kind\":\"indexed_entity\",\"occurrenceId\":\"2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809\",\"stableEntityId\":\"7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-d07e84f6-4993-4c93-8974-5abe999fdddc\"}]},{\"id\":\"retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492-4\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/embedding.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":2}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"e4b05058c40b50bd78e38f27a5289337\",\"relativePath\":\"src/embedding.mjs\",\"contentHash\":\"4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":140},\"kind\":\"indexed_entity\",\"occurrenceId\":\"5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e\",\"stableEntityId\":\"2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-a724137f-9af3-4d1c-adc5-2a5545d27492\"}]},{\"id\":\"retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/invoice.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":6}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"c65f7332c1801ab1bd5d5f0dd870de6e\",\"relativePath\":\"src/invoice.mjs\",\"contentHash\":\"366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":209},\"kind\":\"indexed_entity\",\"occurrenceId\":\"3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef\",\"stableEntityId\":\"7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-c4daaea8-2f62-42da-b6c0-d7e15d12a55f\"}]}],\"views\":[{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"}],\"semanticObservations\":[],\"issues\":[]}"
+        "rawText": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-ff55db8a-70b8-4fdf-a295-b74bf06f1845-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-75028484-cd28-488b-8501-d9549eeda6ca-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-73426006-bd79-4b5e-993d-f240ef4ae839-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-5e2e41da-130e-4438-8645-18b2f5ab2d3f-4]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-a0bf9f11-ed27-41ae-9af0-f2af313f5443-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
       },
       {
         "id": "invoiceTotal",
@@ -3329,17 +3295,13 @@
           "content": [
             {
               "type": "text",
-              "text": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201-4]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-cd5cda13-64d0-4139-85f4-595a7db51704-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426-3]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-1261a948-232c-4c34-9268-283ca7da0d11-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
-            },
-            {
-              "type": "text",
-              "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201-4\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"package.json\",\"range\":{\"startLine\":0,\"endLineExclusive\":4}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"2c7c304cabf0cf29500a4d02b6e9abf0\",\"relativePath\":\"package.json\",\"contentHash\":\"d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":59},\"kind\":\"indexed_entity\",\"occurrenceId\":\"43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566\",\"stableEntityId\":\"571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201\"}]},{\"id\":\"retrieval-cd5cda13-64d0-4139-85f4-595a7db51704-2\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"README.md\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"909197763ee7e2998c8ebfdf31f7c726\",\"relativePath\":\"README.md\",\"contentHash\":\"ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":61},\"kind\":\"indexed_entity\",\"occurrenceId\":\"8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7\",\"stableEntityId\":\"221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-cd5cda13-64d0-4139-85f4-595a7db51704\"}]},{\"id\":\"retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":3}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"9ce8908dac1610b327e5be2c550f3394\",\"relativePath\":\"src/discount.mjs\",\"contentHash\":\"c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":88},\"kind\":\"indexed_entity\",\"occurrenceId\":\"2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809\",\"stableEntityId\":\"7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28\"}]},{\"id\":\"retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426-3\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/embedding.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":2}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"e4b05058c40b50bd78e38f27a5289337\",\"relativePath\":\"src/embedding.mjs\",\"contentHash\":\"4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":140},\"kind\":\"indexed_entity\",\"occurrenceId\":\"5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e\",\"stableEntityId\":\"2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426\"}]},{\"id\":\"retrieval-1261a948-232c-4c34-9268-283ca7da0d11-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/invoice.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":6}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"c65f7332c1801ab1bd5d5f0dd870de6e\",\"relativePath\":\"src/invoice.mjs\",\"contentHash\":\"366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":209},\"kind\":\"indexed_entity\",\"occurrenceId\":\"3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef\",\"stableEntityId\":\"7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-1261a948-232c-4c34-9268-283ca7da0d11\"}]}],\"views\":[{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"}],\"semanticObservations\":[],\"issues\":[]}"
+              "text": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-a9557c30-d480-4e4b-adc9-25394b8b5cc6-4]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-e45567f5-9250-4700-90eb-13c7705cde79-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-ec8d60e5-e6c2-422d-adb3-91915a99d69c-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-80e9ea5a-481e-4ff4-a6cd-416440caa512-3]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-a12f42d5-3546-4780-af59-665f711a285d-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
             }
           ],
           "isError": false,
           "structuredContent": {
             "schemaVersion": "lazy-intel.result/1",
-            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
             "operation": "search",
             "routes": [
               "zvec:search"
@@ -3350,7 +3312,7 @@
                 "backend": "zvec",
                 "ok": true,
                 "outcome": "ok",
-                "latencyMs": 85
+                "latencyMs": 82
               }
             ],
             "status": "ok",
@@ -3363,9 +3325,9 @@
             "normalization": "typed",
             "evidence": [
               {
-                "id": "retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201-4",
+                "id": "retrieval-a9557c30-d480-4e4b-adc9-25394b8b5cc6-4",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "package.json",
                   "range": {
                     "startLine": 0,
@@ -3376,8 +3338,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "2c7c304cabf0cf29500a4d02b6e9abf0",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "583bdc6d0f680f1addb531bb0e075103",
                   "relativePath": "package.json",
                   "contentHash": "d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0",
                   "span": {
@@ -3387,16 +3349,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566",
-                  "stableEntityId": "571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8"
+                  "stableEntityId": "782c4ac129c5e981cc5b2e9710b943a3622c5d9c9e0aaa3924908c02d1b7ee01"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3410,14 +3366,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201"
+                    "executionId": "retrieval-a9557c30-d480-4e4b-adc9-25394b8b5cc6"
                   }
                 ]
               },
               {
-                "id": "retrieval-cd5cda13-64d0-4139-85f4-595a7db51704-2",
+                "id": "retrieval-e45567f5-9250-4700-90eb-13c7705cde79-2",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "README.md",
                   "range": {
                     "startLine": 0,
@@ -3428,8 +3384,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "909197763ee7e2998c8ebfdf31f7c726",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "d97b4aef82b7e2a57b9e5a674623377e",
                   "relativePath": "README.md",
                   "contentHash": "ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d",
                   "span": {
@@ -3439,16 +3395,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7",
-                  "stableEntityId": "221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694"
+                  "stableEntityId": "f2f971b8132397ede14131c3c478b2370b8024a727de130ec6f9dc9d04e4947a"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3462,14 +3412,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-cd5cda13-64d0-4139-85f4-595a7db51704"
+                    "executionId": "retrieval-e45567f5-9250-4700-90eb-13c7705cde79"
                   }
                 ]
               },
               {
-                "id": "retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28-1",
+                "id": "retrieval-ec8d60e5-e6c2-422d-adb3-91915a99d69c-1",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/discount.mjs",
                   "range": {
                     "startLine": 0,
@@ -3480,8 +3430,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "9ce8908dac1610b327e5be2c550f3394",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "b2608c876ecc3b2dc6a1f0c15137690d",
                   "relativePath": "src/discount.mjs",
                   "contentHash": "c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a",
                   "span": {
@@ -3491,16 +3441,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809",
-                  "stableEntityId": "7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9"
+                  "stableEntityId": "aa7e3c8baab105a35c4ffa7a8a82d854b6a148703380de4ee54d856cf85bfdf3"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3514,14 +3458,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28"
+                    "executionId": "retrieval-ec8d60e5-e6c2-422d-adb3-91915a99d69c"
                   }
                 ]
               },
               {
-                "id": "retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426-3",
+                "id": "retrieval-80e9ea5a-481e-4ff4-a6cd-416440caa512-3",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/embedding.mjs",
                   "range": {
                     "startLine": 0,
@@ -3532,8 +3476,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "e4b05058c40b50bd78e38f27a5289337",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "1062bd795a65faeb196158013eee5034",
                   "relativePath": "src/embedding.mjs",
                   "contentHash": "4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981",
                   "span": {
@@ -3543,16 +3487,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e",
-                  "stableEntityId": "2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e"
+                  "stableEntityId": "75dba1a77ccee8b59af946d2b97e22b829fef91d344072803c38638077228d84"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3566,14 +3504,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426"
+                    "executionId": "retrieval-80e9ea5a-481e-4ff4-a6cd-416440caa512"
                   }
                 ]
               },
               {
-                "id": "retrieval-1261a948-232c-4c34-9268-283ca7da0d11-0",
+                "id": "retrieval-a12f42d5-3546-4780-af59-665f711a285d-0",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/invoice.mjs",
                   "range": {
                     "startLine": 0,
@@ -3584,8 +3522,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "c65f7332c1801ab1bd5d5f0dd870de6e",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "ffc48c9f603cd0adfdf66301e5810b81",
                   "relativePath": "src/invoice.mjs",
                   "contentHash": "366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3",
                   "span": {
@@ -3595,16 +3533,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef",
-                  "stableEntityId": "7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff"
+                  "stableEntityId": "604fdb75d2fcafcf6bd5c7fb22ce0be831a2e509d28bc4b093beef8e85d93c2e"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3618,7 +3550,7 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-1261a948-232c-4c34-9268-283ca7da0d11"
+                    "executionId": "retrieval-a12f42d5-3546-4780-af59-665f711a285d"
                   }
                 ]
               }
@@ -3629,11 +3561,11 @@
             "views": [
               {
                 "projection": "retrieval",
-                "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
+                "appliedManifestId": "1186dd29b244936a0450fae279ff3f879d8787f63db9a943610afc75dbcc8099",
+                "profileDigest": "8cda79852ad257269a88fb7e903b18750c43827f8a1c67e0483abd550c953955",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source/.lazy-intel/stores/aea60b92-934b-4228-998c-05a10a3e1bdd"
               }
             ],
             "semanticObservations": [],
@@ -3818,7 +3750,7 @@
             "sourceCheck": null
           }
         ],
-        "rawText": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201-4]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-cd5cda13-64d0-4139-85f4-595a7db51704-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426-3]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-1261a948-232c-4c34-9268-283ca7da0d11-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n\n{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201-4\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"package.json\",\"range\":{\"startLine\":0,\"endLineExclusive\":4}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"2c7c304cabf0cf29500a4d02b6e9abf0\",\"relativePath\":\"package.json\",\"contentHash\":\"d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":59},\"kind\":\"indexed_entity\",\"occurrenceId\":\"43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566\",\"stableEntityId\":\"571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-4c8ef86b-4cd5-4361-a2ab-aa72d53b9201\"}]},{\"id\":\"retrieval-cd5cda13-64d0-4139-85f4-595a7db51704-2\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"README.md\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"909197763ee7e2998c8ebfdf31f7c726\",\"relativePath\":\"README.md\",\"contentHash\":\"ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":61},\"kind\":\"indexed_entity\",\"occurrenceId\":\"8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7\",\"stableEntityId\":\"221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-cd5cda13-64d0-4139-85f4-595a7db51704\"}]},{\"id\":\"retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":3}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"9ce8908dac1610b327e5be2c550f3394\",\"relativePath\":\"src/discount.mjs\",\"contentHash\":\"c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":88},\"kind\":\"indexed_entity\",\"occurrenceId\":\"2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809\",\"stableEntityId\":\"7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-c89ba6a0-cce4-4391-a2eb-ccc2e86daf28\"}]},{\"id\":\"retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426-3\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/embedding.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":2}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"e4b05058c40b50bd78e38f27a5289337\",\"relativePath\":\"src/embedding.mjs\",\"contentHash\":\"4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":140},\"kind\":\"indexed_entity\",\"occurrenceId\":\"5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e\",\"stableEntityId\":\"2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-a2f157d2-ec92-4b65-a26d-85e9d1c8e426\"}]},{\"id\":\"retrieval-1261a948-232c-4c34-9268-283ca7da0d11-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/invoice.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":6}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"c65f7332c1801ab1bd5d5f0dd870de6e\",\"relativePath\":\"src/invoice.mjs\",\"contentHash\":\"366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":209},\"kind\":\"indexed_entity\",\"occurrenceId\":\"3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef\",\"stableEntityId\":\"7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-1261a948-232c-4c34-9268-283ca7da0d11\"}]}],\"views\":[{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"}],\"semanticObservations\":[],\"issues\":[]}"
+        "rawText": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-a9557c30-d480-4e4b-adc9-25394b8b5cc6-4]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-e45567f5-9250-4700-90eb-13c7705cde79-2]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-ec8d60e5-e6c2-422d-adb3-91915a99d69c-1]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-80e9ea5a-481e-4ff4-a6cd-416440caa512-3]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-a12f42d5-3546-4780-af59-665f711a285d-0]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
       },
       {
         "id": "embeddingNativeQwen",
@@ -3827,17 +3759,13 @@
           "content": [
             {
               "type": "text",
-              "text": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9-1]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-b3361cad-9191-4c96-b88f-a944c81d397e-4]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-38ca0815-f470-4627-bf4a-1542c745498d-0]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5-2]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
-            },
-            {
-              "type": "text",
-              "text": "{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae-3\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"package.json\",\"range\":{\"startLine\":0,\"endLineExclusive\":4}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"2c7c304cabf0cf29500a4d02b6e9abf0\",\"relativePath\":\"package.json\",\"contentHash\":\"d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":59},\"kind\":\"indexed_entity\",\"occurrenceId\":\"43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566\",\"stableEntityId\":\"571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae\"}]},{\"id\":\"retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"README.md\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"909197763ee7e2998c8ebfdf31f7c726\",\"relativePath\":\"README.md\",\"contentHash\":\"ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":61},\"kind\":\"indexed_entity\",\"occurrenceId\":\"8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7\",\"stableEntityId\":\"221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9\"}]},{\"id\":\"retrieval-b3361cad-9191-4c96-b88f-a944c81d397e-4\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":3}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"9ce8908dac1610b327e5be2c550f3394\",\"relativePath\":\"src/discount.mjs\",\"contentHash\":\"c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":88},\"kind\":\"indexed_entity\",\"occurrenceId\":\"2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809\",\"stableEntityId\":\"7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-b3361cad-9191-4c96-b88f-a944c81d397e\"}]},{\"id\":\"retrieval-38ca0815-f470-4627-bf4a-1542c745498d-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/embedding.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":2}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"e4b05058c40b50bd78e38f27a5289337\",\"relativePath\":\"src/embedding.mjs\",\"contentHash\":\"4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":140},\"kind\":\"indexed_entity\",\"occurrenceId\":\"5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e\",\"stableEntityId\":\"2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-38ca0815-f470-4627-bf4a-1542c745498d\"}]},{\"id\":\"retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5-2\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/invoice.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":6}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"c65f7332c1801ab1bd5d5f0dd870de6e\",\"relativePath\":\"src/invoice.mjs\",\"contentHash\":\"366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":209},\"kind\":\"indexed_entity\",\"occurrenceId\":\"3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef\",\"stableEntityId\":\"7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5\"}]}],\"views\":[{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"}],\"semanticObservations\":[],\"issues\":[]}"
+              "text": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-2c001e2b-f736-4d23-aec9-bf278e2d8dd5-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-bcff64c1-9240-4a3b-a13d-b48b808d80ad-1]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-3beb338c-2918-43a8-8964-31fb5fa2a702-4]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-ca3bacf5-f1e1-4210-adfe-e1367f18e8a4-0]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-06a025e9-fa1c-494d-b843-0713c6d044f4-2]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
             }
           ],
           "isError": false,
           "structuredContent": {
             "schemaVersion": "lazy-intel.result/1",
-            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+            "root": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
             "operation": "search",
             "routes": [
               "zvec:search"
@@ -3848,7 +3776,7 @@
                 "backend": "zvec",
                 "ok": true,
                 "outcome": "ok",
-                "latencyMs": 89
+                "latencyMs": 83
               }
             ],
             "status": "ok",
@@ -3861,9 +3789,9 @@
             "normalization": "typed",
             "evidence": [
               {
-                "id": "retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae-3",
+                "id": "retrieval-2c001e2b-f736-4d23-aec9-bf278e2d8dd5-3",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "package.json",
                   "range": {
                     "startLine": 0,
@@ -3874,8 +3802,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "2c7c304cabf0cf29500a4d02b6e9abf0",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "583bdc6d0f680f1addb531bb0e075103",
                   "relativePath": "package.json",
                   "contentHash": "d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0",
                   "span": {
@@ -3885,16 +3813,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566",
-                  "stableEntityId": "571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8"
+                  "stableEntityId": "782c4ac129c5e981cc5b2e9710b943a3622c5d9c9e0aaa3924908c02d1b7ee01"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3908,14 +3830,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae"
+                    "executionId": "retrieval-2c001e2b-f736-4d23-aec9-bf278e2d8dd5"
                   }
                 ]
               },
               {
-                "id": "retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9-1",
+                "id": "retrieval-bcff64c1-9240-4a3b-a13d-b48b808d80ad-1",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "README.md",
                   "range": {
                     "startLine": 0,
@@ -3926,8 +3848,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "909197763ee7e2998c8ebfdf31f7c726",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "d97b4aef82b7e2a57b9e5a674623377e",
                   "relativePath": "README.md",
                   "contentHash": "ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d",
                   "span": {
@@ -3937,16 +3859,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7",
-                  "stableEntityId": "221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694"
+                  "stableEntityId": "f2f971b8132397ede14131c3c478b2370b8024a727de130ec6f9dc9d04e4947a"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -3960,14 +3876,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9"
+                    "executionId": "retrieval-bcff64c1-9240-4a3b-a13d-b48b808d80ad"
                   }
                 ]
               },
               {
-                "id": "retrieval-b3361cad-9191-4c96-b88f-a944c81d397e-4",
+                "id": "retrieval-3beb338c-2918-43a8-8964-31fb5fa2a702-4",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/discount.mjs",
                   "range": {
                     "startLine": 0,
@@ -3978,8 +3894,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "9ce8908dac1610b327e5be2c550f3394",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "b2608c876ecc3b2dc6a1f0c15137690d",
                   "relativePath": "src/discount.mjs",
                   "contentHash": "c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a",
                   "span": {
@@ -3989,16 +3905,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809",
-                  "stableEntityId": "7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9"
+                  "stableEntityId": "aa7e3c8baab105a35c4ffa7a8a82d854b6a148703380de4ee54d856cf85bfdf3"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -4012,14 +3922,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-b3361cad-9191-4c96-b88f-a944c81d397e"
+                    "executionId": "retrieval-3beb338c-2918-43a8-8964-31fb5fa2a702"
                   }
                 ]
               },
               {
-                "id": "retrieval-38ca0815-f470-4627-bf4a-1542c745498d-0",
+                "id": "retrieval-ca3bacf5-f1e1-4210-adfe-e1367f18e8a4-0",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/embedding.mjs",
                   "range": {
                     "startLine": 0,
@@ -4030,8 +3940,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "e4b05058c40b50bd78e38f27a5289337",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "1062bd795a65faeb196158013eee5034",
                   "relativePath": "src/embedding.mjs",
                   "contentHash": "4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981",
                   "span": {
@@ -4041,16 +3951,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e",
-                  "stableEntityId": "2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e"
+                  "stableEntityId": "75dba1a77ccee8b59af946d2b97e22b829fef91d344072803c38638077228d84"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -4064,14 +3968,14 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-38ca0815-f470-4627-bf4a-1542c745498d"
+                    "executionId": "retrieval-ca3bacf5-f1e1-4210-adfe-e1367f18e8a4"
                   }
                 ]
               },
               {
-                "id": "retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5-2",
+                "id": "retrieval-06a025e9-fa1c-494d-b843-0713c6d044f4-2",
                 "locator": {
-                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source",
+                  "rootKey": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source",
                   "relativePath": "src/invoice.mjs",
                   "range": {
                     "startLine": 0,
@@ -4082,8 +3986,8 @@
                 "textKind": "source",
                 "sourceCheck": "matched",
                 "anchor": {
-                  "workspaceId": "workspace-5567076810c6438dab3855903979e1e6",
-                  "fileId": "c65f7332c1801ab1bd5d5f0dd870de6e",
+                  "workspaceId": "workspace-24508a7c6bbff5f5e041fabb9745eb5e",
+                  "fileId": "ffc48c9f603cd0adfdf66301e5810b81",
                   "relativePath": "src/invoice.mjs",
                   "contentHash": "366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3",
                   "span": {
@@ -4093,16 +3997,10 @@
                   },
                   "kind": "indexed_entity",
                   "occurrenceId": "3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef",
-                  "stableEntityId": "7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff"
+                  "stableEntityId": "604fdb75d2fcafcf6bd5c7fb22ce0be831a2e509d28bc4b093beef8e85d93c2e"
                 },
-                "projectionView": {
-                  "projection": "retrieval",
-                  "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                  "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                  "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
-                  "state": "clean",
-                  "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
-                },
+                "projection": "retrieval",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
                 "coverage": {
                   "kind": "ranked_sample",
                   "completeWithinScope": false,
@@ -4116,7 +4014,7 @@
                     "operation": "search",
                     "backendVersion": "309a66995809243d3274fa8b5bea63ab11dda1a0",
                     "adapterVersion": "0.3.0",
-                    "executionId": "retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5"
+                    "executionId": "retrieval-06a025e9-fa1c-494d-b843-0713c6d044f4"
                   }
                 ]
               }
@@ -4127,11 +4025,11 @@
             "views": [
               {
                 "projection": "retrieval",
-                "viewId": "6a81ad37d7a16e4dc47cb0f40408d37d",
-                "appliedManifestId": "5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a",
-                "profileDigest": "ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c",
+                "viewId": "76ae6a0aa26195e2bda4e11bb8eae4bd",
+                "appliedManifestId": "1186dd29b244936a0450fae279ff3f879d8787f63db9a943610afc75dbcc8099",
+                "profileDigest": "8cda79852ad257269a88fb7e903b18750c43827f8a1c67e0483abd550c953955",
                 "state": "clean",
-                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076"
+                "storeRoot": "/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source/.lazy-intel/stores/aea60b92-934b-4228-998c-05a10a3e1bdd"
               }
             ],
             "semanticObservations": [],
@@ -4316,18 +4214,18 @@
             "sourceCheck": null
           }
         ],
-        "rawText": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9-1]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-b3361cad-9191-4c96-b88f-a944c81d397e-4]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-38ca0815-f470-4627-bf4a-1542c745498d-0]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5-2]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n\n{\"status\":\"ok\",\"fulfillment\":{\"requiredMet\":true,\"unmet\":[]},\"stopReason\":\"plan_complete\",\"coverage\":\"bounded\",\"omittedItems\":0,\"truncated\":false,\"evidence\":[{\"id\":\"retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae-3\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"package.json\",\"range\":{\"startLine\":0,\"endLineExclusive\":4}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"2c7c304cabf0cf29500a4d02b6e9abf0\",\"relativePath\":\"package.json\",\"contentHash\":\"d1d14a4beffd961a7dcc0e47fcde8e452f7a42ac235b659359ab380771c3a0c0\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":59},\"kind\":\"indexed_entity\",\"occurrenceId\":\"43454c6c172db4a7e34bf1f7f889ddb0112eb8a9e2689e172a7cec66de95f566\",\"stableEntityId\":\"571b00f05ae11b61d3c760dac32d2832e65eaeee8fe8519fcaa2d44cba5314b8\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-a63774d4-e41a-4eba-b332-fee532cb5fae\"}]},{\"id\":\"retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9-1\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"README.md\",\"range\":{\"startLine\":0,\"endLineExclusive\":1}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"909197763ee7e2998c8ebfdf31f7c726\",\"relativePath\":\"README.md\",\"contentHash\":\"ef337bfbdddb160dd4782a82e8a74035fb2a6d7c16558ca174186cbe41c7121d\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":61},\"kind\":\"indexed_entity\",\"occurrenceId\":\"8c9d06934395f93c760d0058f96d894bb2035e30a61a38f344987314f92075c7\",\"stableEntityId\":\"221258109dff1e7dc8fd0793ee2baeb99d2616de00832c1a72041d88078f7694\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-ec8a0699-d14d-483f-9e3c-225c8442efa9\"}]},{\"id\":\"retrieval-b3361cad-9191-4c96-b88f-a944c81d397e-4\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/discount.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":3}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"9ce8908dac1610b327e5be2c550f3394\",\"relativePath\":\"src/discount.mjs\",\"contentHash\":\"c1256d2ec5083da070fdddc472a4c611a11148a0fb7215b0848ef1ac91ea907a\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":88},\"kind\":\"indexed_entity\",\"occurrenceId\":\"2e7e591701d83db25df1394b7919cd6536d9d3e11298d1b70963eab036340809\",\"stableEntityId\":\"7f904153a4eef4c0e62cf25226a5cc1420580c6e98b95592676ea1f9005545d9\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-b3361cad-9191-4c96-b88f-a944c81d397e\"}]},{\"id\":\"retrieval-38ca0815-f470-4627-bf4a-1542c745498d-0\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/embedding.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":2}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"e4b05058c40b50bd78e38f27a5289337\",\"relativePath\":\"src/embedding.mjs\",\"contentHash\":\"4a83c05ac73586ce22f566df95f0d4b745896a1be78fd37425174a877e881981\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":140},\"kind\":\"indexed_entity\",\"occurrenceId\":\"5f9bf3f2101bbe1783f1978d52e59eb3f31afd7202fb5fe023ffe65350498c8e\",\"stableEntityId\":\"2fc7abed27ec720f782ef74d8a7df5cb70b7d216f155c5a4dd7a1f393729b07e\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-38ca0815-f470-4627-bf4a-1542c745498d\"}]},{\"id\":\"retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5-2\",\"locator\":{\"rootKey\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source\",\"relativePath\":\"src/invoice.mjs\",\"range\":{\"startLine\":0,\"endLineExclusive\":6}},\"method\":\"hybrid_retrieval\",\"textKind\":\"source\",\"sourceCheck\":\"matched\",\"anchor\":{\"workspaceId\":\"workspace-5567076810c6438dab3855903979e1e6\",\"fileId\":\"c65f7332c1801ab1bd5d5f0dd870de6e\",\"relativePath\":\"src/invoice.mjs\",\"contentHash\":\"366a1135c7a4c4819ac7f9e5a5cfe4f653d174d03a9bb053e7a3941a5e5b90f3\",\"span\":{\"coordinateSystem\":\"utf8-bytes\",\"startByte\":0,\"endByte\":209},\"kind\":\"indexed_entity\",\"occurrenceId\":\"3a937e7f08201c089119dd1f53a8c84c91742112d6f79db2b362de19ba8f23ef\",\"stableEntityId\":\"7a2700e28784d4ee91ae2e29da2adb6894115137a474f26df60d9e462a8a6aff\"},\"projectionView\":{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"},\"coverage\":{\"kind\":\"ranked_sample\",\"completeWithinScope\":false,\"scopeDescription\":\"source=index; zvec-grep ranked_sample\",\"returned\":5,\"omitted\":null},\"provenance\":[{\"backend\":\"zvec\",\"operation\":\"search\",\"backendVersion\":\"309a66995809243d3274fa8b5bea63ab11dda1a0\",\"adapterVersion\":\"0.3.0\",\"executionId\":\"retrieval-66dcc128-a44c-4c72-a831-c190c0db65e5\"}]}],\"views\":[{\"projection\":\"retrieval\",\"viewId\":\"6a81ad37d7a16e4dc47cb0f40408d37d\",\"appliedManifestId\":\"5c759388ecf28568ea7f9469fba1e90afe175e48d1f59711529de63e9ac0364a\",\"profileDigest\":\"ad20b817f94c2c384ee3ec1c236c9b18fd01102eb0e7d4a60fdf4318d484442c\",\"state\":\"clean\",\"storeRoot\":\"/private/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel/stores/9ef41251-9d90-45cd-a4c5-774ec5e30076\"}],\"semanticObservations\":[],\"issues\":[]}"
+        "rawText": "Status: ok\nLimits: maxChars=12000; wireCapBytes=1048576\nStop reason: plan_complete\nOmitted items: 0\n\n## Related retrieval\n\n### retrieval [retrieval-2c001e2b-f736-4d23-aec9-bf278e2d8dd5-3]\nLocation: package.json:1-4\nText: source\nSource check: matched\n\n{\n  \"name\": \"backend-parity-fixture\",\n  \"type\": \"module\"\n}\n\n\n### retrieval [retrieval-bcff64c1-9240-4a3b-a13d-b48b808d80ad-1]\nLocation: README.md:1-1\nText: source\nSource check: matched\n\nA small real source corpus for stock/unified backend parity.\n\n\n### retrieval [retrieval-3beb338c-2918-43a8-8964-31fb5fa2a702-4]\nLocation: src/discount.mjs:1-3\nText: source\nSource check: matched\n\nexport function applyDiscount(total, rate) {\n  return Math.round(total * (1 - rate));\n}\n\n\n### retrieval [retrieval-ca3bacf5-f1e1-4210-adfe-e1367f18e8a4-0]\nLocation: src/embedding.mjs:1-2\nText: source\nSource check: matched\n\n// Critical configuration anchor: embeddingNativeQwen is local and cached.\nexport const embeddingNativeQwen = 'local/qwen3-embedding-0.6b';\n\n\n### retrieval [retrieval-06a025e9-fa1c-494d-b843-0713c6d044f4-2]\nLocation: src/invoice.mjs:1-6\nText: source\nSource check: matched\n\nimport { applyDiscount } from './discount.mjs';\n\nexport function invoiceTotal(lines, rate = 0) {\n  const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);\n  return applyDiscount(subtotal, rate);\n}\n"
       }
     ]
   },
   "cleanup": {
-    "temporaryRoot": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA",
+    "temporaryRoot": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl",
     "performed": true,
     "closeIndexManagerBeforeCloseUnified": true
   },
   "revisions": {
     "backend": "current checkout",
-    "gitHead": "2efc110b28fede4a76a91653a5102a5180105a73",
+    "gitHead": "fb9059a42f897b85e06c6711b489db9d914ca4aa",
     "vendorZvecUpstreamCommit": "309a66995809243d3274fa8b5bea63ab11dda1a0"
   },
   "stock": {
@@ -4341,11 +4239,11 @@
       "filesUnchanged": 0,
       "filesFailed": 0,
       "entitiesCreated": 5,
-      "durationMs": 1348,
+      "durationMs": 1399,
       "timings": [
         {
           "name": "index_scan",
-          "durationMs": 4
+          "durationMs": 3
         },
         {
           "name": "index_diff",
@@ -4357,25 +4255,25 @@
         },
         {
           "name": "index_prepare",
-          "durationMs": 105,
+          "durationMs": 99,
           "count": 5
         },
         {
           "name": "index_embedding",
-          "durationMs": 519
+          "durationMs": 475
         },
         {
           "name": "index_commit",
-          "durationMs": 8,
+          "durationMs": 7,
           "count": 5
         },
         {
           "name": "index_optimize",
-          "durationMs": 711
+          "durationMs": 815
         }
       ]
     },
-    "stateRoot": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/stock-state",
+    "stateRoot": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/stock-state",
     "inputHash": "7074cb012364755501b3e94453f764a63a900b601d3d8a6abcd4837d46994b7e",
     "modelConfigDigest": "920ef664ff5c1b02a6d719b0592a700c10c5c562685849eb7b5dba4a9bfb2527"
   },
@@ -4384,7 +4282,7 @@
     "toolNames": [
       "code_intel"
     ],
-    "stateRoot": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-V2mFtA/unified-source/.lazy-intel",
+    "stateRoot": "/var/folders/tc/56th_sqd0tdb3t0m62v53q5h0000gn/T/lazy-intel-backend-parity-Yh1nOl/unified-source/.lazy-intel",
     "inputHash": "7074cb012364755501b3e94453f764a63a900b601d3d8a6abcd4837d46994b7e",
     "modelConfigDigest": "920ef664ff5c1b02a6d719b0592a700c10c5c562685849eb7b5dba4a9bfb2527"
   }
