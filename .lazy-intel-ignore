@@ -2,4 +2,4 @@
 vendor/
 # Generated verification evidence: large JSON that outranks the source it describes.
 # Release gates read these files directly; excluding them from the index changes nothing there.
-docs/unified/*.json
+docs/unified/**/*.json
