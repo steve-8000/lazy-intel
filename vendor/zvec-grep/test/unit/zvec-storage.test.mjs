@@ -109,6 +109,7 @@ test("file metadata supports one batched path-prefix lookup", async (t) => {
   const root = join(parent, "repo");
   const storage = createWorkspaceIndexStorage({
     storagePath: join(parent, "storage"),
+    embeddingCachePath: join(parent, "embedding-cache.jsonl"),
     readOnly: false,
     embedding: {
       provider: "local",

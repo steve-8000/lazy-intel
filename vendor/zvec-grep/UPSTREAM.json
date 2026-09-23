@@ -103,10 +103,18 @@
     {
       "path": "src/engine/storage/zvec.ts",
       "original_blob": "c1040e6a5555224e9dc57e7bda554039d1e71a5d",
-      "resulting_blob": "2b0fa5f0067b76eb2708741ddbc835d27361adfc",
+      "resulting_blob": "c0e3d5115e383d4a9c46d92e8d61f15bf97525ff",
       "unit": "U12",
-      "reason": "Opens the shared workspace embedding cache and tracks build-used keys for crash-safe atomic full-build compaction with rebuilt read offsets.",
+      "reason": "Opens the shared workspace embedding cache, tracks build-used keys for crash-safe atomic full-build compaction, and keeps cache reads/writes after the new cache-build methods.",
       "test_evidence": "test/parity/retrieval.test.js; vendor build and verify-vendor."
+    },
+    {
+      "path": "src/engine/extraction/code/extractor.ts",
+      "original_blob": "e7d2a285cf4b4ceaa0f4cc3fbdc6ba177b2d3b0d",
+      "resulting_blob": "b7eb3bccf49baa00a851dfd326539ce5fec2548a",
+      "unit": "U13",
+      "reason": "Caps indexed code fragments at 3,200 UTF-16 code units even when the active model input budget is larger, with at most 480 characters of overlap and grammar member grouping or bounded line-window fallbacks.",
+      "test_evidence": "test/unit/extraction/code.test.mjs; test/parity/retrieval.test.js; test/contracts/retrieval-adapter.test.js; verify-vendor."
     },
     {
       "path": "src/engine/service/workspace-index.ts",
@@ -131,9 +139,17 @@
       "unit": "U12",
       "reason": "Threads the explicit shared embedding-cache path through prepared and regular writable workspace-index creation.",
       "test_evidence": "vendor build; cache rotation smoke; verify-vendor."
+    },
+    {
+      "path": "test/unit/zvec-storage.test.mjs",
+      "original_blob": "de81cd8488433280fc602ebe8a35b6efa33ce7a0",
+      "resulting_blob": "a3aa5603dad3297b928dba890eb0e16b0ac53c1c",
+      "unit": "U13",
+      "reason": "Provides the required explicit embedding cache path for writable workspace storage in the path-prefix unit test.",
+      "test_evidence": "node --test vendor/zvec-grep/test/unit/**/*.test.mjs; verify-vendor."
     }
   ],
-  "patch_revision": 7,
+  "patch_revision": 9,
   "rules": [
     "The import commit is upstream verbatim. Every later change is a separate commit and a local_patches entry.",
     "A local_patches entry records original_blob, resulting_blob, reason and test evidence.",

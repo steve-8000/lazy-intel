@@ -18,12 +18,12 @@ import { chunkOptionsForMetadata } from "../vector-content.js";
 import { resolveAdapter, type LanguageAdapter } from "./adapter.js";
 import { hasJavascriptTypescriptFunctionValue } from "./families/js-ts.js";
 
-const DEFAULT_CODE_CHUNK_CHARS = 3600;
-const DEFAULT_CODE_CHUNK_OVERLAP_CHARS = 540;
+const MAX_CODE_CHUNK_CHARS = 3200;
+const DEFAULT_CODE_CHUNK_CHARS = MAX_CODE_CHUNK_CHARS;
+const DEFAULT_CODE_CHUNK_OVERLAP_CHARS = 480;
 const COMPONENT_CODE_FORMAT_SET: ReadonlySet<string> = new Set(
   COMPONENT_CODE_FORMATS,
 );
-
 export class CodeExtractor {
   async extract(
     source: Source,
@@ -158,9 +158,24 @@ export class CodeExtractor {
 function resolveCodeChunkOptions(
   options: ChunkOptions,
 ): Required<ChunkOptions> {
-  const maxChunkChars = options.maxChunkChars ?? DEFAULT_CODE_CHUNK_CHARS;
-  const chunkOverlapChars =
+  // Keep indexed source fragments small even when a model's input budget is
+  // much larger; retrieval consumers need independently readable excerpts.
+  const requestedMaxChunkChars =
+    options.maxChunkChars ?? DEFAULT_CODE_CHUNK_CHARS;
+  const maxChunkChars = Math.min(
+    requestedMaxChunkChars,
+    MAX_CODE_CHUNK_CHARS,
+  );
+  const requestedOverlapChars =
     options.chunkOverlapChars ?? DEFAULT_CODE_CHUNK_OVERLAP_CHARS;
+  const chunkOverlapChars =
+    requestedMaxChunkChars > MAX_CODE_CHUNK_CHARS
+      ? Math.min(
+          requestedOverlapChars,
+          DEFAULT_CODE_CHUNK_OVERLAP_CHARS,
+          Math.max(0, maxChunkChars - 1),
+        )
+      : requestedOverlapChars;
 
   if (!Number.isInteger(maxChunkChars) || maxChunkChars <= 0) {
     throw new EngineError(

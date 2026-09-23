@@ -399,15 +399,6 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
     this.persistFile(indexedFile);
   }
 
-  getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]> {
-    return this.embeddingCache.get(keys);
-  }
-
-  putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void {
-    this.assertWritable("putCachedEmbeddings");
-    this.embeddingCache.put(entries);
-  }
-
   beginEmbeddingCacheBuild(batchId?: string, firstPart?: boolean): void {
     this.embeddingCache.beginBuild(batchId, firstPart);
   }
@@ -420,6 +411,8 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
   discardEmbeddingCacheBuild(batchId?: string): void {
     this.embeddingCache.discardBuild(batchId);
   }
+
+
 
   private upsertDocs(fileId: string, docs: readonly ZVecDocInput[]): void {
     for (let start = 0; start < docs.length; start += ZVEC_UPSERT_BATCH_SIZE) {
@@ -434,6 +427,14 @@ class ZvecWorkspaceIndexStorage implements WorkspaceIndexStorage {
         });
       }
     }
+  }
+  getCachedEmbeddings(keys: readonly string[]): ReadonlyMap<string, readonly number[]> {
+    return this.embeddingCache.get(keys);
+  }
+
+  putCachedEmbeddings(entries: readonly EmbeddingCacheEntry[]): void {
+    this.assertWritable("putCachedEmbeddings");
+    this.embeddingCache.put(entries);
   }
 
 
